@@ -95,7 +95,7 @@ export class DisplayBindings {
     this._displayControls?.destroy();
     this._displayControls = bindDisplayControls({
       elements: {
-        styleButtons: document.querySelectorAll('.style-btn'),
+        styleButtons: document.querySelectorAll('.style-btn[data-style]'),
         bloomButton: this._bloomBtn,
         bloomSlider: this._bloomSlider,
         sharpenButton: this._sharpenBtn,

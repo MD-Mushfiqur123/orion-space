@@ -1,0 +1,967 @@
+/*
+   ORION GLASS — world-class redesign layer
+   Smoke glass over near-black, single NASA-orange accent (#f07832).
+   Loads after premium-polish.css and wins the !important cascade.
+
+   Radius system (locked):
+     shells (sidebars / map / dock / chat) .. 24-28px
+     wells (inset trays) ................... 20-22px
+     controls (buttons / chips) ............ 14-16px (pills 999px)
+     inputs ................................ 10-12px
+*/
+
+:root {
+  --og-accent: #f07832;
+  --og-accent-bright: #ffa25e;
+  --og-accent-soft: rgba(240, 120, 50, 0.12);
+  --og-accent-glow: rgba(240, 120, 50, 0.32);
+  --og-accent-line: rgba(240, 120, 50, 0.42);
+  --og-ink: #060608;
+  --og-smoke:
+    linear-gradient(
+      165deg,
+      rgba(255, 255, 255, 0.105),
+      rgba(255, 255, 255, 0.028) 42%,
+      rgba(9, 11, 15, 0.5)
+    );
+  --og-line: rgba(255, 255, 255, 0.13);
+  --og-line-soft: rgba(255, 255, 255, 0.08);
+  --og-line-top: rgba(255, 255, 255, 0.28);
+  --og-shadow-shell:
+    0 36px 90px rgba(0, 0, 0, 0.62),
+    0 4px 14px rgba(0, 0, 0, 0.42);
+  --og-ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ═══ Shared glass shell ═══════════════════════════════════ */
+#left-panel-stack,
+#right-context-rail {
+  background:
+    radial-gradient(120% 90% at 50% 0%, rgba(255, 255, 255, 0.055), transparent 46%),
+    var(--og-smoke) !important;
+  border: 1px solid var(--og-line-soft) !important;
+  border-top-color: rgba(255, 255, 255, 0.16) !important;
+  border-radius: 24px !important;
+  box-shadow:
+    var(--og-shadow-shell),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: blur(40px) saturate(1.5) !important;
+  -webkit-backdrop-filter: blur(40px) saturate(1.5) !important;
+}
+
+/* ═══ Map capsule ══════════════════════════════════════════ */
+#cesiumContainer {
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-top-color: rgba(255, 255, 255, 0.18) !important;
+  border-radius: 24px !important;
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+}
+
+/* ═══ Title pill + top camera actions ══════════════════════ */
+#title-bar {
+  background:
+    linear-gradient(160deg, rgba(24, 26, 31, 0.94), rgba(10, 12, 16, 0.95)) !important;
+  border: 1px solid var(--og-line-soft) !important;
+  border-top-color: rgba(255, 255, 255, 0.16) !important;
+  border-radius: 12px !important;
+  box-shadow:
+    0 14px 40px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: blur(16px) saturate(1) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(1) !important;
+}
+
+#top-center-actions {
+  background:
+    linear-gradient(160deg, rgba(22, 24, 29, 0.92), rgba(9, 11, 15, 0.94)) !important;
+  border: 1px solid var(--og-line-soft) !important;
+  border-top-color: rgba(255, 255, 255, 0.16) !important;
+  border-radius: 12px !important;
+  box-shadow:
+    0 14px 40px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: blur(16px) saturate(1) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(1) !important;
+}
+
+#top-center-actions button {
+  border-radius: 8px !important;
+  border: 1px solid rgba(255, 255, 255, 0.11) !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  transition:
+    background-color 160ms var(--og-ease),
+    color 160ms var(--og-ease),
+    border-color 160ms var(--og-ease),
+    transform 100ms var(--og-ease) !important;
+}
+
+#top-center-actions button:hover {
+  background: #ffffff !important;
+  color: #000000 !important;
+  border-color: #ffffff !important;
+}
+
+#top-center-actions button:active {
+  transform: scale(0.92) !important;
+}
+
+/* Orbit indicator */
+#orbit-indicator.active {
+  background:
+    linear-gradient(160deg, rgba(22, 24, 29, 0.92), rgba(9, 11, 15, 0.94)) !important;
+  border: 1px solid var(--og-line-soft) !important;
+  border-top-color: rgba(255, 255, 255, 0.2) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5) !important;
+  backdrop-filter: blur(16px) saturate(1) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(1) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   COMMAND DOCK — macOS-style floating glass dock
+   ═══════════════════════════════════════════════════════════ */
+#command-dock {
+  width: fit-content !important;
+  max-width: calc(100vw - 3rem) !important;
+  min-width: min(560px, calc(100vw - 3rem)) !important;
+  height: 60px !important;
+  min-height: 60px !important;
+  bottom: 20px !important;
+  padding: 5px !important;
+  border-radius: 22px !important;
+  background:
+    radial-gradient(140% 180% at 50% -32%, rgba(255, 255, 255, 0.14), transparent 52%),
+    radial-gradient(circle at 3% 135%, rgba(240, 120, 50, 0.12), transparent 44%),
+    radial-gradient(circle at 99% 125%, rgba(255, 154, 86, 0.07), transparent 42%),
+    var(--og-smoke) !important;
+  border: 1px solid var(--og-line) !important;
+  border-top-color: var(--og-line-top) !important;
+  box-shadow:
+    var(--og-shadow-shell),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.45) !important;
+  backdrop-filter: blur(42px) saturate(1.6) !important;
+  -webkit-backdrop-filter: blur(42px) saturate(1.6) !important;
+}
+
+/* diagonal sheen across the glass */
+#command-dock::before {
+  content: '' !important;
+  position: absolute !important;
+  inset: 1px !important;
+  border-radius: 20px !important;
+  pointer-events: none !important;
+  background: linear-gradient(
+    104deg,
+    rgba(255, 255, 255, 0.1),
+    transparent 30%,
+    transparent 68%,
+    rgba(255, 154, 86, 0.05)
+  ) !important;
+}
+
+/* clear 20px air gap between map capsule and dock */
+#cesiumContainer,
+#world-overlay-root {
+  bottom: 100px !important;
+}
+
+/* inset tray that holds the controls */
+#command-dock #control-panel-popover {
+  height: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  background: rgba(3, 4, 7, 0.36) !important;
+  border-radius: 16px !important;
+  padding: 4px 5px !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    inset 0 12px 26px rgba(0, 0, 0, 0.3) !important;
+  border: none !important;
+}
+
+#command-dock #style-buttons {
+  gap: 5px !important;
+}
+
+/* glass divider between preset group and utility group */
+#style-buttons > .w-px {
+  width: 1px !important;
+  height: 26px !important;
+  margin: 0 5px !important;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(255, 255, 255, 0.22),
+    transparent
+  ) !important;
+}
+
+/* dock buttons */
+#command-dock .style-btn {
+  min-height: 48px !important;
+  padding: 9px 15px !important;
+  border-radius: 16px !important;
+  white-space: nowrap !important;
+  flex: 0 0 auto !important;
+  color: rgba(240, 241, 245, 0.68) !important;
+  background: rgba(255, 255, 255, 0.035) !important;
+  border: 1px solid rgba(255, 255, 255, 0.095) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 0 0 0 rgba(0, 0, 0, 0) !important;
+  transition:
+    background-color 180ms var(--og-ease),
+    border-color 180ms var(--og-ease),
+    box-shadow 180ms var(--og-ease),
+    color 180ms var(--og-ease),
+    transform 120ms var(--og-ease) !important;
+}
+
+#command-dock .style-btn:hover {
+  color: #ffffff !important;
+  background: rgba(255, 255, 255, 0.11) !important;
+  border-color: rgba(255, 255, 255, 0.28) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 10px 24px rgba(0, 0, 0, 0.28) !important;
+  transform: translateY(-1px) !important;
+}
+
+#command-dock .style-btn:active {
+  transform: translateY(0) scale(0.96) !important;
+}
+
+/* selected preset — crisp white, like macOS dock selection */
+#command-dock .style-btn.active,
+#command-dock .style-btn[aria-pressed='true'] {
+  color: #0a0a0c !important;
+  background: linear-gradient(160deg, #ffffff, #dcdcdf) !important;
+  border-color: #ffffff !important;
+  box-shadow:
+    0 10px 26px rgba(255, 255, 255, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+}
+
+#command-dock .style-btn.active *,
+#command-dock .style-btn[aria-pressed='true'] * {
+  color: #0a0a0c !important;
+}
+
+#command-dock .btn-label {
+  font-family: var(--font-display) !important;
+  font-size: 9px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.12em !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+}
+
+/* AGENT HARNESS — the single accent hero of the dock */
+#orion-harness-dock-btn {
+  color: #ffc9a3 !important;
+  background:
+    radial-gradient(120% 150% at 50% -24%, rgba(240, 120, 50, 0.38), transparent 62%),
+    rgba(240, 120, 50, 0.14) !important;
+  border: 1px solid rgba(255, 162, 94, 0.58) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 205, 170, 0.34),
+    inset 0 -8px 18px rgba(240, 120, 50, 0.12),
+    0 0 30px rgba(240, 120, 50, 0.26),
+    0 6px 18px rgba(0, 0, 0, 0.32) !important;
+  text-shadow: 0 0 14px rgba(240, 120, 50, 0.45) !important;
+}
+
+#orion-harness-dock-btn:hover {
+  color: #ffe9d6 !important;
+  background:
+    radial-gradient(120% 150% at 50% -24%, rgba(240, 120, 50, 0.52), transparent 64%),
+    rgba(240, 120, 50, 0.22) !important;
+  border-color: rgba(255, 180, 120, 0.8) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 205, 170, 0.42),
+    inset 0 -8px 18px rgba(240, 120, 50, 0.16),
+    0 0 44px rgba(240, 120, 50, 0.42),
+    0 12px 28px rgba(0, 0, 0, 0.34) !important;
+  text-shadow: 0 0 18px rgba(240, 120, 50, 0.6) !important;
+}
+
+#orion-harness-dock-btn .bg-emerald-400,
+#orion-harness-dock-btn .animate-pulse {
+  background: var(--og-accent-bright) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   ORION INTELLIGENCE CHAT — premium agent console
+   ═══════════════════════════════════════════════════════════ */
+#orion-map-harness-container {
+  bottom: 100px !important;
+  width: min(680px, calc(100vw - 32px)) !important;
+  filter: drop-shadow(0 30px 60px rgba(0, 0, 0, 0.5)) !important;
+}
+
+#orion-map-harness-container > div {
+  background:
+    radial-gradient(130% 100% at 50% -25%, rgba(255, 255, 255, 0.1), transparent 50%),
+    radial-gradient(circle at 100% 115%, rgba(240, 120, 50, 0.09), transparent 46%),
+    linear-gradient(
+      165deg,
+      rgba(14, 17, 23, 0.82),
+      rgba(10, 12, 17, 0.86) 42%,
+      rgba(7, 9, 13, 0.9)
+    ) !important;
+  border: 1px solid var(--og-line) !important;
+  border-top-color: var(--og-line-top) !important;
+  border-radius: 28px !important;
+  box-shadow:
+    var(--og-shadow-shell),
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.4) !important;
+  backdrop-filter: blur(42px) saturate(1.55) !important;
+  -webkit-backdrop-filter: blur(42px) saturate(1.55) !important;
+  overflow: hidden !important;
+}
+
+/* header */
+#orion-harness-header {
+  border-color: rgba(255, 255, 255, 0.07) !important;
+}
+
+#orion-harness-sector-badge {
+  font-family: var(--font-mono) !important;
+  font-size: 9px !important;
+  letter-spacing: 0.12em !important;
+  color: rgba(255, 255, 255, 0.4) !important;
+  border: 1px solid rgba(255, 255, 255, 0.09) !important;
+  border-radius: 999px !important;
+  padding: 3px 9px !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+}
+
+/* header live dot → accent */
+#orion-map-harness-container .bg-emerald-400 {
+  background: var(--og-accent) !important;
+}
+
+#orion-map-harness-container .bg-emerald-400 + .animate-ping,
+#orion-map-harness-container .animate-ping {
+  background: var(--og-accent) !important;
+}
+
+/* quick-command chips — one tint family, mono micro labels */
+#orion-map-harness-container .harness-chip {
+  border-radius: 999px !important;
+  color: rgba(235, 237, 242, 0.72) !important;
+  background: rgba(255, 255, 255, 0.065) !important;
+  border: 1px solid rgba(255, 255, 255, 0.13) !important;
+  font-family: var(--font-mono) !important;
+  font-size: 9px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.1em !important;
+  transition:
+    background-color 160ms var(--og-ease),
+    border-color 160ms var(--og-ease),
+    color 160ms var(--og-ease),
+    transform 120ms var(--og-ease) !important;
+}
+
+/* unify the multicolor chip icons to a single zinc tint */
+#orion-map-harness-container .harness-chip .material-symbols-outlined {
+  color: rgba(235, 237, 242, 0.45) !important;
+  font-size: 13px !important;
+  transition: color 160ms var(--og-ease) !important;
+}
+
+#orion-map-harness-container .harness-chip:hover {
+  color: #ffffff !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-color: var(--og-accent-line) !important;
+  transform: translateY(-1px) !important;
+}
+
+#orion-map-harness-container .harness-chip:hover .material-symbols-outlined {
+  color: var(--og-accent-bright) !important;
+}
+
+#orion-map-harness-container .harness-chip:active {
+  transform: translateY(0) scale(0.96) !important;
+}
+
+/* Chat transcript — the modern-chatbox body */
+
+#orion-map-harness-container #orion-harness-transcript {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 148px;
+  max-height: 242px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  padding: 14px 14px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  scroll-behavior: smooth;
+  border-top: 1px solid rgba(255, 255, 255, 0.055);
+}
+
+#orion-map-harness-container #orion-harness-transcript::-webkit-scrollbar {
+  width: 5px;
+}
+#orion-map-harness-container #orion-harness-transcript::-webkit-scrollbar-track {
+  background: transparent;
+}
+#orion-map-harness-container #orion-harness-transcript::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.14);
+  border-radius: 99px;
+}
+#orion-map-harness-container #orion-harness-transcript::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.24);
+}
+
+/* Empty state — centered invitation */
+#orion-map-harness-container #orion-harness-empty {
+  margin: auto;
+  text-align: center;
+  max-width: 380px;
+  padding: 6px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+}
+
+#orion-map-harness-container #orion-harness-empty-glyph {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: var(--og-accent-bright);
+  background: radial-gradient(
+    circle at 50% 30%,
+    rgba(240, 120, 50, 0.22),
+    rgba(240, 120, 50, 0.05)
+  );
+  border: 1px solid rgba(240, 120, 50, 0.3);
+  box-shadow: 0 0 22px rgba(240, 120, 50, 0.14);
+}
+#orion-map-harness-container #orion-harness-empty-glyph .material-symbols-outlined {
+  font-size: 21px;
+}
+
+#orion-map-harness-container #orion-harness-empty-title {
+  font-family: var(--font-display);
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.88);
+}
+
+#orion-map-harness-container #orion-harness-empty-sub {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.42);
+}
+
+/* Message rows + bubbles */
+#orion-map-harness-container #orion-harness-messages {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+#orion-map-harness-container .orion-msg {
+  display: flex;
+  width: 100%;
+}
+
+#orion-map-harness-container .orion-msg-user {
+  justify-content: flex-end;
+}
+
+#orion-map-harness-container .orion-msg-agent {
+  justify-content: flex-start;
+}
+
+#orion-map-harness-container .orion-msg-bubble {
+  max-width: 84%;
+  padding: 9px 13px;
+  border-radius: 16px;
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  font-weight: 400;
+  line-height: 1.55;
+  letter-spacing: 0.005em;
+  word-break: break-word;
+  white-space: pre-wrap;
+  animation: orionMsgIn 0.28s var(--og-ease);
+}
+
+@keyframes orionMsgIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+#orion-map-harness-container .orion-msg-user .orion-msg-bubble {
+  color: #ffe9d6;
+  background: linear-gradient(
+    150deg,
+    rgba(240, 120, 50, 0.3),
+    rgba(240, 120, 50, 0.15)
+  );
+  border: 1px solid rgba(240, 120, 50, 0.34);
+  border-bottom-right-radius: 6px;
+  box-shadow: 0 6px 18px rgba(240, 120, 50, 0.1);
+}
+
+#orion-map-harness-container .orion-msg-agent .orion-msg-bubble {
+  color: rgba(255, 255, 255, 0.86);
+  background: rgba(255, 255, 255, 0.065);
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  border-bottom-left-radius: 6px;
+}
+
+/* ═══ Premium composer (dark glass) ═══════════════════════ */
+#orion-map-harness-container #orion-composer-wrap {
+  padding: 12px 12px 6px !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.055);
+}
+
+#orion-composer {
+  background: rgba(8, 10, 14, 0.68) !important;
+  border: 1px solid rgba(255, 255, 255, 0.11) !important;
+  border-radius: 22px !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+    0 18px 44px rgba(0, 0, 0, 0.42) !important;
+  backdrop-filter: blur(20px) saturate(1.3) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(1.3) !important;
+  transition:
+    border-color 180ms var(--og-ease),
+    box-shadow 180ms var(--og-ease) !important;
+}
+
+#orion-composer:focus-within {
+  border-color: var(--og-accent-line) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 18px 44px rgba(0, 0, 0, 0.42),
+    0 0 0 3px rgba(240, 120, 50, 0.13) !important;
+}
+
+#orion-map-harness-container #orion-harness-input {
+  display: block !important;
+  width: 100% !important;
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  resize: none !important;
+  box-shadow: none !important;
+  padding: 13px 16px 4px !important;
+  font-size: 13.5px !important;
+  line-height: 1.5 !important;
+  color: #f6f7f9 !important;
+  caret-color: var(--og-accent-bright) !important;
+  font-family: 'Inter', sans-serif !important;
+  max-height: 120px !important;
+}
+
+#orion-map-harness-container #orion-harness-input::placeholder {
+  color: rgba(255, 255, 255, 0.3) !important;
+}
+
+#orion-composer-toolbar {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 8px !important;
+  padding: 4px 8px 8px !important;
+}
+
+#orion-composer-toolbar .orion-composer-tools,
+#orion-composer-toolbar .orion-composer-actions {
+  display: flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+}
+
+#orion-map-harness-container .orion-tool-btn {
+  width: 30px !important;
+  min-width: 30px !important;
+  height: 30px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 999px !important;
+  border: 1px solid transparent !important;
+  background: transparent !important;
+  color: rgba(255, 255, 255, 0.42) !important;
+  transition:
+    background-color 160ms var(--og-ease),
+    color 160ms var(--og-ease),
+    transform 100ms var(--og-ease) !important;
+}
+
+#orion-map-harness-container .orion-tool-btn:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #ffffff !important;
+}
+
+#orion-map-harness-container .orion-tool-btn:active {
+  transform: scale(0.9) !important;
+}
+
+#orion-map-harness-container .orion-tool-btn .material-symbols-outlined {
+  font-size: 17px !important;
+}
+
+/* mic — circular ghost */
+#orion-map-harness-container #orion-harness-mic-btn {
+  width: 36px !important;
+  min-width: 36px !important;
+  height: 36px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 999px !important;
+  color: rgba(240, 241, 245, 0.75) !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  transition:
+    background-color 160ms var(--og-ease),
+    border-color 160ms var(--og-ease),
+    color 160ms var(--og-ease),
+    box-shadow 160ms var(--og-ease),
+    transform 100ms var(--og-ease) !important;
+}
+
+#orion-map-harness-container #orion-harness-mic-btn:hover {
+  color: #ffffff !important;
+  background: rgba(255, 255, 255, 0.12) !important;
+  border-color: rgba(255, 255, 255, 0.26) !important;
+}
+
+#orion-map-harness-container #orion-harness-mic-btn.is-listening {
+  background: #ffffff !important;
+  color: #000000 !important;
+  border-color: #ffffff !important;
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.14) !important;
+}
+
+/* send — circular filled accent */
+#orion-map-harness-container #orion-harness-exec-btn {
+  width: 38px !important;
+  min-width: 38px !important;
+  height: 38px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 999px !important;
+  color: #1c0d04 !important;
+  background: linear-gradient(160deg, var(--og-accent-bright), var(--og-accent)) !important;
+  border: 1px solid rgba(255, 190, 150, 0.5) !important;
+  box-shadow:
+    0 10px 26px rgba(240, 120, 50, 0.34),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35) !important;
+  transition:
+    box-shadow 160ms var(--og-ease),
+    transform 100ms var(--og-ease) !important;
+}
+
+#orion-map-harness-container #orion-harness-exec-btn:hover {
+  box-shadow:
+    0 14px 34px rgba(240, 120, 50, 0.46),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
+  transform: translateY(-1px) !important;
+}
+
+#orion-map-harness-container #orion-harness-exec-btn:active,
+#orion-map-harness-container #orion-harness-mic-btn:active {
+  transform: scale(0.94) !important;
+}
+
+#orion-composer-hint {
+  text-align: center !important;
+  font-size: 9.5px !important;
+  letter-spacing: 0.05em !important;
+  color: rgba(255, 255, 255, 0.3) !important;
+  font-family: var(--font-sans) !important;
+  padding: 7px 12px 3px !important;
+}
+
+/* status line — element kept for JS state, hidden from view */
+#orion-harness-status[hidden] {
+  display: none !important;
+}
+
+/* header small buttons */
+#orion-harness-speech-btn,
+#orion-harness-close-btn {
+  border-radius: 10px !important;
+  transition:
+    background-color 160ms var(--og-ease),
+    color 160ms var(--og-ease),
+    border-color 160ms var(--og-ease) !important;
+}
+
+#orion-harness-speech-btn {
+  border: 1px solid rgba(255, 255, 255, 0.09) !important;
+}
+
+#orion-harness-speech-btn:hover,
+#orion-harness-close-btn:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* ═══ Evidence card (inline-styled in JS; override here) ═══ */
+#orion-evidence-card {
+  background:
+    radial-gradient(130% 100% at 50% -25%, rgba(255, 255, 255, 0.09), transparent 50%),
+    linear-gradient(165deg, rgba(20, 22, 27, 0.94), rgba(7, 8, 11, 0.9)) !important;
+  border: 1px solid var(--og-line-soft) !important;
+  border-top-color: rgba(255, 255, 255, 0.18) !important;
+  border-radius: 20px !important;
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.7),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: blur(30px) saturate(1.5) !important;
+  -webkit-backdrop-filter: blur(30px) saturate(1.5) !important;
+  overflow: hidden !important;
+}
+
+#orion-evidence-card button {
+  border-radius: 10px !important;
+  transition:
+    background-color 160ms var(--og-ease),
+    color 160ms var(--og-ease),
+    border-color 160ms var(--og-ease),
+    transform 100ms var(--og-ease) !important;
+}
+
+#orion-evidence-card button:active {
+  transform: scale(0.96) !important;
+}
+
+#orion-evidence-orbit-btn {
+  color: #1c0d04 !important;
+  background: linear-gradient(160deg, var(--og-accent-bright), var(--og-accent)) !important;
+}
+
+/* ═══ Right rail accents ═══════════════════════════════════ */
+#weather-pulse-badge {
+  background: var(--og-accent-soft) !important;
+  border-color: var(--og-accent-line) !important;
+  color: var(--og-accent-bright) !important;
+}
+
+#weather-pulse-badge .pulse-dot {
+  background: var(--og-accent-bright) !important;
+}
+
+.climate-detective-card {
+  border-radius: 14px !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  background:
+    radial-gradient(120% 120% at 0% 0%, rgba(240, 120, 50, 0.07), transparent 55%),
+    rgba(255, 255, 255, 0.025) !important;
+}
+
+/* Radius lock — one scale across the rail:
+   shells 24 · wells/cards 14 · inputs 10 · buttons 12 · pills 999 */
+#live-weather-telemetry-panel .grid.grid-cols-2 > div,
+#disaster-panel .flex.flex-col.gap-2 > div {
+  border-radius: 14px !important;
+}
+
+#global-radio-panel #radio-country-input,
+#live-radio-selector {
+  border-radius: 10px !important;
+}
+
+.hotspot-rate {
+  color: #ffffff !important;
+}
+
+/* ═══ Accessibility: visible keyboard focus ════════════════ */
+#command-dock .style-btn:focus-visible,
+#command-dock #orion-harness-dock-btn:focus-visible,
+#orion-map-harness-container button:focus-visible,
+#top-center-actions button:focus-visible {
+  outline: 2px solid var(--og-accent-bright) !important;
+  outline-offset: 2px !important;
+}
+
+/* ═══ Responsive ═══════════════════════════════════════════ */
+/* Laptop — narrower rails, wider map */
+@media (max-width: 1280px) {
+  #left-panel-stack {
+    width: 248px !important;
+  }
+
+  #right-context-rail {
+    width: 268px !important;
+  }
+
+  #cesiumContainer,
+  #world-overlay-root {
+    left: 272px !important;
+    right: 292px !important;
+  }
+
+  #title-bar {
+    left: 290px !important;
+  }
+
+  #top-center-actions {
+    right: 310px !important;
+  }
+}
+
+/* Small laptop — tighter still */
+@media (max-width: 1024px) {
+  #left-panel-stack {
+    width: 220px !important;
+    padding: 10px !important;
+  }
+
+  #right-context-rail {
+    width: 252px !important;
+  }
+
+  #cesiumContainer,
+  #world-overlay-root {
+    left: 244px !important;
+    right: 276px !important;
+  }
+
+  #title-bar {
+    left: 260px !important;
+  }
+
+  #top-center-actions {
+    right: 292px !important;
+  }
+}
+
+/* Tablet — globe takes over, left stack steps aside,
+   right rail floats as a glass overlay */
+@media (max-width: 860px) {
+  #left-panel-stack {
+    display: none !important;
+  }
+
+  #top-center-actions {
+    display: none !important;
+  }
+
+  #cesiumContainer,
+  #world-overlay-root {
+    left: 12px !important;
+    right: 12px !important;
+    top: 12px !important;
+  }
+
+  #right-context-rail {
+    width: min(300px, calc(100vw - 24px)) !important;
+    right: 12px !important;
+    top: 12px !important;
+    bottom: 12px !important;
+  }
+
+  #title-bar {
+    left: 28px !important;
+    top: 24px !important;
+  }
+
+  #orion-map-harness-container {
+    width: calc(100vw - 24px) !important;
+  }
+}
+
+/* Phone — composer full-width, dock collapses to short labels */
+@media (max-width: 640px) {
+  #title-bar .subtitle {
+    display: none !important;
+  }
+
+  #orion-map-harness-container {
+    bottom: 86px !important;
+  }
+
+  /* chips scroll instead of wrap */
+  #orion-map-harness-container .harness-chip-row,
+  #orion-map-harness-container .flex.flex-wrap {
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    scrollbar-width: none !important;
+  }
+
+  #orion-map-harness-container .harness-chip {
+    flex-shrink: 0 !important;
+  }
+
+  #orion-map-harness-container #orion-harness-transcript {
+    max-height: 38vh !important;
+  }
+
+  /* keep composer tools to two */
+  #orion-map-harness-container .orion-tool-btn:nth-child(n + 3) {
+    display: none !important;
+  }
+
+  #command-dock {
+    min-width: 0 !important;
+    max-width: calc(100vw - 1rem) !important;
+    overflow-x: auto !important;
+    scrollbar-width: none !important;
+    bottom: 12px !important;
+  }
+
+  #command-dock .style-btn {
+    padding: 6px 9px !important;
+  }
+
+  #command-dock .style-btn .btn-label {
+    display: none !important;
+  }
+
+  #command-dock .style-btn::after {
+    content: attr(data-short) !important;
+    font-size: 9px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.12em !important;
+  }
+
+  #command-dock .style-btn > .w-px {
+    display: none !important;
+  }
+}
+
+@media (max-width: 480px) {
+  #real-earth-clouds-dock-btn {
+    display: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #command-dock .style-btn,
+  #orion-map-harness-container .harness-chip,
+  #top-center-actions button,
+  #orion-map-harness-container #orion-harness-mic-btn,
+  #orion-map-harness-container #orion-harness-exec-btn {
+    transition: none !important;
+  }
+}

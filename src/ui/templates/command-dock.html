@@ -1,30 +1,32 @@
-  <!-- Centered Bottom Command Dock (Visual Styles & Timeline) -->
-  <div id="command-dock" aria-label="Visual preset modes and timeline">
-    <div id="control-panel">
-      <div id="control-panel-popover">
-        <div id="style-buttons" class="button-grid">
-          <button class="style-btn active" data-style="normal" title="Normal 3D Earth Globe">
-            <span class="btn-label">NORMAL</span>
-          </button>
-          <button class="style-btn" data-style="thermal" title="FLIR Thermal Anomaly Detection">
-            <span class="btn-label">FLIR THERMAL</span>
-          </button>
-          <button class="style-btn" data-style="noir" title="Swiss Monochrome Minimalist Noir">
-            <span class="btn-label">NOIR</span>
-          </button>
-          <button class="style-btn" data-style="surveillance" title="Night Vision Sensor Pass">
-            <span class="btn-label">NVG</span>
-          </button>
-          <button class="style-btn" data-style="retro" title="High Contrast Tactical CRT">
-            <span class="btn-label">CRT</span>
-          </button>
-          <button id="real-earth-clouds-dock-btn" class="style-btn" title="Toggle Real Earth Cloud Stream (NASA Satellite)">
-            <span class="btn-label">☁️ REAL CLOUDS</span>
-          </button>
-          <button id="orion-harness-dock-btn" class="style-btn" title="Open Autonomous AI Map Harness Agent (Natural Language / Voice Control)">
-            <span class="btn-label">🤖 AGENT HARNESS</span>
-          </button>
-        </div>
+
+<div id="command-dock" class="fixed bottom-6 left-1/2 z-50 pointer-events-auto" aria-label="Visual preset modes and timeline">
+  <div id="control-panel">
+    <div id="control-panel-popover" class="bg-black/60 backdrop-blur-3xl border border-white/10 rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.8)] p-2">
+      <div id="style-buttons" class="flex items-center gap-1.5">
+        <button class="style-btn active px-4 py-2.5 rounded-xl text-[10px] font-bold tracking-widest text-zinc-400 hover:text-white hover:bg-white/10 transition-all border border-transparent hover:border-white/10 active:scale-[0.96]" data-style="normal" data-short="NORMAL" title="Normal 3D Earth Globe">
+          <span class="btn-label">NORMAL</span>
+        </button>
+        <button class="style-btn px-4 py-2.5 rounded-xl text-[10px] font-bold tracking-widest text-zinc-400 hover:text-white hover:bg-white/10 transition-all border border-transparent hover:border-white/10 active:scale-[0.96]" data-style="thermal" data-short="FLIR" title="FLIR Thermal Anomaly Detection">
+          <span class="btn-label">FLIR THERMAL</span>
+        </button>
+        <button class="style-btn px-4 py-2.5 rounded-xl text-[10px] font-bold tracking-widest text-zinc-400 hover:text-white hover:bg-white/10 transition-all border border-transparent hover:border-white/10 active:scale-[0.96]" data-style="noir" data-short="NOIR" title="Swiss Monochrome Minimalist Noir">
+          <span class="btn-label">NOIR</span>
+        </button>
+        <button class="style-btn px-4 py-2.5 rounded-xl text-[10px] font-bold tracking-widest text-zinc-400 hover:text-white hover:bg-white/10 transition-all border border-transparent hover:border-white/10 active:scale-[0.96]" data-style="surveillance" data-short="NVG" title="Night Vision Sensor Pass">
+          <span class="btn-label">NVG</span>
+        </button>
+        <button class="style-btn px-4 py-2.5 rounded-xl text-[10px] font-bold tracking-widest text-zinc-400 hover:text-white hover:bg-white/10 transition-all border border-transparent hover:border-white/10 active:scale-[0.96]" data-style="retro" data-short="CRT" title="High Contrast Tactical CRT">
+          <span class="btn-label">CRT</span>
+        </button>
+        <div class="w-px h-6 bg-white/10 mx-1"></div>
+        <button id="real-earth-clouds-dock-btn" data-short="CLOUDS" class="style-btn px-4 py-2.5 rounded-xl text-[10px] font-bold tracking-widest text-zinc-400 hover:text-white hover:bg-white/10 transition-all border border-transparent hover:border-white/10 active:scale-[0.96]" title="Toggle Real Earth Cloud Stream (NASA Satellite)">
+          <span class="btn-label">REAL CLOUDS</span>
+        </button>
+        <button id="orion-harness-dock-btn" data-short="AGENT" class="style-btn px-5 py-2.5 rounded-xl text-[10px] font-bold tracking-widest text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 transition-all border border-emerald-500/20 hover:border-emerald-500/40 shadow-[0_0_15px_rgba(16,185,129,0.1)] flex items-center gap-2 active:scale-[0.96]" title="Open Autonomous AI Map Harness Agent">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span class="btn-label">AGENT HARNESS</span>
+        </button>
       </div>
     </div>
   </div>
+</div>

@@ -205,10 +205,20 @@ export class LayerPanel {
       const group =
         PANEL_ORDER[PANEL_POSITIONS.get(layer.id)]?.label ?? 'Other layers';
       if (group && group !== previousGroup) {
-        const heading = document.createElement('h3');
-        heading.className = 'data-layer-group-heading';
-        heading.textContent = group;
-        this._toggleContainer.appendChild(heading);
+        const details = document.createElement('details');
+        details.className = 'layer-group-accordion';
+        details.open = true; // start open
+
+        const summary = document.createElement('summary');
+        summary.className = 'layer-group-summary';
+        summary.innerHTML = `<span class="data-layer-group-heading">${group}</span><span class="material-symbols-outlined accordion-icon">expand_more</span>`;
+        details.appendChild(summary);
+
+        this._currentGroupContainer = document.createElement('div');
+        this._currentGroupContainer.className = 'layer-group-content flex flex-col gap-2 mt-2 mb-4';
+        details.appendChild(this._currentGroupContainer);
+
+        this._toggleContainer.appendChild(details);
       }
       previousGroup = group;
       const row = document.createElement('div');
@@ -221,9 +231,46 @@ export class LayerPanel {
       const left = document.createElement('div');
       left.className = 'data-toggle-left';
       const icon = document.createElement('span');
-      icon.className = 'data-icon';
+      icon.className = 'data-icon material-symbols-outlined';
       icon.setAttribute('aria-hidden', 'true');
-      icon.textContent = layer.icon;
+      const emojiMap = {
+        '🚀': 'rocket_launch',
+        '🧭': 'explore',
+        '🏔️': 'landscape',
+        '⛰️': 'landscape',
+        '🌊': 'waves',
+        '📻': 'radio',
+        '🚢': 'directions_boat',
+        '📷': 'photo_camera',
+        '🛰️': 'satellite',
+        '✈️': 'flight',
+        '🎖️': 'military_tech',
+        '📡': 'radar',
+        '▲': 'directions_boat',
+        '🚗': 'directions_car',
+        '🚌': 'directions_bus',
+        '🚲': 'pedal_bike',
+        '📹': 'videocam',
+        '☄️': 'image',
+        '🪧': 'cctv',
+        '🎛️': 'memory',
+        '🌊': 'waves',
+        '⚡': 'bolt',
+        '🔥': 'local_fire_department',
+        '🎯': 'my_location',
+        '🚢': 'directions_boat',
+        '🌩️': 'thunderstorm',
+        '🤖': 'smart_toy',
+        '🧪': 'science',
+        '🏭': 'factory',
+        '🌋': 'volcano',
+        '🎣': 'fishing'
+      };
+      icon.textContent = emojiMap[layer.icon] || layer.icon;
+      icon.style.fontSize = '16px';
+      icon.style.marginRight = '8px';
+      icon.style.verticalAlign = 'middle';
+      icon.style.color = 'var(--text-muted, #a1a1aa)';
       const name = document.createElement('span');
       name.className = 'data-name';
       name.textContent = panelLabel(layer);
@@ -327,7 +374,11 @@ export class LayerPanel {
         }
       }
 
-      this._toggleContainer.appendChild(row);
+      if (this._currentGroupContainer) {
+        this._currentGroupContainer.appendChild(row);
+      } else {
+        this._toggleContainer.appendChild(row);
+      }
     }
     this._refreshWeatherPanel();
   }

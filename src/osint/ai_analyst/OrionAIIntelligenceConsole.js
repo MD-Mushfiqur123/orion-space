@@ -1502,7 +1502,7 @@ Available Operator Command Syntaxes:
       <div style="font-size:10px; color:#80deea; display:flex; gap:12px; align-items:center;">
         <span id="orion-hud-sector-tag">${this.activeSector.id.toUpperCase()}</span>
         <span id="orion-hud-shader-tag">[${this.activeShader.toUpperCase()}]</span>
-        <button id="orion-hud-audio-btn" style="background:transparent; border:none; color:#00e5ff; cursor:pointer;" title="Toggle Sound">🔊</button>
+        <button id="orion-hud-audio-btn" style="background:transparent; border:none; color:#00e5ff; cursor:pointer;" title="Toggle Sound">[AUDIO ON]</button>
       </div>
     `;
 
@@ -1636,7 +1636,7 @@ Available Operator Command Syntaxes:
 
     this._domElements.audioBtn.addEventListener('click', () => {
       this.soundEnabled = !this.soundEnabled;
-      this._domElements.audioBtn.textContent = this.soundEnabled ? '🔊' : '🔇';
+      this._domElements.audioBtn.textContent = this.soundEnabled ? '[AUDIO ON]' : '[AUDIO OFF]';
       this._appendLog(
         'SYS',
         `Audio sound effects ${this.soundEnabled ? 'ENABLED' : 'MUTED'}`,
