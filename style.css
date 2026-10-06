@@ -1,6 +1,12 @@
-/* ═══════════════════════════════════════════════════════════════════════════════
-   PROJECT: ORION SPACE — Master Stylesheet Entry Point
-   Clean Swiss Minimalist Architecture (Zero Legacy Bloat)
-   ═══════════════════════════════════════════════════════════════════════════════ */
+/* 
+   PROJECT: ORION SPACE - Master Stylesheet Entry Point
+*/
 @import './src/ui/styles/foundation.css';
 @import './src/ui/styles/clean-minimal.css';
+@import './src/ui/styles/premium-polish.css';
+@import './src/ui/styles/orion-glass.css';
+@import './src/ui/styles/orion-final-polish.css';
+
+@import "tailwindcss";
+@source "./src";
+@source "./index.html";

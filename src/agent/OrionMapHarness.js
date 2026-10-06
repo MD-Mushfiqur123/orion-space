@@ -208,7 +208,7 @@ export class OrionMapHarness {
         this.isListening = true;
         this._updateMicButton(true);
         this._setStatus(
-          '🎙️ LISTENING... SPEAK NOW (e.g. "Fly to Barisal", "Show real clouds")',
+          '<span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">mic</span> LISTENING... SPEAK NOW (e.g. "Fly to Barisal", "Show real clouds")',
         );
       };
 
@@ -242,139 +242,104 @@ export class OrionMapHarness {
 
     const container = document.createElement('div');
     container.id = 'orion-map-harness-container';
-    container.style.cssText = `
-      position: fixed;
-      bottom: 86px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: min(760px, calc(100vw - 32px));
-      background: rgba(9, 9, 11, 0.94);
-      border: 1px solid #27272a;
-      border-radius: 8px;
-      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(16px);
-      z-index: 1500;
-      display: none;
-      flex-direction: column;
-      overflow: hidden;
-      font-family: 'JetBrains Mono', monospace;
-      color: #ffffff;
-      user-select: none;
-      transition: opacity 0.2s ease, transform 0.2s ease;
-    `;
+    // Positioning, sizing and z-index are owned by orion-final-polish.css.
+    // We only keep the Tailwind utilities that set display/font/visibility
+    // state, since those are toggled by JS (hidden class) and aren't
+    // overridden by the polish sheet.
+    container.className = 'flex-col font-sans pointer-events-auto hidden';
 
-    container.innerHTML = `
-      <!-- Header -->
-      <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-bottom: 1px solid #27272a; background: rgba(255, 255, 255, 0.02);">
-        <div style="display: flex; align-items: center; gap: 8px;">
-          <span style="display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #ffffff; box-shadow: 0 0 6px rgba(255, 255, 255, 0.8);"></span>
-          <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.8px; color: #ffffff;">ORION AGENT HARNESS</span>
-          <span style="font-size: 9px; color: #71717a; border: 1px solid #27272a; padding: 1px 6px; border-radius: 3px;">VOICE &amp; NLP</span>
+        container.innerHTML = `
+      <!-- Orion Agent Premium Intelligence UI -->
+      <div class="flex flex-col w-full" style="font-family: 'Inter', -apple-system, sans-serif;">
+
+        <!-- Header bar -->
+        <div id="orion-harness-header" class="flex items-center justify-between px-4 py-3 border-b">
+          <div class="flex items-center gap-2.5">
+            <div class="relative flex-shrink-0 w-2 h-2">
+              <span class="absolute flex h-2 w-2 rounded-full bg-emerald-400"></span>
+              <span class="animate-ping absolute inline-flex h-full w-full top-0 left-0 rounded-full bg-emerald-400 opacity-60"></span>
+            </div>
+            <span class="text-[11px] font-semibold tracking-[0.1em] text-white uppercase" style="font-family: 'Space Grotesk', sans-serif;">Orion Intelligence Agent</span>
+            <span class="text-[8px] font-bold text-zinc-600 border border-white/[0.06] px-1.5 py-0.5 rounded tracking-widest">VOICE + NLP</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span id="orion-harness-sector-badge">AWAITING COMM</span>
+            <button id="orion-harness-speech-btn" class="flex items-center gap-1 text-[9px] font-semibold tracking-wider text-zinc-500 hover:text-white bg-transparent px-2 py-1">
+              <span class="material-symbols-outlined text-[13px]">volume_up</span>
+              <span>AUDIO ON</span>
+            </button>
+            <button id="orion-harness-close-btn" class="flex items-center justify-center w-6 h-6 text-zinc-600 hover:text-white" title="Close">
+              <span class="material-symbols-outlined text-[16px]">close</span>
+            </button>
+          </div>
         </div>
-        <div style="display: flex; align-items: center; gap: 10px;">
-          <span id="orion-harness-sector-badge" style="font-size: 10px; color: #a1a1aa;">BANGLADESH [1500KM]</span>
-          <button id="orion-harness-speech-btn" type="button" style="background: transparent; border: 1px solid #27272a; border-radius: 4px; color: #ffffff; padding: 2px 6px; font-size: 11px; cursor: pointer;" title="Toggle Agent Voice Audio">🔊</button>
-          <button id="orion-harness-close-btn" type="button" style="background: transparent; border: none; color: #a1a1aa; font-size: 14px; cursor: pointer;" title="Close Harness">✕</button>
+
+        <!-- Quick command chips -->
+        <div class="flex flex-wrap items-center gap-1.5 px-4 py-2.5 border-b border-white/[0.04] bg-white/[0.01]">
+          <button class="harness-chip flex items-center gap-1.5 px-2.5 py-1.5" data-cmd="fly to barisal">
+            <span class="material-symbols-outlined">my_location</span>BARISAL
+          </button>
+          <button class="harness-chip flex items-center gap-1.5 px-2.5 py-1.5" data-cmd="where is warming fastest">
+            <span class="material-symbols-outlined">device_thermostat</span>WARMING
+          </button>
+          <button class="harness-chip flex items-center gap-1.5 px-2.5 py-1.5" data-cmd="is warming significant">
+            <span class="material-symbols-outlined">bar_chart</span>PROOF
+          </button>
+          <button class="harness-chip flex items-center gap-1.5 px-2.5 py-1.5" data-cmd="sea level rise">
+            <span class="material-symbols-outlined">water</span>SEA LEVEL
+          </button>
+          <button class="harness-chip flex items-center gap-1.5 px-2.5 py-1.5" data-cmd="orbit">
+            <span class="material-symbols-outlined">360</span>ORBIT
+          </button>
+          <button class="harness-chip flex items-center gap-1.5 px-2.5 py-1.5" data-cmd="flir">
+            <span class="material-symbols-outlined">thermostat</span>FLIR
+          </button>
+          <button class="harness-chip flex items-center gap-1.5 px-2.5 py-1.5" data-cmd="sylhet flood">
+            <span class="material-symbols-outlined">flood</span>SYLHET
+          </button>
         </div>
-      </div>
 
-      <!-- Quick Action Chips -->
-      <div style="display: flex; flex-wrap: wrap; gap: 6px; padding: 8px 14px; border-bottom: 1px solid #18181b; background: rgba(0, 0, 0, 0.3);">
-        <button class="harness-chip" data-cmd="where is warming fastest" style="border-color: #52525b; color: #ffffff;">🔥 FASTEST WARMING</button>
-        <button class="harness-chip" data-cmd="barisal evidence" style="border-color: #52525b; color: #ffffff;">📊 BARISAL EVIDENCE</button>
-        <button class="harness-chip" data-cmd="is warming significant" style="border-color: #52525b; color: #ffffff;">📈 STATISTICAL PROOF</button>
-        <button class="harness-chip" data-cmd="fly to barisal">📍 BARISAL</button>
-        <button class="harness-chip" data-cmd="fly to dhaka">📍 DHAKA</button>
-        <button class="harness-chip" data-cmd="clouds">☁️ REAL CLOUDS</button>
-        <button class="harness-chip" data-cmd="sea level rise">🌊 SEA LEVEL RISE</button>
-        <button class="harness-chip" data-cmd="flir">🔥 FLIR THERMAL</button>
-        <button class="harness-chip" data-cmd="orbit">🔄 360° ORBIT</button>
-        <button class="harness-chip" data-cmd="sylhet flood">🌊 SYLHET FLOOD</button>
-        <button class="harness-chip" data-cmd="reset">🏠 RESET VIEW</button>
-      </div>
+        <!-- Transcript -->
+        <div id="orion-harness-transcript">
+          <div id="orion-harness-empty">
+            <div id="orion-harness-empty-glyph"><span class="material-symbols-outlined">radar</span></div>
+            <p id="orion-harness-empty-title">Direct the intelligence agent</p>
+            <p id="orion-harness-empty-sub">Ask about warming trends, monsoon floods, sectors, or sensor passes. Replies also surface as evidence cards on the globe.</p>
+          </div>
+          <div id="orion-harness-messages"></div>
+        </div>
 
-      <!-- Input Form -->
-      <div style="display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: rgba(0, 0, 0, 0.4);">
-        <input id="orion-harness-input" type="text" placeholder="Command the map agent (e.g. 'Fly to Barisal', 'Show real clouds', 'বরিশাল নিয়ে যাও')..." autocomplete="off" spellcheck="false" style="
-          flex: 1;
-          background: #18181b;
-          border: 1px solid #27272a;
-          border-radius: 5px;
-          padding: 8px 12px;
-          font-family: inherit;
-          font-size: 12px;
-          color: #ffffff;
-          outline: none;
-        " />
-        <button id="orion-harness-mic-btn" type="button" title="Speak to Agent (Microphone)" style="
-          background: #18181b;
-          border: 1px solid #27272a;
-          color: #ffffff;
-          padding: 8px 12px;
-          border-radius: 5px;
-          font-size: 13px;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        ">🎙️</button>
-        <button id="orion-harness-exec-btn" type="button" style="
-          background: #ffffff;
-          color: #000000;
-          font-weight: 700;
-          border: none;
-          padding: 8px 16px;
-          border-radius: 5px;
-          font-size: 11px;
-          cursor: pointer;
-          font-family: inherit;
-        ">EXECUTE</button>
-      </div>
+        <!-- Composer -->
+        <div id="orion-composer-wrap">
+          <div id="orion-composer">
+            <textarea id="orion-harness-input" rows="1" placeholder="Ask Orion anything — warming, floods, sectors, passes..." autocomplete="off" spellcheck="false"></textarea>
+            <div id="orion-composer-toolbar">
+              <div class="orion-composer-tools">
+                <button class="orion-tool-btn" data-cmd="fly to barisal" title="Fly to Barisal"><span class="material-symbols-outlined">my_location</span></button>
+                <button class="orion-tool-btn" data-cmd="orbit" title="Orbit globe"><span class="material-symbols-outlined">public</span></button>
+                <button class="orion-tool-btn" data-cmd="sea level rise" title="Sea level rise"><span class="material-symbols-outlined">water</span></button>
+                <button class="orion-tool-btn" data-cmd="flir" title="Thermal view"><span class="material-symbols-outlined">thermostat</span></button>
+              </div>
+              <div class="orion-composer-actions">
+                <button id="orion-harness-mic-btn" title="Speak to Agent"><span class="material-symbols-outlined">mic</span></button>
+                <button id="orion-harness-exec-btn" title="Send"><span class="material-symbols-outlined">arrow_upward</span></button>
+              </div>
+            </div>
+          </div>
+          <div id="orion-composer-hint">Replies also surface as evidence cards on the globe</div>
+        </div>
 
-      <!-- Status & Feedback Area -->
-      <div id="orion-harness-feedback" style="
-        padding: 8px 14px;
-        background: #09090b;
-        font-size: 10.5px;
-        color: #a1a1aa;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        min-height: 32px;
-        border-top: 1px solid #18181b;
-      ">
-        <span id="orion-harness-status-text">⚡ Ready. Type or speak a command to maneuver the globe.</span>
-        <span style="font-size: 9px; color: #52525b;">HOTKEY: SPACE / ESC</span>
+        <!-- Status kept for agent state plumbing, visually hidden -->
+        <div id="orion-harness-status" hidden>
+          <span id="orion-harness-status-text">Ready.</span>
+        </div>
       </div>
     `;
 
     parent.appendChild(container);
 
-    // Style helper for chips
-    const styleEl = document.createElement('style');
-    styleEl.textContent = `
-      .harness-chip {
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid #27272a;
-        color: #d4d4d8;
-        padding: 3px 8px;
-        border-radius: 4px;
-        font-size: 10px;
-        cursor: pointer;
-        font-family: inherit;
-        transition: all 0.15s ease;
-      }
-      .harness-chip:hover {
-        background: #ffffff;
-        color: #000000;
-        border-color: #ffffff;
-      }
-      #orion-harness-input:focus {
-        border-color: #71717a !important;
-        box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.15);
-      }
-    `;
-    document.head.appendChild(styleEl);
+    this._msgList = container.querySelector('#orion-harness-messages');
+    this._emptyState = container.querySelector('#orion-harness-empty');
 
     // Event Wire-ups
     const inputEl = container.querySelector('#orion-harness-input');
@@ -383,15 +348,29 @@ export class OrionMapHarness {
     const closeBtn = container.querySelector('#orion-harness-close-btn');
     const speechBtn = container.querySelector('#orion-harness-speech-btn');
 
-    execBtn?.addEventListener('click', () => {
+    const autoGrow = () => {
+      if (!inputEl) return;
+      inputEl.style.height = 'auto';
+      inputEl.style.height = `${Math.min(inputEl.scrollHeight, 120)}px`;
+    };
+
+    const submit = () => {
       const val = inputEl?.value?.trim();
-      if (val) this.execute(val);
-    });
+      if (val) {
+        this.execute(val);
+        if (inputEl) inputEl.value = '';
+        autoGrow();
+      }
+    };
+
+    execBtn?.addEventListener('click', submit);
+
+    inputEl?.addEventListener('input', autoGrow);
 
     inputEl?.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        const val = inputEl?.value?.trim();
-        if (val) this.execute(val);
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        submit();
       } else if (e.key === 'Escape') {
         this.close();
       }
@@ -403,20 +382,22 @@ export class OrionMapHarness {
 
     speechBtn?.addEventListener('click', () => {
       this.speechEnabled = !this.speechEnabled;
-      speechBtn.textContent = this.speechEnabled ? '🔊' : '🔇';
-      speechBtn.title = this.speechEnabled
-        ? 'Agent Voice Enabled'
-        : 'Agent Voice Muted';
+      const iconHtml = '<span class="material-symbols-outlined text-[13px]">volume_up</span>';
+      const label = this.speechEnabled ? 'AUDIO ON' : 'AUDIO OFF';
+      speechBtn.innerHTML = `${iconHtml}<span>${label}</span>`;
       this._setStatus(
         this.speechEnabled ? 'Agent voice enabled' : 'Agent voice muted',
       );
     });
 
-    container.querySelectorAll('.harness-chip').forEach((chip) => {
+    container.querySelectorAll('[data-cmd]').forEach((chip) => {
       chip.addEventListener('click', () => {
         const cmd = chip.dataset.cmd;
-        if (inputEl) inputEl.value = cmd;
-        if (cmd) this.execute(cmd);
+        if (cmd) {
+          this.execute(cmd);
+          if (inputEl) inputEl.value = '';
+          autoGrow();
+        }
       });
     });
 
@@ -445,6 +426,7 @@ export class OrionMapHarness {
       this.mount();
       return this.open();
     }
+    el.classList.remove('hidden');
     el.style.display = 'flex';
     this.isVisible = true;
     const inputEl = document.getElementById('orion-harness-input');
@@ -455,7 +437,10 @@ export class OrionMapHarness {
   /** Close the Harness. */
   close() {
     const el = document.getElementById('orion-map-harness-container');
-    if (el) el.style.display = 'none';
+    if (el) {
+      el.classList.add('hidden');
+      el.style.display = '';
+    }
     this.isVisible = false;
     this.stopVoice();
   }
@@ -497,21 +482,41 @@ export class OrionMapHarness {
 
   _updateMicButton(active) {
     const btn = document.getElementById('orion-harness-mic-btn');
-    if (!btn) return;
-    if (active) {
-      btn.style.background = '#ffffff';
-      btn.style.color = '#000000';
-      btn.style.borderColor = '#ffffff';
-    } else {
-      btn.style.background = '#18181b';
-      btn.style.color = '#ffffff';
-      btn.style.borderColor = '#27272a';
-    }
+    if (btn) btn.classList.toggle('is-listening', !!active);
   }
 
   _setStatus(msg) {
     const textEl = document.getElementById('orion-harness-status-text');
-    if (textEl) textEl.textContent = msg;
+    if (textEl) textEl.innerHTML = msg;
+
+    const plain = String(msg).replace(/<[^>]*>/g, '').trim();
+    if (
+      plain &&
+      plain !== this._lastAgentMsg &&
+      this._msgList &&
+      this._msgList.childElementCount > 0
+    ) {
+      this._lastAgentMsg = plain;
+      this._addTranscriptMessage(plain, 'agent');
+    }
+  }
+
+  _addTranscriptMessage(text, kind) {
+    if (!this._msgList) return;
+    if (this._emptyState) this._emptyState.style.display = 'none';
+    const row = document.createElement('div');
+    row.className = `orion-msg orion-msg-${kind}`;
+    const bubble = document.createElement('div');
+    bubble.className = 'orion-msg-bubble';
+    bubble.textContent = text;
+    row.appendChild(bubble);
+    this._msgList.appendChild(row);
+    this._scrollTranscript();
+  }
+
+  _scrollTranscript() {
+    const t = document.getElementById('orion-harness-transcript');
+    if (t) t.scrollTop = t.scrollHeight;
   }
 
   /** Speak message via native Web Speech synthesis. */
@@ -565,6 +570,7 @@ export class OrionMapHarness {
     const lower = rawCommand.toLowerCase().trim();
     this.history.push(rawCommand);
     this._playTone(660, 0.06);
+    this._addTranscriptMessage(rawCommand, 'user');
 
     // 1. Orbit command
     if (
@@ -879,7 +885,7 @@ export class OrionMapHarness {
     this.stopOrbit();
     const sector = this.activeSector || SECTORS.barisal;
     this._setStatus(
-      `🔄 Engaging continuous 360° tactical orbit around ${sector.name}...`,
+      `Engaging continuous 360° tactical orbit around ${sector.name}...`,
     );
     this.speak(`Engaging 360 degree orbit around ${sector.name}`);
 
@@ -1107,8 +1113,8 @@ export class OrionMapHarness {
         </div>
 
         <div style="display: flex; gap: 8px;">
-          <button id="orion-evidence-speak-btn" style="flex: 1; background: #18181b; border: 1px solid #27272a; color: #ffffff; padding: 6px 10px; border-radius: 4px; font-size: 10px; cursor: pointer; font-family: inherit;">🔊 READ EVIDENCE</button>
-          <button id="orion-evidence-orbit-btn" style="background: #ffffff; color: #000000; border: none; padding: 6px 12px; border-radius: 4px; font-size: 10px; font-weight: 700; cursor: pointer; font-family: inherit;">🔄 360° SURVEY</button>
+          <button id="orion-evidence-speak-btn" style="flex: 1; background: #18181b; border: 1px solid #27272a; color: #ffffff; padding: 6px 10px; border-radius: 4px; font-size: 10px; cursor: pointer; font-family: inherit;">READ EVIDENCE</button>
+          <button id="orion-evidence-orbit-btn" style="background: #ffffff; color: #000000; border: none; padding: 6px 12px; border-radius: 4px; font-size: 10px; font-weight: 700; cursor: pointer; font-family: inherit;">360° SURVEY</button>
         </div>
       </div>
     `;

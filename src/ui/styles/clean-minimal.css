@@ -18,15 +18,16 @@
   --panel-radius: 12px !important;
   --btn-radius: 6px !important;
   --font-mono: 'JetBrains Mono', monospace !important;
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+  --font-sans: 'Inter', -apple-system, sans-serif !important;
+  --font-display: 'Space Grotesk', sans-serif !important;
 }
 
 *, *::before, *::after {
   box-sizing: border-box !important;
-  margin: 0 !important;
-  padding: 0 !important;
+  
+  
   text-shadow: none !important;
-  box-shadow: none !important;
+  
   outline: none !important;
 }
 
@@ -152,7 +153,7 @@ svg[class*="cockpit"],
   font-weight: 700 !important;
   letter-spacing: 0.12em !important;
   color: #ffffff !important;
-  margin: 0 !important;
+  
 }
 
 #title-bar .subtitle {
@@ -267,9 +268,9 @@ svg[class*="cockpit"],
 
 /* Category Headings in Left Sidebar */
 .data-layer-group-heading {
-  font-family: var(--font-sans) !important;
-  font-size: 10px !important;
-  font-weight: 700 !important;
+  font-family: var(--font-display) !important;
+  font-size: 10.5px !important;
+  font-weight: 600 !important;
   text-transform: uppercase !important;
   letter-spacing: 0.12em !important;
   color: #71717A !important;
@@ -298,7 +299,7 @@ svg[class*="cockpit"],
   border: 1px solid rgba(255, 255, 255, 0.10) !important;
   border-radius: 8px !important;
   margin-bottom: 2px !important;
-  transition: all 120ms ease !important;
+  transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1) !important;
   cursor: default !important;
 }
 
@@ -361,7 +362,7 @@ svg[class*="cockpit"],
   background: rgba(255, 255, 255, 0.06) !important;
   color: #A1A1AA !important;
   cursor: pointer !important;
-  transition: all 120ms ease !important;
+  transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1) !important;
   line-height: 1 !important;
   display: inline-flex !important;
   align-items: center !important;
@@ -414,7 +415,7 @@ svg[class*="cockpit"],
   border: 1px solid rgba(255, 255, 255, 0.12) !important;
   color: #A1A1AA !important;
   cursor: pointer !important;
-  transition: all 120ms ease !important;
+  transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1) !important;
 }
 
 .data-toggle-chip:hover,
@@ -441,7 +442,7 @@ svg[class*="cockpit"],
   padding: 4px 10px !important;
   font-size: 10px !important;
   cursor: pointer !important;
-  transition: all 120ms ease !important;
+  transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1) !important;
 }
 
 .location-pills button:hover,
@@ -554,7 +555,7 @@ svg[class*="cockpit"],
   border-radius: 50% !important;
   background: #ffffff !important;
   animation: swissPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite !important;
-  box-shadow: none !important;
+  
 }
 
 @keyframes swissPulse {
@@ -582,7 +583,7 @@ svg[class*="cockpit"],
   display: flex !important;
   flex-direction: column !important;
   gap: 4px !important;
-  box-shadow: none !important;
+  
 }
 
 .hotspot-title {
@@ -617,7 +618,7 @@ svg[class*="cockpit"],
   padding: 7px 10px !important;
   font-size: 11px !important;
   font-family: var(--font-sans) !important;
-  box-shadow: none !important;
+  
   transition: border-color 120ms ease !important;
 }
 
@@ -665,7 +666,7 @@ svg[class*="cockpit"],
   align-items: center !important;
   justify-content: center !important;
   padding: 0 12px !important;
-  box-shadow: none !important;
+  
 }
 
 #command-dock #control-panel,
@@ -705,8 +706,8 @@ svg[class*="cockpit"],
   display: flex !important;
   align-items: center !important;
   gap: 6px !important;
-  transition: all 120ms ease !important;
-  box-shadow: none !important;
+  transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1) !important;
+  
   text-shadow: none !important;
 }
 

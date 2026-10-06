@@ -21,21 +21,17 @@ application
             'real-earth-clouds-dock-btn',
           );
 
-          cloudDockBtn?.addEventListener('click', () => {
-            const active = realCloudStream.toggle();
-            cloudDockBtn.style.background = active
-              ? '#ffffff'
-              : 'rgba(255, 255, 255, 0.05)';
-            cloudDockBtn.style.color = active ? '#000000' : '#e4e4e7';
-            cloudDockBtn.style.borderColor = active
-              ? '#ffffff'
-              : 'rgba(255, 255, 255, 0.15)';
-            cloudDockBtn.setAttribute('aria-pressed', String(active));
+          cloudDockBtn?.addEventListener('click', async () => {
+            const active = realCloudStream.active
+              ? (realCloudStream.hide(), false)
+              : await realCloudStream.show();
+            cloudDockBtn.classList.toggle('active', Boolean(active));
+            cloudDockBtn.setAttribute('aria-pressed', String(Boolean(active)));
             const label = cloudDockBtn.querySelector('.btn-label');
             if (label) {
               label.textContent = active
-                ? '☁️ REAL CLOUDS (ON)'
-                : '☁️ REAL CLOUDS';
+                ? 'REAL CLOUDS (ON)'
+                : 'REAL CLOUDS';
             }
             const diag = realCloudStream.getDiagnostics();
             cloudDockBtn.title = active

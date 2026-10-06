@@ -1,349 +1,215 @@
-<aside id="right-context-rail">
+
+<aside id="right-context-rail" class="flex flex-col gap-4">
+  
   <!-- Top Live Weather & Atmospheric Telemetry Box -->
-  <div
-    id="live-weather-telemetry-panel"
-    class="panel-collapsible active"
-    data-panel-id="live-weather-telemetry-panel"
-  >
-    <div
-      class="panel-header"
-      style="display: flex; align-items: center; justify-content: space-between"
-    >
-      <span class="panel-title">LIVE WEATHER &amp; CLIMATE</span>
-      <span
-        id="weather-pulse-badge"
-        style="
-          display: inline-flex;
-          align-items: center;
-          gap: 5px;
-          font-size: 9px;
-          color: #ffffff;
-          font-family: var(--font-mono);
-          font-weight: 600;
-          letter-spacing: 0.08em;
-          padding: 2px 7px;
-          border-radius: 9999px;
-          background: rgba(255, 255, 255, 0.06);
-          border: 1px solid rgba(255, 255, 255, 0.16);
-        "
-      >
-        <span
-          class="pulse-dot"
-          style="
-            display: inline-block;
-            width: 5px;
-            height: 5px;
-            border-radius: 50%;
-            background: #ffffff;
-            opacity: 0.85;
-          "
-        ></span>
-        LIVE
+  <div id="live-weather-telemetry-panel" class="panel-collapsible active" data-panel-id="live-weather-telemetry-panel">
+    <div class="panel-header flex items-center justify-between pb-3 mb-3 border-b border-white/8">
+      <div class="flex items-center gap-2">
+        <span class="material-symbols-outlined text-[14px] text-zinc-400">partly_cloudy_day</span>
+        <span class="text-[10px] font-bold tracking-[0.12em] text-zinc-300 uppercase">Live Weather &amp; Climate</span>
+      </div>
+      <span id="weather-pulse-badge" class="inline-flex items-center gap-1 text-[8px] text-emerald-400 font-mono font-bold tracking-widest px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">
+        <span class="w-1 h-1 rounded-full bg-emerald-400 animate-pulse inline-block"></span>LIVE
       </span>
     </div>
-    <div
-      style="display: flex; flex-direction: column; gap: 8px; font-size: 11px"
-    >
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px">
-        <div
-          style="
-            padding: 8px;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 6px;
-            border: 1px solid rgba(255, 255, 255, 0.12);
-          "
-        >
-          <div style="font-size: 9px; color: #a1a1aa; font-family: var(--font-sans); letter-spacing: 0.04em;">SURFACE TEMP</div>
-          <div
-            id="weather-val-temp"
-            style="
-              font-size: 13px;
-              font-weight: 700;
-              color: #ffffff;
-              font-family: var(--font-mono);
-              margin-top: 3px;
-            "
-          >
-            28.4 °C
+    
+    <div class="flex flex-col gap-2.5">
+      <div class="grid grid-cols-2 gap-3">
+        <!-- Temp Card -->
+        <div class="relative overflow-hidden p-3.5 bg-white/[0.03] backdrop-blur-md rounded-2xl border border-white/[0.08] hover:border-white/[0.15] hover:bg-white/[0.05] transition-all group shadow-[0_4px_24px_rgba(0,0,0,0.2)]">
+          <div class="absolute inset-0 bg-gradient-to-br from-white/[0.04] to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+          <div class="flex items-center gap-2 mb-3">
+            <div class="w-6 h-6 rounded-lg bg-orange-500/10 flex items-center justify-center border border-orange-500/20 group-hover:scale-110 transition-transform duration-300">
+              <span class="material-symbols-outlined text-[13px] text-orange-400">device_thermostat</span>
+            </div>
+            <span class="text-[9px] text-zinc-400 font-medium tracking-widest uppercase">Surface Temp</span>
+          </div>
+          <div class="flex items-baseline gap-1">
+            <div id="weather-val-temp" class="text-xl font-bold text-white font-mono tracking-tight tabular-nums">28.4</div>
+            <span class="text-[10px] text-zinc-500 font-medium font-sans">&deg;C</span>
           </div>
         </div>
-        <div
-          style="
-            padding: 8px;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 6px;
-            border: 1px solid rgba(255, 255, 255, 0.12);
-          "
-        >
-          <div style="font-size: 9px; color: #a1a1aa; font-family: var(--font-sans); letter-spacing: 0.04em;">PRECIPITATION (GPM)</div>
-          <div
-            id="weather-val-rain"
-            style="
-              font-size: 13px;
-              font-weight: 700;
-              color: #ffffff;
-              font-family: var(--font-mono);
-              margin-top: 3px;
-            "
-          >
-            12.5 mm/h
+
+        <!-- Precip Card -->
+        <div class="relative overflow-hidden p-3.5 bg-white/[0.03] backdrop-blur-md rounded-2xl border border-white/[0.08] hover:border-white/[0.15] hover:bg-white/[0.05] transition-all group shadow-[0_4px_24px_rgba(0,0,0,0.2)]">
+          <div class="absolute inset-0 bg-gradient-to-br from-white/[0.04] to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+          <div class="flex items-center gap-2 mb-3">
+            <div class="w-6 h-6 rounded-lg bg-blue-500/10 flex items-center justify-center border border-blue-500/20 group-hover:scale-110 transition-transform duration-300">
+              <span class="material-symbols-outlined text-[13px] text-blue-400">water_drop</span>
+            </div>
+            <span class="text-[9px] text-zinc-400 font-medium tracking-widest uppercase">Precipitation</span>
+          </div>
+          <div class="flex items-baseline gap-1">
+            <div id="weather-val-precip" class="text-xl font-bold text-white font-mono tracking-tight tabular-nums">12.5</div>
+            <span class="text-[10px] text-zinc-500 font-medium font-sans">mm/h</span>
           </div>
         </div>
-        <div
-          style="
-            padding: 8px;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 6px;
-            border: 1px solid rgba(255, 255, 255, 0.12);
-          "
-        >
-          <div style="font-size: 9px; color: #a1a1aa; font-family: var(--font-sans); letter-spacing: 0.04em;">WIND VELOCITY</div>
-          <div
-            id="weather-val-wind"
-            style="
-              font-size: 13px;
-              font-weight: 700;
-              color: #ffffff;
-              font-family: var(--font-mono);
-              margin-top: 3px;
-            "
-          >
-            18.2 km/h
+
+        <!-- Wind Card -->
+        <div class="relative overflow-hidden p-3.5 bg-white/[0.03] backdrop-blur-md rounded-2xl border border-white/[0.08] hover:border-white/[0.15] hover:bg-white/[0.05] transition-all group shadow-[0_4px_24px_rgba(0,0,0,0.2)]">
+          <div class="absolute inset-0 bg-gradient-to-br from-white/[0.04] to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+          <div class="flex items-center gap-2 mb-3">
+            <div class="w-6 h-6 rounded-lg bg-sky-500/10 flex items-center justify-center border border-sky-500/20 group-hover:scale-110 transition-transform duration-300">
+              <span class="material-symbols-outlined text-[13px] text-sky-400">air</span>
+            </div>
+            <span class="text-[9px] text-zinc-400 font-medium tracking-widest uppercase">Wind Velocity</span>
+          </div>
+          <div class="flex items-baseline gap-1">
+            <div id="weather-val-wind" class="text-xl font-bold text-white font-mono tracking-tight tabular-nums">18.2</div>
+            <span class="text-[10px] text-zinc-500 font-medium font-sans">km/h</span>
           </div>
         </div>
-        <div
-          style="
-            padding: 8px;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 6px;
-            border: 1px solid rgba(255, 255, 255, 0.12);
-          "
-        >
-          <div style="font-size: 9px; color: #a1a1aa; font-family: var(--font-sans); letter-spacing: 0.04em;">TROPOSPHERIC NO2</div>
-          <div
-            id="weather-val-no2"
-            style="
-              font-size: 13px;
-              font-weight: 700;
-              color: #ffffff;
-              font-family: var(--font-mono);
-              margin-top: 3px;
-            "
-          >
-            48.1 µmol/m²
+
+        <!-- NO2 Card -->
+        <div class="relative overflow-hidden p-3.5 bg-white/[0.03] backdrop-blur-md rounded-2xl border border-white/[0.08] hover:border-white/[0.15] hover:bg-white/[0.05] transition-all group shadow-[0_4px_24px_rgba(0,0,0,0.2)]">
+          <div class="absolute inset-0 bg-gradient-to-br from-white/[0.04] to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+          <div class="flex items-center gap-2 mb-3">
+            <div class="w-6 h-6 rounded-lg bg-amber-500/10 flex items-center justify-center border border-amber-500/20 group-hover:scale-110 transition-transform duration-300">
+              <span class="material-symbols-outlined text-[13px] text-amber-400">cloud</span>
+            </div>
+            <span class="text-[9px] text-zinc-400 font-medium tracking-widest uppercase">Tropo NO2</span>
+          </div>
+          <div class="flex items-baseline gap-1">
+            <div id="weather-val-no2" class="text-xl font-bold text-white font-mono tracking-tight tabular-nums">48.1</div>
+            <span class="text-[10px] text-zinc-500 font-medium font-sans">&micro;mol</span>
           </div>
         </div>
       </div>
-      <div
-        style="
-          font-size: 10px;
-          color: #a1a1aa;
-          line-height: 1.4;
-          border-top: 1px solid rgba(255, 255, 255, 0.1);
-          padding-top: 6px;
-        "
-      >
-        <div>
-          <strong>Active Sensor:</strong> Copernicus Sentinel-5P / NASA GPM
+      
+      <div class="px-1 pt-2 border-t border-white/[0.06]">
+        <div class="flex items-center gap-1.5 text-[9px] text-zinc-500 leading-relaxed">
+          <span class="material-symbols-outlined text-[11px]">satellite_alt</span>
+          <span><strong class="text-zinc-400">Copernicus Sentinel-5P</strong> / NASA GPM · NRT</span>
         </div>
-        <div><strong>Update Frequency:</strong> Near Real-Time (NRT)</div>
       </div>
     </div>
   </div>
 
   <!-- NASA Climate Detective Analytics Panel -->
-  <div
-    id="climate-detective-panel"
-    class="panel-collapsible active"
-    data-panel-id="climate-detective-panel"
-  >
-    <div class="panel-header">
-      <span class="panel-title">CLIMATE DETECTIVE</span>
+  <div id="climate-detective-panel" class="panel-collapsible active" data-panel-id="climate-detective-panel">
+    <div class="panel-header flex items-center gap-2 pb-3 mb-3 border-b border-white/8">
+      <span class="material-symbols-outlined text-[14px] text-red-400">search_insights</span>
+      <span class="text-[10px] font-bold tracking-[0.12em] text-zinc-300 uppercase">Climate Detective</span>
     </div>
-    <div
-      class="climate-detective-body"
-      style="display: flex; flex-direction: column; gap: 10px"
-    >
-      <div class="climate-detective-card">
-        <div class="hotspot-title">BARISAL HOTSPOT</div>
-        <div class="hotspot-rate">+0.452°C / decade</div>
-        <div class="hotspot-meta">
-          p = 0.0062 · Significant Post-Monsoon Warming
+    <div class="climate-detective-body flex flex-col gap-2.5">
+      <!-- Hotspot card -->
+      <div class="relative overflow-hidden p-4 bg-gradient-to-br from-red-500/[0.08] via-transparent to-transparent border border-red-500/15 rounded-2xl">
+        <div class="absolute top-0 right-0 w-20 h-20 bg-red-500/5 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2"></div>
+        <div class="flex items-center gap-1.5 mb-2">
+          <span class="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse inline-block"></span>
+          <div class="text-[9px] font-bold text-red-400 tracking-[0.15em] uppercase">Barisal Hotspot</div>
         </div>
+        <div class="text-[28px] font-bold text-white mb-1 tracking-tight font-display leading-none">+0.452°C <span class="text-zinc-500 text-lg font-normal">/ dec</span></div>
+        <div class="text-[9px] text-zinc-500 mt-1.5">p = 0.0062 · Significant Post-Monsoon Warming</div>
       </div>
-      <div
-        style="
-          font-size: 11px;
-          color: #a1a1aa;
-          line-height: 1.6;
-          border-top: 1px solid rgba(255, 255, 255, 0.12);
-          padding-top: 8px;
-        "
-      >
-        <div><strong>Period:</strong> 2000 – 2026 (MERRA-2)</div>
-        <div><strong>Grid Points:</strong> 34 BD Stations</div>
-        <div><strong>Test:</strong> Mann-Kendall τ (+0.642)</div>
-        <div><strong>Slope:</strong> Sen's Slope β (+0.045°C/yr)</div>
+      
+      <!-- Stats -->
+      <div class="grid grid-cols-2 gap-1.5">
+        <div class="p-2.5 bg-white/[0.02] rounded-lg border border-white/[0.05]">
+          <div class="text-[8px] text-zinc-600 uppercase tracking-wider mb-0.5">Period</div>
+          <div class="text-[10px] text-zinc-300 font-medium">2000–2026</div>
+          <div class="text-[8px] text-zinc-500">(MERRA-2)</div>
+        </div>
+        <div class="p-2.5 bg-white/[0.02] rounded-lg border border-white/[0.05]">
+          <div class="text-[8px] text-zinc-600 uppercase tracking-wider mb-0.5">Grid Points</div>
+          <div class="text-[10px] text-zinc-300 font-medium">34 BD Stations</div>
+        </div>
+        <div class="p-2.5 bg-white/[0.02] rounded-lg border border-white/[0.05]">
+          <div class="text-[8px] text-zinc-600 uppercase tracking-wider mb-0.5">Test</div>
+          <div class="text-[10px] text-zinc-300 font-medium font-mono">τ +0.642</div>
+          <div class="text-[8px] text-zinc-500">Mann-Kendall</div>
+        </div>
+        <div class="p-2.5 bg-white/[0.02] rounded-lg border border-white/[0.05]">
+          <div class="text-[8px] text-zinc-600 uppercase tracking-wider mb-0.5">Slope β</div>
+          <div class="text-[10px] text-zinc-300 font-medium font-mono">+0.045°C/yr</div>
+          <div class="text-[8px] text-zinc-500">Sen's Slope</div>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Live Global Radio Tuner (Any Country Streaming) -->
-  <div
-    id="global-radio-panel"
-    class="panel-collapsible active"
-    data-panel-id="global-radio-panel"
-  >
-    <div class="panel-header">
-      <span class="panel-title">LIVE GLOBAL RADIO</span>
+  <!-- Live Global Radio Tuner -->
+  <div id="global-radio-panel" class="panel-collapsible active" data-panel-id="global-radio-panel">
+    <div class="panel-header flex items-center gap-2 pb-3 mb-3 border-b border-white/8">
+      <span class="material-symbols-outlined text-[14px] text-zinc-400">radio</span>
+      <span class="text-[10px] font-bold tracking-[0.12em] text-zinc-300 uppercase">Live Global Radio</span>
     </div>
-    <div
-      style="display: flex; flex-direction: column; gap: 8px; font-size: 11px"
-    >
-      <div style="display: flex; gap: 6px">
-        <input
-          type="search"
-          id="radio-country-input"
-          name="radio_country_search"
-          placeholder="Search Country (e.g. Bangladesh, USA, Japan)..."
-          autocomplete="off"
-          autocorrect="off"
-          autocapitalize="off"
-          spellcheck="false"
-          data-form-type="other"
-          data-lpignore="true"
-          aria-autocomplete="none"
-          style="width: 100%"
-        />
-      </div>
-      <div
-        id="radio-station-select-wrap"
-        style="display: flex; flex-direction: column; gap: 4px"
-      >
-        <select id="live-radio-selector" style="width: 100%">
-          <option value="https://stream.zeno.fm/f3wvbbqmdg8uv">
-            🇧🇩 Bangladesh Betar (Dhaka)
-          </option>
-          <option value="https://stream.zeno.fm/0r0xa792kwzuv">
-            🇧🇩 Radio Foorti 88.0 FM
-          </option>
-          <option value="https://stream.zeno.fm/k22222">
-            🇧🇩 Radio Today 89.6 FM
-          </option>
-          <option
-            value="https://stream.live.vc.bbcmedia.co.uk/bbc_world_service"
-          >
-            🇬🇧 BBC World Service (London)
-          </option>
-          <option value="https://ice6.somafm.com/groovesalad-128-mp3">
-            🇺🇸 SomaFM Ambient (San Francisco)
-          </option>
-          <option
-            value="https://nhk-lh.akamaihd.net/i/nhkworld_w@86720/master.m3u8"
-          >
-            🇯🇵 NHK World Radio (Tokyo)
-          </option>
-          <option value="https://stream.zeno.fm/4m6g91k2kwzuv">
-            🇮🇳 AIR Vividh Bharati (Delhi)
-          </option>
-          <option value="https://ice1.somafm.com/defcon-128-mp3">
-            🌐 DEF CON Military Radio
-          </option>
+    <div class="flex flex-col gap-2.5">
+      <input type="search" id="radio-country-input" class="w-full bg-black/30 border border-white/[0.08] rounded-lg px-3 py-2 text-[11px] text-white placeholder-zinc-600 focus:outline-none focus:border-white/25 transition-all font-sans" placeholder="Search country or station" autocomplete="off" spellcheck="false" />
+      
+      <div class="relative">
+        <select id="live-radio-selector" class="w-full bg-black/30 border border-white/[0.08] rounded-lg px-3 py-2.5 text-[11px] text-white focus:outline-none focus:border-white/25 cursor-pointer appearance-none pr-8 font-sans">
+          <option value="https://stream.zeno.fm/f3wvbbqmdg8uv">BD Bangladesh Betar (Dhaka)</option>
+          <option value="https://stream.zeno.fm/0r0xa792kwzuv">BD Radio Foorti 88.0 FM</option>
+          <option value="https://stream.zeno.fm/k22222">BD Radio Today 89.6 FM</option>
+          <option value="https://stream.live.vc.bbcmedia.co.uk/bbc_world_service">UK BBC World Service</option>
+          <option value="https://ice6.somafm.com/groovesalad-128-mp3">US SomaFM Ambient</option>
+          <option value="https://nhk-lh.akamaihd.net/i/nhkworld_w@86720/master.m3u8">JP NHK World Radio</option>
+          <option value="https://stream.zeno.fm/4m6g91k2kwzuv">IN AIR Vividh Bharati</option>
+          <option value="https://ice1.somafm.com/defcon-128-mp3">GL DEF CON Military</option>
         </select>
+        <span class="material-symbols-outlined text-[16px] text-zinc-500 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none">expand_more</span>
       </div>
-      <div style="display: flex; gap: 6px; align-items: center">
-        <button
-          id="radio-play-toggle-btn"
-          class="style-btn"
-          style="
-            flex: 1;
-            justify-content: center;
-            background: #ffffff !important;
-            color: #000000 !important;
-            font-weight: 700;
-          "
-        >
-          ▶ TUNE &amp; PLAY
+      
+      <div class="grid grid-cols-[1fr_auto] gap-2">
+        <button id="radio-play-toggle-btn" class="flex items-center justify-center gap-2 bg-white text-black font-bold text-[11px] py-2.5 rounded-xl hover:bg-zinc-100 transition-all active:scale-[0.97] shadow-[0_0_20px_rgba(255,255,255,0.15)] tracking-wide">
+          <span class="material-symbols-outlined text-[16px]">play_arrow</span> TUNE &amp; PLAY
         </button>
-        <button
-          id="radio-stop-toggle-btn"
-          class="style-btn"
-          style="width: 60px; justify-content: center"
-        >
+        <button id="radio-stop-toggle-btn" class="flex items-center justify-center bg-white/[0.04] border border-white/[0.08] text-zinc-400 hover:text-white font-bold text-[11px] px-3 py-2.5 rounded-xl hover:bg-white/[0.08] transition-all active:scale-[0.97] tracking-wide">
           STOP
         </button>
       </div>
-      <div
-        id="radio-now-playing"
-        style="
-          font-size: 10px;
-          color: #a1a1aa;
-          font-family: var(--font-mono);
-          text-align: center;
-          min-height: 16px;
-        "
-      >
-        Radio Ready · Select station &amp; press play
+      
+      <div id="radio-now-playing" class="text-[9px] text-zinc-600 font-mono text-center">
+        Radio Ready · Select station &amp; play
       </div>
       <audio id="global-radio-audio-player" preload="none"></audio>
     </div>
   </div>
 
   <!-- Bangladesh Climate Disasters Timeline -->
-  <div
-    id="disaster-panel"
-    class="panel-collapsible active"
-    data-panel-id="disaster-panel"
-  >
-    <div class="panel-header">
-      <span class="panel-title">HISTORICAL EVENTS</span>
+  <div id="disaster-panel" class="panel-collapsible active" data-panel-id="disaster-panel">
+    <div class="panel-header flex items-center gap-2 pb-3 mb-3 border-b border-white/8">
+      <span class="material-symbols-outlined text-[14px] text-amber-400">history</span>
+      <span class="text-[10px] font-bold tracking-[0.12em] text-zinc-300 uppercase">Historical Events</span>
     </div>
-    <div
-      style="
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-        font-size: 11px;
-        color: #e4e4e7;
-      "
-    >
-      <div
-        style="
-          padding: 6px 8px;
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          border-radius: 6px;
-          background: rgba(255, 255, 255, 0.02);
-        "
-      >
-        <strong>2024 · Feni-Noakhali Flood</strong>
-        <div style="font-size: 10px; color: #a1a1aa">
-          Inland flash flood, 5.8M affected
+    <div class="flex flex-col gap-2.5">
+      <div class="group relative flex items-center gap-3 p-3.5 bg-white/[0.02] backdrop-blur-md border border-white/[0.05] rounded-2xl hover:border-blue-500/30 hover:bg-blue-500/[0.04] transition-all cursor-default shadow-[0_4px_24px_rgba(0,0,0,0.15)]">
+        <div class="flex-shrink-0 w-9 h-9 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+          <span class="material-symbols-outlined text-[16px] text-blue-400">flood</span>
+        </div>
+        <div class="flex flex-col gap-1 min-w-0 flex-1">
+          <div class="flex items-center justify-between">
+            <div class="text-[10px] font-bold text-white tracking-wide truncate">Feni-Noakhali Flood</div>
+            <div class="text-[8px] font-mono font-bold text-blue-400 bg-blue-400/10 px-1.5 py-0.5 rounded border border-blue-400/20">2024</div>
+          </div>
+          <div class="text-[9px] text-zinc-400 truncate">Inland flash flood, 5.8M affected</div>
         </div>
       </div>
-      <div
-        style="
-          padding: 6px 8px;
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          border-radius: 6px;
-          background: rgba(255, 255, 255, 0.02);
-        "
-      >
-        <strong>2022 · Sylhet Mega Flood</strong>
-        <div style="font-size: 10px; color: #a1a1aa">
-          122-year record, 7.2M displaced
+
+      <div class="group relative flex items-center gap-3 p-3.5 bg-white/[0.02] backdrop-blur-md border border-white/[0.05] rounded-2xl hover:border-blue-500/30 hover:bg-blue-500/[0.04] transition-all cursor-default shadow-[0_4px_24px_rgba(0,0,0,0.15)]">
+        <div class="flex-shrink-0 w-9 h-9 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+          <span class="material-symbols-outlined text-[16px] text-blue-400">water</span>
+        </div>
+        <div class="flex flex-col gap-1 min-w-0 flex-1">
+          <div class="flex items-center justify-between">
+            <div class="text-[10px] font-bold text-white tracking-wide truncate">Sylhet Mega Flood</div>
+            <div class="text-[8px] font-mono font-bold text-blue-400 bg-blue-400/10 px-1.5 py-0.5 rounded border border-blue-400/20">2022</div>
+          </div>
+          <div class="text-[9px] text-zinc-400 truncate">122-year record, 7.2M displaced</div>
         </div>
       </div>
-      <div
-        style="
-          padding: 6px 8px;
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          border-radius: 6px;
-          background: rgba(255, 255, 255, 0.02);
-        "
-      >
-        <strong>2007 · Cyclone Sidr</strong>
-        <div style="font-size: 10px; color: #a1a1aa">
-          Category 4, 3,406 casualties
+
+      <div class="group relative flex items-center gap-3 p-3.5 bg-white/[0.02] backdrop-blur-md border border-white/[0.05] rounded-2xl hover:border-red-500/30 hover:bg-red-500/[0.04] transition-all cursor-default shadow-[0_4px_24px_rgba(0,0,0,0.15)]">
+        <div class="flex-shrink-0 w-9 h-9 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+          <span class="material-symbols-outlined text-[16px] text-red-400">cyclone</span>
+        </div>
+        <div class="flex flex-col gap-1 min-w-0 flex-1">
+          <div class="flex items-center justify-between">
+            <div class="text-[10px] font-bold text-white tracking-wide truncate">Cyclone Sidr</div>
+            <div class="text-[8px] font-mono font-bold text-red-400 bg-red-400/10 px-1.5 py-0.5 rounded border border-red-400/20">2007</div>
+          </div>
+          <div class="text-[9px] text-zinc-400 truncate">Category 4, 3,406 casualties</div>
         </div>
       </div>
     </div>
