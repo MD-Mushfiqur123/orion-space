@@ -1237,6 +1237,13 @@ export class OrionMapHarness {
       senSlope: '15x Amplification in Post-Monsoon Season',
       pValue: 'Annual p=0.45 (ns) vs Oct p=0.007 (***)',
       significance: 'EXTREME SEASONAL VARIATION',
+      narrative:
+        'Crucial discovery: Evaluating only annual averages dilutes the extreme post-monsoon autumn signal. Farmers and disaster managers must prepare for delayed cooling and extended post-monsoon tropical heat.',
+      speech,
+    });
+    this.speak(speech);
+  }
+
   /** Query 5: Real-time Live Weather Telemetry */
   async handleLiveWeatherQuery() {
     this._setStatus('📡 Querying Open-Meteo & NASA atmospheric telemetry...');
