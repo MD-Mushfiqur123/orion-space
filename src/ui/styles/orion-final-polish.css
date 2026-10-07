@@ -967,43 +967,78 @@
 
   #cesiumContainer,
   #world-overlay-root {
-    left: 12px !important;
-    right: 12px !important;
-    top: 12px !important;
+    left: 8px !important;
+    right: 8px !important;
+    top: 8px !important;
+    bottom: 8px !important;
   }
 
   #right-context-rail {
-    width: min(310px, calc(100vw - 24px)) !important;
-    right: 12px !important;
-    top: 12px !important;
-    bottom: 12px !important;
+    position: fixed !important;
+    width: calc(100vw - 16px) !important;
+    max-width: 340px !important;
+    right: 8px !important;
+    top: 8px !important;
+    max-height: calc(100vh - 100px) !important;
+    overflow-y: auto !important;
+    z-index: 1200 !important;
+    display: none !important; /* toggled or collapsible on small screens */
+  }
+
+  #right-context-rail.mobile-open {
+    display: flex !important;
   }
 
   #orion-map-harness-container {
-    width: calc(100vw - 24px) !important;
+    width: calc(100vw - 16px) !important;
+    left: 8px !important;
+    right: 8px !important;
+    bottom: 84px !important;
+    max-height: 80vh !important;
+  }
+
+  #orion-evidence-card {
+    top: 12px !important;
+    right: 8px !important;
+    left: 8px !important;
+    width: calc(100vw - 16px) !important;
+    max-width: 100vw !important;
+    font-size: 10.5px !important;
   }
 }
 
 @media (max-width: 640px) {
   #orion-map-harness-container {
-    bottom: 86px !important;
+    bottom: 76px !important;
+    left: 6px !important;
+    right: 6px !important;
+    width: calc(100vw - 12px) !important;
   }
 
   #orion-map-harness-container #orion-harness-transcript {
-    max-height: 36vh !important;
+    max-height: 32vh !important;
   }
 
   #command-dock {
     min-width: 0 !important;
-    max-width: calc(100vw - 1rem) !important;
+    width: calc(100vw - 12px) !important;
+    max-width: calc(100vw - 12px) !important;
     overflow-x: auto !important;
     scrollbar-width: none !important;
-    bottom: 12px !important;
+    bottom: 8px !important;
+    left: 6px !important;
+    transform: none !important;
+    padding: 3px 6px !important;
+  }
+
+  #command-dock #control-panel-popover {
+    gap: 3px !important;
+    padding: 3px !important;
   }
 
   #command-dock .style-btn {
-    padding: 6px 10px !important;
-    min-height: 44px !important;
+    padding: 6px 8px !important;
+    min-height: 40px !important;
   }
 
   #command-dock .style-btn .btn-label {

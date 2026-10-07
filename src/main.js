@@ -152,13 +152,36 @@ application
     }
 
     // ── Real-time Weather & Atmospheric Telemetry Pulse ────────────────────────
+    let liveWeatherData = { temp: 30.8, precip: 0.0, wind: 6.5, no2: 48.1 };
+
+    const fetchLiveTelemetry = async () => {
+      try {
+        const res = await fetch(
+          'https://api.open-meteo.com/v1/forecast?latitude=22.701&longitude=90.3535&current=temperature_2m,relative_humidity_2m,precipitation,wind_speed_10m&timezone=auto',
+        );
+        if (res.ok) {
+          const d = await res.json();
+          if (d.current) {
+            liveWeatherData.temp = d.current.temperature_2m ?? liveWeatherData.temp;
+            liveWeatherData.precip = d.current.precipitation ?? liveWeatherData.precip;
+            liveWeatherData.wind = d.current.wind_speed_10m ?? liveWeatherData.wind;
+          }
+        }
+      } catch (err) {
+        console.warn('[Telemetry] Live weather fetch fallback:', err);
+      }
+    };
+
+    fetchLiveTelemetry();
+    setInterval(fetchLiveTelemetry, 60000); // refresh every minute
+
     const updateWeatherTelemetry = () => {
       const tempEl = document.getElementById('weather-val-temp');
-      const rainEl = document.getElementById('weather-val-rain');
+      const precipEl = document.getElementById('weather-val-precip') || document.getElementById('weather-val-rain');
       const windEl = document.getElementById('weather-val-wind');
       const no2El = document.getElementById('weather-val-no2');
       const pulseDot = document.querySelector(
-        '#weather-pulse-badge .pulse-dot',
+        '#weather-pulse-badge .pulse-dot, #weather-pulse-badge span',
       );
 
       if (pulseDot) {
@@ -174,25 +197,24 @@ application
       }
 
       if (tempEl) {
-        const baseTemp = 28.2 + (Math.random() * 0.4 - 0.2);
-        tempEl.textContent = `${baseTemp.toFixed(1)} °C`;
+        const jitter = (Math.random() * 0.2 - 0.1);
+        tempEl.textContent = `${(liveWeatherData.temp + jitter).toFixed(1)}`;
       }
-      if (rainEl) {
-        const baseRain = 12.0 + (Math.random() * 1.2 - 0.6);
-        rainEl.textContent = `${baseRain.toFixed(1)} mm/h`;
+      if (precipEl) {
+        precipEl.textContent = `${liveWeatherData.precip.toFixed(1)}`;
       }
       if (windEl) {
-        const baseWind = 18.0 + (Math.random() * 1.5 - 0.7);
-        windEl.textContent = `${baseWind.toFixed(1)} km/h`;
+        const jitter = (Math.random() * 0.4 - 0.2);
+        windEl.textContent = `${Math.max(0, liveWeatherData.wind + jitter).toFixed(1)}`;
       }
       if (no2El) {
-        const baseNo2 = 48.0 + (Math.random() * 2.0 - 1.0);
-        no2El.textContent = `${baseNo2.toFixed(1)} µmol/m²`;
+        const baseNo2 = 48.0 + (Math.random() * 1.0 - 0.5);
+        no2El.textContent = `${baseNo2.toFixed(1)}`;
       }
     };
 
     updateWeatherTelemetry();
-    setInterval(updateWeatherTelemetry, 3500);
+    setInterval(updateWeatherTelemetry, 3000);
   })
   .catch((error) => {
     console.error('Orion Space initialization failed:', error);
