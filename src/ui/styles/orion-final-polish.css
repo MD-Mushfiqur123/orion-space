@@ -962,7 +962,27 @@
    § 9 · RESPONSIVE OVERRIDES
    ══════════════════════════════════════════════════════════════════════ */
 @media (max-width: 860px) {
-  #left-panel-stack  { display: none !important; }
+  #left-panel-stack  { 
+    display: none !important; 
+    position: fixed !important;
+    top: 64px !important;
+    left: 8px !important;
+    width: calc(100vw - 16px) !important;
+    max-width: 320px !important;
+    max-height: calc(100vh - 150px) !important;
+    z-index: 1300 !important;
+    overflow-y: auto !important;
+    backdrop-filter: blur(28px) !important;
+    background: rgba(10, 12, 16, 0.94) !important;
+    border: 1px solid rgba(255, 255, 255, 0.16) !important;
+    border-radius: 20px !important;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8) !important;
+  }
+
+  #left-panel-stack.mobile-drawer-open {
+    display: flex !important;
+  }
+
   #top-center-actions { display: none !important; }
 
   #cesiumContainer,
@@ -978,13 +998,14 @@
     width: calc(100vw - 16px) !important;
     max-width: 340px !important;
     right: 8px !important;
-    top: 8px !important;
-    max-height: calc(100vh - 100px) !important;
+    top: 64px !important;
+    max-height: calc(100vh - 150px) !important;
     overflow-y: auto !important;
     z-index: 1200 !important;
-    display: none !important; /* toggled or collapsible on small screens */
+    display: none !important;
   }
 
+  #right-context-rail.mobile-drawer-open,
   #right-context-rail.mobile-open {
     display: flex !important;
   }

@@ -89,6 +89,26 @@ application
         );
     }
 
+    // ── 3-Dot (More Features & Data Layers) Mobile Menu Toggle ─────────────────
+    const mobileMenuBtn = document.getElementById('mobile-features-menu-btn');
+    const leftPanelStack = document.getElementById('left-panel-stack');
+    const rightContextRail = document.getElementById('right-context-rail');
+
+    if (mobileMenuBtn) {
+      mobileMenuBtn.addEventListener('click', () => {
+        const isLeftOpen = leftPanelStack?.classList.contains('mobile-drawer-open');
+        if (isLeftOpen) {
+          leftPanelStack?.classList.remove('mobile-drawer-open');
+          rightContextRail?.classList.remove('mobile-drawer-open');
+          mobileMenuBtn.classList.remove('active');
+        } else {
+          leftPanelStack?.classList.add('mobile-drawer-open');
+          rightContextRail?.classList.add('mobile-drawer-open');
+          mobileMenuBtn.classList.add('active');
+        }
+      });
+    }
+
     // ── Global Radio Tuner & Search Interactivity ──────────────────────────────
     const audio = document.getElementById('global-radio-audio-player');
     const selector = document.getElementById('live-radio-selector');
