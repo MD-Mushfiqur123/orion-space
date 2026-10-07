@@ -188,26 +188,14 @@ export class RealEarthCloudStream {
     const activeDate = this.activeDate;
     const fallbackDate = this.fallbackDate;
     const cesium = this.cesium;
+    const url = `https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/${layer}/default/${activeDate}/${matrixSet}/{z}/{y}/{x}.jpg`;
 
-    const wmtsUrl = `https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/${layer}/default/{Time}/${matrixSet}/{TileMatrix}/{TileRow}/{TileCol}.jpg`;
-
-    const provider = new cesium.WebMapTileServiceImageryProvider({
-      url: wmtsUrl,
-      layer,
-      style: 'default',
-      format,
-      tileMatrixSetID: matrixSet,
+    const provider = new cesium.UrlTemplateImageryProvider({
+      url,
       maximumLevel: maxLevel,
       tilingScheme: new cesium.WebMercatorTilingScheme(),
-      times: new cesium.TimeIntervalCollection([
-        new cesium.TimeInterval({
-          start: cesium.JulianDate.fromIso8601('2000-01-01'),
-          stop: cesium.JulianDate.fromIso8601('2099-12-31'),
-          data: activeDate,
-        }),
-      ]),
       credit: new cesium.Credit(
-        `NASA GIBS (${this.config.name}) · ${activeDate} UTC`,
+        `NASA GIBS Live Weather Satellite (${this.config.name}) · ${activeDate} UTC`,
       ),
     });
 
