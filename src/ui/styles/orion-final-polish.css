@@ -991,43 +991,48 @@
 
   #orion-map-harness-container {
     width: calc(100vw - 16px) !important;
-    left: 8px !important;
-    right: 8px !important;
-    bottom: 84px !important;
-    max-height: 80vh !important;
+    max-width: 440px !important;
+    left: 50% !important;
+    right: auto !important;
+    transform: translateX(-50%) !important;
+    bottom: 82px !important;
+    max-height: 75vh !important;
   }
 
   #orion-evidence-card {
     top: 12px !important;
-    right: 8px !important;
-    left: 8px !important;
+    left: 50% !important;
+    right: auto !important;
+    transform: translateX(-50%) !important;
     width: calc(100vw - 16px) !important;
-    max-width: 100vw !important;
+    max-width: 440px !important;
     font-size: 10.5px !important;
   }
 }
 
 @media (max-width: 640px) {
   #orion-map-harness-container {
-    bottom: 76px !important;
-    left: 6px !important;
-    right: 6px !important;
+    bottom: 74px !important;
+    left: 50% !important;
+    right: auto !important;
+    transform: translateX(-50%) !important;
     width: calc(100vw - 12px) !important;
+    max-width: calc(100vw - 12px) !important;
   }
 
   #orion-map-harness-container #orion-harness-transcript {
-    max-height: 32vh !important;
+    max-height: 28vh !important;
   }
 
   #command-dock {
     min-width: 0 !important;
     width: calc(100vw - 12px) !important;
-    max-width: calc(100vw - 12px) !important;
+    max-width: 420px !important;
     overflow-x: auto !important;
     scrollbar-width: none !important;
     bottom: 8px !important;
-    left: 6px !important;
-    transform: none !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
     padding: 3px 6px !important;
   }
 
