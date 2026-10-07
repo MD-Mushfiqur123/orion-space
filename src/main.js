@@ -21,6 +21,16 @@ application
             'real-earth-clouds-dock-btn',
           );
 
+          // Auto-enable NASA GIBS Real Earth Clouds on initial load
+          realCloudStream.show().then((active) => {
+            if (active && cloudDockBtn) {
+              cloudDockBtn.classList.add('active');
+              cloudDockBtn.setAttribute('aria-pressed', 'true');
+              const label = cloudDockBtn.querySelector('.btn-label');
+              if (label) label.textContent = 'REAL CLOUDS (ON)';
+            }
+          });
+
           cloudDockBtn?.addEventListener('click', async () => {
             const active = realCloudStream.active
               ? (realCloudStream.hide(), false)
