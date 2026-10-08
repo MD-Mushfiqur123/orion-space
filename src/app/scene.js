@@ -76,9 +76,9 @@ export async function createApplicationScene({
   signal.throwIfAborted();
   if (tileset) {
     viewer.scene.primitives.add(tileset);
-    // NOTE: Cesium World Terrain intentionally disabled — conflicts with Google 3D Tiles at high zoom.
-    // Google Photorealistic 3D Tiles provide their own terrain/elevation.
-    viewer.scene.globe.show = false;
+    // Keep base globe enabled and day-lit for seamless orbital transitions
+    viewer.scene.globe.show = true;
+    viewer.scene.globe.enableLighting = false;
     console.info(`[Init] Google 3D Tiles loaded via ${photoreal.route}.`);
   } else {
     if (photoreal.errors.length) {

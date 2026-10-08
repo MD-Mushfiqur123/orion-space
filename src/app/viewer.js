@@ -132,16 +132,27 @@ export function createApplicationViewer({ container, creditContainer }) {
   try {
     viewer.targetFrameRate = 60;
     viewer.resolutionScale = Math.min(window.devicePixelRatio || 1.0, 1.5);
+    
+    // Set clock to solar noon (bright daytime illumination over Bangladesh & Asia)
+    viewer.clock.currentTime = Cesium.JulianDate.fromDate(
+      new Date('2026-06-21T06:00:00Z'),
+    );
+    viewer.clock.shouldAnimate = false;
+
     // Before any tile builds a draw command: Cesium's per-vertex model
     // atmosphere fails to LINK on Apple's Metal backend and kills the
     // render loop. See app/atmosphereCompat.js.
     applyModelAtmosphereWorkaround(viewer.scene);
-    viewer.scene.globe.show = false;
+    
+    viewer.scene.globe.show = true;
+    viewer.scene.globe.enableLighting = false; // Disable dark night shadows over terrain
     viewer.scene.globe.maximumScreenSpaceError = 2.0;
+    viewer.scene.globe.baseColor = Cesium.Color.fromCssColorString('#12283e');
+    
     viewer.scene.skyAtmosphere.show = true;
-    viewer.scene.skyAtmosphere.atmosphereLightIntensity = 18;
-    viewer.scene.skyAtmosphere.saturationShift = -0.12;
-    viewer.scene.skyAtmosphere.brightnessShift = -0.08;
+    viewer.scene.skyAtmosphere.atmosphereLightIntensity = 22;
+    viewer.scene.skyAtmosphere.saturationShift = 0.1;
+    viewer.scene.skyAtmosphere.brightnessShift = 0.15;
     return viewer;
   } catch (error) {
     viewer.destroy();

@@ -92,8 +92,8 @@ export class VisualEffects {
     this.bloomStage.enabled = false;
     Object.assign(this.bloomStage.uniforms, {
       glowOnly: false,
-      contrast: 256.0,
-      brightness: -0.35,
+      contrast: 128.0,
+      brightness: 0.0,
       delta: 0.25,
       sigma: 0.35,
       stepSize: 1.0,
