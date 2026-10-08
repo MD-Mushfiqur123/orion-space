@@ -103,58 +103,24 @@ export function createControls({ state: layerState, services, parts, source }) {
     getDetectableObjects(options = {}) {
       if (!layerState._pointCollection || !layerState._pointCollection.show)
         return [];
-      // Dense extras are points-only: excluded from the detection overlay.
-      const eligibleCount = Math.max(
-        1,
-        layerState._points.size - layerState._denseIds.length,
-      );
-      const maxCount = Number.isFinite(options.maxCount)
-        ? Math.max(1, Math.floor(options.maxCount))
-        : eligibleCount;
-      const seed = Number.isFinite(options.seed) ? Math.floor(options.seed) : 0;
-      const stride = Math.max(1, Math.ceil(eligibleCount / maxCount));
-      const start = seed % stride;
-
-      const result = [];
-      let idx = 0;
-      for (const [noradId, point] of layerState._points) {
-        if (
-          layerState._denseIds.length > 0 &&
-          layerState._catalog.get(noradId)?.group === 'dense'
-        )
-          continue;
-        const shouldTake = (idx - start) % stride === 0;
-        idx++;
-        if (!shouldTake) continue;
-        if (!point.position) continue;
-        const isTracked = noradId === layerState._trackedNorad;
-        // A docked companion sits at the tracked subject's own position, so its
-        // mark and label would stack underneath the tracked card. It is listed on
-        // that card instead. Only members of the tracked cluster are affected —
-        // unrelated nearby satellites are never suppressed.
-        if (!isTracked && layerState._dockedCompanions.has(noradId)) continue;
-        const cat = layerState._catalog.get(noradId);
-        let object = layerState._detectionObjects.get(noradId);
-        if (!object) {
-          object = {
-            sourceId: noradId,
-            id: cat?.name || `SAT-${noradId}`,
-            type: 'SAT',
-            // Human class ("NAV · GPS"), not the raw CelesTrak tag ("GPS-OPS").
-            // The detection canvas composites ABOVE the post-FX chain, so this
-            // is how class survives NVG/FLIR once the dot colors are collapsed.
-            klass: satelliteClassLabel(cat?.group, {
-              isIss: noradId === ISS_NORAD,
-            }),
-          };
-          layerState._detectionObjects.set(noradId, object);
-        }
-        object.position = point.position;
-        object.skipLabel = isTracked;
-        result.push(object);
-        if (result.length >= maxCount) break;
-      }
-      return result;
+      // Suppress screen-wide clutter brackets. Only highlight if a satellite is specifically tracked.
+      if (!layerState._trackedNorad) return [];
+      const noradId = layerState._trackedNorad;
+      const point = layerState._points.get(noradId);
+      if (!point?.position) return [];
+      const cat = layerState._catalog.get(noradId);
+      return [
+        {
+          sourceId: noradId,
+          id: cat?.name || `SAT-${noradId}`,
+          type: 'SAT',
+          klass: satelliteClassLabel(cat?.group, {
+            isIss: noradId === ISS_NORAD,
+          }),
+          position: point.position,
+          skipLabel: false,
+        },
+      ];
     },
 
     /**

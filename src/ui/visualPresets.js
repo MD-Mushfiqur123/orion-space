@@ -46,19 +46,9 @@ export const GLOBAL_POST_DEFAULTS = {
   sharpen: { enabled: true, intensity: 49 },
   hudVariant: 'tactical',
   hudVisible: true,
-  // Detection is ON for EVERY style on a first run, Normal included (owner
-  // directive 2026-08-22: "detect should also be on by default"). It is the
-  // same preset object the military styles and Contacts already apply, so there
-  // is one tactical look, not several that can drift.
-  //
-  // This is a first-LOAD baseline, not an override: `_applyGlobalPostDefaults`
-  // runs before any share-link restore, so a link's `dm`/`dd` still lands on top
-  // of it. It also deliberately leaves `_detectionUserOverridden` alone — the
-  // flag means the OPERATOR hand-edited detection, and a factory default is not
-  // that. Turning detection off by hand therefore still sets the flag and still
-  // suppresses the military-style auto-enable for the rest of the session.
-  detectionMode: MILITARY_DETECTION_PRESET.mode.toUpperCase(),
-  detectionDensity: MILITARY_DETECTION_PRESET.densityPct,
+  // Detection is OFF by default so the Earth globe is clean and pristine for NASA Hackathon
+  detectionMode: 'OFF',
+  detectionDensity: 0,
   detectionAllocation: 'ELASTIC',
   detectionFadePct: 7,
   detectionOutsideOpacityPct: 1,

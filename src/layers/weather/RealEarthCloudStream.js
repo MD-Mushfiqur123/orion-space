@@ -135,9 +135,9 @@ export class RealEarthCloudStream {
     this.cloudLayer = null;
     this.provider = null;
     this.active = false;
-    this.satelliteKey = options.satellite || 'terra';
-    this.dateOffset = options.dateOffset ?? 'auto';
-    this.alpha = options.alpha ?? 0.85;
+    this.satelliteKey = options.satellite || 'viirs-snpp';
+    this.dateOffset = options.dateOffset ?? 1; // Default to yesterday's 100% complete global composite to eliminate all orbital black swaths
+    this.alpha = options.alpha ?? 0.8;
     this.activeDate = getUtcIsoDate(1);
     this.fallbackDate = getUtcIsoDate(2);
     this._initialized = false;
@@ -145,10 +145,10 @@ export class RealEarthCloudStream {
   }
 
   get config() {
-    return SATELLITE_CONFIGS[this.satelliteKey] || SATELLITE_CONFIGS.terra;
+    return SATELLITE_CONFIGS[this.satelliteKey] || SATELLITE_CONFIGS['viirs-snpp'];
   }
 
-  /** Resolve the optimal date (today vs yesterday) based on availability. */
+  /** Resolve the optimal date (default yesterday for 100% seamless stitched orbital coverage). */
   async resolveOptimalDates() {
     if (typeof this.dateOffset === 'number') {
       this.activeDate = getUtcIsoDate(this.dateOffset);
@@ -162,24 +162,9 @@ export class RealEarthCloudStream {
       return;
     }
 
-    // Auto mode: probe today's date first
-    const today = getUtcIsoDate(0);
-    const yesterday = getUtcIsoDate(1);
-    const dayBefore = getUtcIsoDate(2);
-
-    const isTodayReady = await probeGibsTileAvailable(
-      this.config.layer,
-      today,
-      this.config.matrixSet,
-    );
-
-    if (isTodayReady) {
-      this.activeDate = today;
-      this.fallbackDate = yesterday;
-    } else {
-      this.activeDate = yesterday;
-      this.fallbackDate = dayBefore;
-    }
+    // Auto mode: default to yesterday's complete 24h stitched pass for zero black swath gaps
+    this.activeDate = getUtcIsoDate(1);
+    this.fallbackDate = getUtcIsoDate(2);
   }
 
   /** Create and mount the WMTS imagery provider. */

@@ -21,28 +21,24 @@ application
             'real-earth-clouds-dock-btn',
           );
 
-          // Auto-enable NASA GIBS Real Earth Clouds on initial load
-          realCloudStream.show().then((active) => {
-            if (active && cloudDockBtn) {
-              cloudDockBtn.classList.add('active');
-              cloudDockBtn.setAttribute('aria-pressed', 'true');
+          const syncCloudUI = (isActive) => {
+            if (cloudDockBtn) {
+              cloudDockBtn.classList.toggle('active', isActive);
+              cloudDockBtn.setAttribute('aria-pressed', String(isActive));
               const label = cloudDockBtn.querySelector('.btn-label');
-              if (label) label.textContent = 'REAL CLOUDS (ON)';
+              if (label) {
+                label.textContent = isActive
+                  ? 'REAL CLOUDS (ON)'
+                  : 'REAL CLOUDS';
+              }
             }
-          });
+          };
 
           cloudDockBtn?.addEventListener('click', async () => {
             const active = realCloudStream.active
               ? (realCloudStream.hide(), false)
               : await realCloudStream.show();
-            cloudDockBtn.classList.toggle('active', Boolean(active));
-            cloudDockBtn.setAttribute('aria-pressed', String(Boolean(active)));
-            const label = cloudDockBtn.querySelector('.btn-label');
-            if (label) {
-              label.textContent = active
-                ? 'REAL CLOUDS (ON)'
-                : 'REAL CLOUDS';
-            }
+            syncCloudUI(Boolean(active));
             const diag = realCloudStream.getDiagnostics();
             cloudDockBtn.title = active
               ? `NASA GIBS Live Clouds Active: ${diag.satelliteName} (${diag.activeDate} UTC)`
@@ -50,6 +46,19 @@ application
             window.dispatchEvent(
               new CustomEvent('gev:clouds-toggled', { detail: diag }),
             );
+          });
+
+          const clearLayersBtn = document.getElementById(
+            'clear-selected-layers',
+          );
+          clearLayersBtn?.addEventListener('click', () => {
+            realCloudStream.hide();
+            syncCloudUI(false);
+          });
+
+          window.addEventListener('gev:clouds-toggled', (e) => {
+            const active = Boolean(e?.detail?.active);
+            syncCloudUI(active);
           });
 
           // ── Autonomous Orion Map Harness Agent (Voice & NLP) ────────────────────
