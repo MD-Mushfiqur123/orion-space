@@ -1,5 +1,15 @@
 # Changelog
 
+- Orion Space judge-review fixes (2026-10): reproducible trend analysis in
+  `analysis/` (Mann-Kendall, Theil-Sen, Benjamini-Hochberg FDR); headline
+  corrected to the September signal (+0.40 °C/decade on the Barisal coast,
+  34/34 cells significant, 31 after FDR) in the README, submission docs, app
+  cards, trend agent and pitch deck; "stations" renamed to MERRA-2 grid cells;
+  base project God's Eye View credited in README and LICENSE; layer panel
+  leads with Earth Observation and Events and collapses inherited groups;
+  first-run line rewritten for the challenge; simulated `src/osint/` modules
+  labelled; self-graded VERIFICATION_REPORT.md removed.
+
 - Public Overpass instances are no longer used by default. Street Traffic
   roads come from TomTom flow tiles, OpenFreeMap vector tiles, or both, chosen
   on the layer row (TomTom / OSM / Hybrid) or with `?trafficRoads=`. With a

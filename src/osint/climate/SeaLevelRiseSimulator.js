@@ -8,7 +8,6 @@
  * (Barisal, Bhola, Patuakhali, Khulna, Bagerhat, Satkhira, Barguna, Pirojpur, Jhalokati).
  *
  * Project Orion Space - Orion Space OSINT & Tactical Climate System
- * Zero Placeholders - 100% Production Ready
  */
 
 import * as Cesium from 'cesium';

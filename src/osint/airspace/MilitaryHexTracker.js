@@ -8,7 +8,6 @@
  * the Bay of Bengal, Chittagong FIR, and Andaman Sea maritime corridors.
  *
  * Project Orion Space - Orion Space OSINT Airspace Suite
- * Zero Placeholders - 100% Production Ready
  */
 
 import * as Cesium from 'cesium';

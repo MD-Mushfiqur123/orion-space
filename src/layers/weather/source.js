@@ -118,28 +118,11 @@ export function createWeatherSource({
       );
       try {
         signal?.throwIfAborted();
-        let response;
-        try {
-          response = await fetchImpl(
-            `/api/weather/manifest?product=${product}`,
-            { signal: controller.signal, cache: 'no-store', redirect: 'error' },
-          );
-        } catch {}
-
-        if (!response || !response.ok) {
-          // Static fallback: generate clean valid ISO timestamp for today
-          const nowIso = new Date().toISOString();
-          return {
-            schemaVersion: 1,
-            product,
-            bounds: { west: -180, south: -60, east: 180, north: 60 },
-            times: [nowIso],
-            latest: nowIso,
-            tileSize: 256,
-            maxLevel: 6,
-            tilingScheme: 'geographic',
-          };
-        }
+        const response = await fetchImpl(
+          `/api/weather/manifest?product=${product}`,
+          { signal: controller.signal, cache: 'no-store', redirect: 'error' },
+        );
+        if (!response.ok) throw new Error(`Weather HTTP ${response.status}`);
         return validateWeatherSnapshot(
           await readResponseJsonCapped(response, 16_384, controller.signal),
           product,
@@ -148,6 +131,20 @@ export function createWeatherSource({
         clearTimeout(timer);
         signal?.removeEventListener('abort', abort);
       }
+    },
+    /** Read one image frame through the bounded image route. */
+    async getImage({ product, time, size, bbox = null, signal } = {}) {
+      signal?.throwIfAborted();
+      const response = await fetchImpl(
+        weatherImageUrl(product, time, size, bbox),
+        { signal, redirect: 'error' },
+      );
+      if (!response.ok)
+        throw new Error(`Weather image HTTP ${response.status}`);
+      const bytes = new Uint8Array(await response.arrayBuffer());
+      signal?.throwIfAborted();
+      const type = response.headers.get('content-type') || '';
+      return { contentType: type.split(';')[0].trim().toLowerCase(), bytes };
     },
   };
 }

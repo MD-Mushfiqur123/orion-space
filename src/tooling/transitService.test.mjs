@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createTransitService } from 'gods-eye-view/sources/transit-service';
-import { createTransitSource } from 'gods-eye-view/layers/transit/source';
+import { createTransitService } from 'orion-space/sources/transit-service';
+import { createTransitSource } from 'orion-space/layers/transit/source';
 
 const request = (path, method = 'GET') => ({
   url: `https://example.test${path}`,

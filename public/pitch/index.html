@@ -137,30 +137,24 @@
               </li>
               <li class="feature-item">
                 <span class="feature-bullet">[03]</span>
-                <div><strong>Pettitt's Changepoint Detection ($K$):</strong> Pinpoints exact structural regime shifts across 34 meteorological stations.</div>
+                <div><strong>Benjamini-Hochberg FDR:</strong> Corrects for testing 442 cell-month series at once, so only robust trends are called significant.</div>
               </li>
             </ul>
           </div>
 
           <div class="spec-box">
-            <div class="mono-label" style="color: #a1a1aa; margin-bottom: 12px;">// ENGINE_VERIFICATION_LOG (BARISAL STATION #04)</div>
-<span class="kw">const</span> telemetry = <span class="kw">await</span> IngestNASA_MERRA2({
-  coords: [<span class="num">22.7010</span>, <span class="num">90.3535</span>],
-  range: [<span class="num">2001</span>, <span class="num">2025</span>],
-  parameters: [<span class="fn">"T2M"</span>, <span class="fn">"PRECTOTCORR"</span>, <span class="fn">"RH2M"</span>]
-});
+            <div class="mono-label" style="color: #a1a1aa; margin-bottom: 12px;">// analysis/trend_analysis.py (BARISAL COAST CELL 22.5°N 90.0°E)</div>
+<span class="comment"># NASA POWER monthly API, source MERRA-2, 2001-2025</span>
+series = t2m[<span class="fn">"22.5,90.0"</span>][<span class="fn">"September"</span>]   <span class="comment"># 25 values</span>
 
-<span class="comment">// Pure non-parametric calculation</span>
-<span class="kw">const</span> { tau, pValue } = <span class="fn">MannKendall</span>(telemetry.daily);
-<span class="kw">const</span> slopeDecadal   = <span class="fn">TheilSenSlope</span>(telemetry.daily) * <span class="num">3650</span>;
-<span class="kw">const</span> changepoint    = <span class="fn">PettittTest</span>(telemetry.daily);
+<span class="comment"># Pure non-parametric calculation</span>
+S, Z, p   = <span class="fn">mann_kendall</span>(series)
+slope     = <span class="fn">sen_slope</span>(series) * <span class="num">10</span>   <span class="comment"># °C / decade</span>
+fdr_pass  = <span class="fn">bh_fdr</span>(all_442_p_values)
 
-<span class="comment">// Verified Output:</span>
-<span class="kw">return</span> {
-  tau: <span class="num">+0.382</span>, pValue: <span class="num">0.0070</span>, <span class="comment">/* p < 0.01 (Extremely Significant) */</span>
-  theilSenSlope: <span class="num">+0.457</span>,       <span class="comment">/* °C / decade in Post-Monsoon */</span>
-  regimeShiftYear: <span class="num">2014</span>        <span class="comment">/* Structural climate tipping point */</span>
-};
+<span class="comment"># Output:</span>
+tau = <span class="num">+0.57</span>, p = <span class="num">0.00007</span>   <span class="comment"># survives FDR q=0.05</span>
+slope = <span class="num">+0.40</span>                <span class="comment"># °C / decade in September</span>
           </div>
         </div>
       </section>
@@ -171,7 +165,7 @@
           <div class="mono-label">// 03. EMPIRICAL FINDINGS</div>
           <h2 class="slide-title">The Discovery: Barisal Hotspot & Seasonal Dissociation</h2>
           <p class="slide-subtitle">
-            Empirical proof that annual averages mask a dangerous +0.457°C/decade post-monsoon warming anomaly across 91.2% of coastal stations.
+            Annual averages hide the signal: September warms in all 34 MERRA-2 grid cells over Bangladesh (31 survive FDR), +0.40°C/decade on the Barisal coast, while the annual mean is flat.
           </p>
         </div>
 
@@ -179,7 +173,7 @@
           <div class="card" style="justify-content: flex-start;">
             <div class="card-header">
               <div class="mono-label">STATISTICAL COMPARISON</div>
-              <h3 class="card-title">October Warming Dissociation</h3>
+              <h3 class="card-title">September Warming Signal</h3>
             </div>
             
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0;">
@@ -190,13 +184,13 @@
               </div>
               <div style="background: #000; border: 1px solid #ef4444; padding: 14px;">
                 <div class="mono-label" style="color: #ef4444;">OCTOBER SPIKE</div>
-                <div class="card-stat alert" style="font-size: 28px; margin: 4px 0;">+0.457°C</div>
-                <div style="font-size: 11px; color: #ef4444;">p = 0.0070 (91.2% Stations)</div>
+                <div class="card-stat alert" style="font-size: 28px; margin: 4px 0;">+0.40°C</div>
+                <div style="font-size: 11px; color: #ef4444;">September · p &lt; 0.001 · 34/34 cells</div>
               </div>
             </div>
 
             <p class="card-body">
-              <strong>Impact on Cyclone Season:</strong> October coincides directly with the post-monsoon Bay of Bengal cyclogenesis window. Rapid warming elevates sea surface thermal potential and intensifies Category 4/5 cyclone frequency.
+              <strong>Why it matters:</strong> September and October lead into the post-monsoon Bay of Bengal cyclone season and the Aman rice harvest. A warmer late monsoon is worth watching for both; this project measures the air-temperature trend, not cyclone impacts.
             </p>
           </div>
 
@@ -272,7 +266,7 @@
             <ul class="feature-list" style="margin-top: 16px;">
               <li class="feature-item">
                 <span class="feature-bullet">"Barisal e October er trend kemon?"</span>
-                <div>Dispatches camera flight to Barisal, opens statistical dossier, and plots +0.457°C chart.</div>
+                <div>Dispatches camera flight to Barisal, opens statistical dossier, and plots the +0.40°C September trend.</div>
               </li>
               <li class="feature-item">
                 <span class="feature-bullet">"Simulate 2 meter sea level rise in Payra Port"</span>

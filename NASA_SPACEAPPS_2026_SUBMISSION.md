@@ -1,261 +1,111 @@
-# 🛰️ NASA SPACE APPS CHALLENGE 2026 — GLOBAL SUBMISSION DOSSIER
+# Orion Space: Earth System Trend Detective
+### NASA Space Apps Challenge 2026 · Team Orion Space · Barisal, Bangladesh
 
-<div align="center">
-
-# Project Orion Space: Earth System Trend Detective
-### *A 3D Photorealistic Satellite Digital Twin & Planetary Trend Detective for Climate Anomaly Telemetry*
-
-**NASA International Space Apps Challenge 2026**  
-**Challenge Category:** *Be An Earth System Trend Detective!* (Climate Anomaly & Earth System Trends)  
-**Lead Developer & System Architect:** **Md Mushfiqur Rahim** | **** ()  
-**Live GitHub Repository:** [https://github.com/MD-Mushfiqur123/orion-space](https://github.com/MD-Mushfiqur123/orion-space)  
-**Local Center:**  · Frontlines of Coastal Delta Vulnerability
-
-</div>
+**Challenge:** *Be An Earth System Trend Detective!*
+**Repository:** https://github.com/MD-Mushfiqur123/orion-space
 
 ---
 
-## 🧭 Executive Summary
+## 1. Summary
 
-**Project Orion Space: Earth System Trend Detective** is an open-source, production-grade geospatial intelligence and planetary forensics engine built on top of high-performance **CesiumJS WebGL**, integrating over **25 years of NASA Earth observation data (2000–2025/2026)**. 
+Most climate summaries for Bangladesh show yearly averages. In 25 years of NASA MERRA-2 data, the yearly average of 2-metre air temperature shows **no significant trend in any of the 34 grid cells** over the country. Split by month, a different picture appears: **September is warming in all 34 cells**, and 31 of them stay significant after correcting for multiple testing. On the **Barisal coast** the September rate is **+0.40 °C per decade** (Mann-Kendall p = 0.00007).
 
-Conceived, engineered, and mathematically verified from ****—one of the world's most climate-vulnerable coastal deltas—the platform directly addresses the core mandate of NASA's 2026 Space Apps Challenge: **"Be An Earth System Trend Detective!"**
-
-Rather than relying on static 2D plots or black-box predictive models prone to hallucination, Project Orion Space combines **non-parametric statistical physics** (Mann-Kendall test, Theil-Sen robust slope estimator, Pettitt's changepoint test) with **multi-sensor satellite fusion** (NASA MERRA-2, NASA GIBS, GPM IMERG, Sentinel-1 SAR, Sentinel-5P TROPOMI, GRACE-FO) directly within an interactive 3D virtual globe.
+Orion Space puts that result on a 3D globe, next to live NASA satellite imagery, and lets a user ask *what, where, how much* and *is it significant* in plain language.
 
 ---
 
-## 📌 1. Challenge Category & Project Identity
+## 2. Data
 
-- **Challenge Category:** *Be An Earth System Trend Detective!* (Earth System Trend Detective / Climate Anomaly)
-- **Project Title:** **Project Orion Space: Earth System Trend Detective**
-- **Lead Developer & System Architect:** **Md Mushfiqur Rahim** ([@MD-Mushfiqur123](https://github.com/MD-Mushfiqur123))
-- **Team:** **** ()
-- **Target Geographic Focus:** Coastal  Delta (, Bhola, Patuakhali) & National 34-Station Meteorological Grid
-- **Global Mission:** Demystify planetary climate anomalies by turning raw NASA satellite and reanalysis telemetry into inspectable, interactive 3D spatial truth.
+| Dataset | Provider | Details |
+|---|---|---|
+| MERRA-2 T2M (2-metre air temperature) | NASA GSFC GMAO, via the NASA POWER Monthly & Annual API v2.10 (NASA LaRC) | Monthly means and annual mean, 2001–2025, 104 native grid cells (~0.5° × 0.625°); 34 have their centre inside Bangladesh |
+| GIBS WMTS, MODIS Terra/Aqua and VIIRS Corrected Reflectance | NASA EOSDIS | Live true-colour imagery layer on the globe |
+| FIRMS active fires | NASA EOSDIS | Event layer on the globe |
 
----
-
-## 🔭 2. Scientific Earth Observation Datasets Used
-
-Project Orion Space synthesizes six world-class Earth observation datasets into a unified spatial pipeline:
-
-### 1. NASA MERRA-2 (Modern-Era Retrospective analysis for Research and Applications, Version 2)
-- **Provider:** NASA Goddard Space Flight Center (GSFC) / Global Modeling and Assimilation Office (GMAO).
-- **Temporal Span:** 25-Year Daily Satellite & Atmospheric Reanalysis (January 1, 2000 – Present).
-- **Spatial Resolution:** $0.5^\circ \times 0.625^\circ$ global latitude/longitude grid.
-- **Physical Variables:** 
-  - 2-Meter Surface Air Temperature ($T_{2\text{M}}$, K/°C)
-  - Surface Skin Temperature ($T_{\text{S}}$, °C)
-  - Precipitation Flux ($PRECTOTCORR$, $\text{kg}\cdot\text{m}^{-2}\cdot\text{s}^{-1}$ / mm/day)
-  - Specific Humidity ($QV_{2\text{M}}$, $\text{g/kg}$)
-- **Telemetry Application:** High-precision decadal trend analysis across all 34 grid nodes covering .
-
-### 2. NASA GIBS (Global Imagery Browse Services)
-- **Provider:** NASA Earth Science Data and Information System (ESDIS).
-- **Direct Endpoint:** `https://gibs.earthdata.nasa.gov/wmts/epsg4326/best/{layer}/default/{date}/250m/{z}/{y}/{x}.jpg`
-- **Instruments:**
-  - **MODIS** (Moderate Resolution Imaging Spectroradiometer) aboard NASA **Terra** and **Aqua** satellites.
-  - **VIIRS** (Visible Infrared Imaging Radiometer Suite) aboard Suomi-NPP and NOAA-20/NOAA-21.
-- **Layers Rendered:** Corrected Reflectance (True-Color), Land Surface Temperature (LST Day/Night), NDVI 16-day Vegetation Indices, Surface Thermal Anomalies.
-
-### 3. NASA GPM IMERG (Global Precipitation Measurement)
-- **Provider:** NASA GSFC & JAXA.
-- **Product:** `3IMERGHH` (0.1° $\times$ 0.1°, 30-minute calibrated precipitation).
-- **Role:** Cloud-penetrating dual-frequency precipitation radar and microwave sounders capturing extreme rainfall surges, monsoon convective bands, and cyclone precipitation footprints across the Bay of Bengal.
-
-### 4. ESA Copernicus Sentinel-1 SAR (Synthetic Aperture Radar)
-- **Sensor:** C-SAR (C-band, 5.405 GHz) aboard Sentinel-1A and Sentinel-1B.
-- **Mode & Polarizations:** Interferometric Wide (IW) swath; dual polarization ($\text{VV} + \text{VH}$).
-- **Role in Platform:** All-weather, cloud-penetrating flood water discrimination using radar backscatter ($\sigma^0 \le -16.0\,\text{dB}$ for open standing water). Maps flood inundation in the Sylhet Haor Basin and coastal polder breaches during cyclonic storm surges.
-
-### 5. ESA Copernicus Sentinel-5P TROPOMI
-- **Instrument:** TROPOspheric Monitoring Instrument (hyperspectral atmospheric sounding).
-- **Role in Platform:** Mapping greenhouse gas plumes and tropospheric air pollution corridors:
-  - Methane ($\text{CH}_4$) super-emitter plumes and fugitive emissions across natural gas extraction hubs and agricultural wetlands ($1850 - 2400\,\text{ppb}$).
-  - Nitrogen Dioxide ($\text{NO}_2$) industrial plume footprints along heavy power generation corridors ($1.0 - 45.0 \times 10^{15}\,\text{molec/cm}^2$).
-
-### 6. NASA/GFZ GRACE & GRACE-FO (Gravity Recovery and Climate Experiment)
-- **Provider:** NASA Jet Propulsion Laboratory (JPL) & German Research Centre for Geosciences (GFZ).
-- **Role in Platform:** Satellite gravimetry tracking Terrestrial Water Storage (TWS) anomalies. Maps progressive groundwater depletion in the Barind Tract aquifer system ($>0.4\,\text{m/yr}$ deep drawdown) versus seasonal recharge deficits in South Asia.
+Raw file: `public/data/climate/bangladesh_t2m_regional_raw.json` · Boundary: `public/data/climate/bangladesh_boundary.geojson`
 
 ---
 
-## 📈 3. Mathematical Methodology & Statistical Rigor
+## 3. Method
 
-In strict adherence to the highest standards of atmospheric and climate research, Project Orion Space rejects unverified, black-box interpolations in favor of a mathematically rigorous, non-parametric analytical suite:
+For each of the 34 cells, 13 series of 25 values (12 calendar months plus the annual mean):
 
-```
-┌────────────────────────────────────────────────────────────────────────┐
-│                   THE 4 NASA SCIENTIFIC INVESTIGATIONS                  │
-├────────────────────────┬───────────────────────────────────────────────┤
-│ 1. WHAT is changing?   │ 2-Meter Air Temperature, Rainfall & Inundation│
-│ 2. WHERE is it changing│ 34-Station Spatial Grid across      │
-│ 3. HOW MUCH is changing│ Theil-Sen Robust Median Slope Estimator       │
-│ 4. IS IT SIGNIFICANT?  │ Autocorrelation-Corrected Mann-Kendall Test   │
-└────────────────────────┴───────────────────────────────────────────────┘
-```
+1. **Mann-Kendall test** (two-sided) for a monotonic trend:
+   $$S = \sum_{k=1}^{n-1}\sum_{j=k+1}^{n} \operatorname{sgn}(x_j - x_k),\qquad \operatorname{Var}(S) = \frac{n(n-1)(2n+5) - \sum_i t_i(t_i-1)(2t_i+5)}{18}$$
+   $$Z = \frac{S - \operatorname{sgn}(S)}{\sqrt{\operatorname{Var}(S)}},\qquad p = 2\,(1 - \Phi(|Z|))$$
+2. **Theil-Sen slope**, the median of all pairwise slopes, reported in °C per decade:
+   $$Q = \operatorname{median}\left\{\frac{x_j - x_k}{j - k}\right\}$$
+3. **Benjamini-Hochberg false discovery rate** at q = 0.05 across all 442 tests (34 × 13), because testing many series at once produces false positives at plain p < 0.05.
+4. **Autocorrelation check**: trend-free pre-whitening (Yue et al. 2002) where the lag-1 autocorrelation is significant; the FDR results are unchanged.
 
-### 3.1 Mann-Kendall Non-Parametric Trend Test
-Evaluates monotonic trends over the 25-year time series without requiring Gaussian distribution:
-
-1. **Test Statistic $S$:**
-   $$S = \sum_{k=1}^{n-1} \sum_{j=k+1}^n \text{sgn}(x_j - x_k)$$
-   $$\text{sgn}(\theta) = \begin{cases} +1 & \theta > 0 \\ 0 & \theta = 0 \\ -1 & \theta < 0 \end{cases}$$
-
-2. **Variance with Ties Correction:**
-   $$\text{Var}(S) = \frac{n(n-1)(2n+5) - \sum_{i=1}^m t_i(t_i-1)(2t_i+5)}{18}$$
-
-3. **Standardized Test Statistic $Z$:**
-   $$Z = \begin{cases} \frac{S - 1}{\sqrt{\text{Var}(S)}} & \text{if } S > 0 \\ 0 & \text{if } S = 0 \\ \frac{S + 1}{\sqrt{\text{Var}(S)}} & \text{if } S < 0 \end{cases}$$
-
-4. **Two-Tailed Significance Probability:**
-   $$p = 2 \left( 1 - \Phi(|Z|) \right)$$
-   Where $\Phi$ is the standard normal cumulative distribution function (Abramowitz-Stegun polynomial approximation). Rejects the null hypothesis of no trend at $\alpha = 0.05$ ($|Z| > 1.960$).
-
-### 3.2 Theil-Sen Robust Median Slope Estimator
-Quantifies the decadal rate of change ($\beta$ or $Q$):
-$$Q = \text{median}\left\{ \frac{x_j - x_k}{j - k} \right\} \quad \forall \, 1 \le k < j \le n$$
-$$\text{Intercept } b = \text{median}(X) - Q \cdot \text{median}(\{1, 2, \dots, n\})$$
-- Possesses an empirical **breakdown point of ~29%**, rendering it completely immune to extreme anomaly spikes caused by irregular super-cyclone seasons or ENSO oscillations.
-
-### 3.3 Pettitt's Non-Parametric Change-Point Test
-Detects the exact calendar year of abrupt climate regime shifts and structural breaks:
-$$U_{t, T} = \sum_{i=1}^t \sum_{j=t+1}^T \text{sgn}(x_i - x_j) \quad \text{for } t = 1, 2, \dots, T-1$$
-The primary changepoint occurs at timestep:
-$$\tau = \arg\max_{1 \le t < T} |U_{t, T}|$$
-With associated significance probability:
-$$p \approx 2 \exp \left( \frac{-6 K_T^2}{T^3 + T^2} \right), \quad K_T = \max_{1 \le t < T} |U_{t, T}|$$
-A changepoint with $p < 0.05$ confirms a persistent climate regime shift rather than transient interannual noise.
-
-### 3.4 Spatial False Discovery Rate (Benjamini-Yekutieli Procedure)
-When conducting 34 simultaneous significance tests across :
-$$p_{(k)} \le \frac{k}{M \cdot \sum_{i=1}^M \frac{1}{i}} \cdot q^*, \quad M = 34, \, q^* = 0.05$$
-Guarantees that spatial autocorrelation between adjacent grid cells does not introduce false positive trend detections.
+Code: [`analysis/trend_analysis.py`](analysis/trend_analysis.py). Run `python3 analysis/trend_analysis.py` to reproduce every number in this document.
 
 ---
 
-## 🔍 4. Verification of the 34 MERRA-2  Stations &  Hotspot
+## 4. Results
 
-Direct audit of the MERRA-2 reanalysis files (`_t2m_seasonal_trends.csv` and `_t2m_spatial_trends_filtered.csv`) confirms the exact meteorological telemetry:
+### 4.1 The four questions
 
-### 4.1 The  Post-Monsoon Hotspot Finding
-A standout planetary trend detected by Project Orion Space is the **statistically significant post-monsoon (October) warming trend** concentrated in Southern and Central :
+| Question | Answer |
+|---|---|
+| What is changing? | Late-monsoon air temperature, above all September |
+| Where? | All of Bangladesh; Barisal coast (22.5°N, 90.0°E) is the reference cell |
+| How much? | September median +0.36 °C/decade (34 cells); Barisal coast +0.40 °C/decade |
+| Significant? | September: 34/34 cells p < 0.05, 31/34 after FDR. Annual mean: 0/34 |
 
-```
-┌────────────────────────────────────────────────────────────────────────┐
-│              / SOUTH-CENTRAL POST-MONSOON TELEMETRY             │
-├──────────────────────────────┬─────────────────────────────────────────┤
-│ Parameter                    │ Empirical Value                         │
-├──────────────────────────────┼─────────────────────────────────────────┤
-│ Spatial Coordinates          │ 24.0°N, 90.625°E (-Dhaka Node)   │
-│ Target Month                 │ October (Post-Monsoon Transition)       │
-│ Decadal Linear Slope         │ +0.4523 °C / decade (+0.0452 °C / year) │
-│ Theil-Sen Robust Slope       │ +0.4292 °C / decade (+0.0429 °C / year) │
-│ Mann-Kendall p-value         │ 0.006243 (p = 0.0062, Highly Significant)│
-│ Coefficient of Determination │ R² = 0.2826                             │
-│ Trend Direction              │ Monotonically Increasing (p < 0.01)     │
-└──────────────────────────────┴─────────────────────────────────────────┘
-```
+### 4.2 By month, 34 cells inside Bangladesh
 
-### 4.2 Coastal Division Stations Telemetry Matrix (October Transition)
-Across the coastal belt and riverine confluence of , all adjacent stations corroborate the  warming signal:
+| Month | Median Sen slope (°C/decade) | Warming, p < 0.05 | Warming, after FDR |
+|---|---|---|---|
+| January | +0.167 | 0 | 0 |
+| February | −0.250 | 0 | 0 |
+| March | −0.280 | 0 | 0 |
+| April | −0.107 | 0 | 0 |
+| May | −0.477 | 0 | 0 |
+| June | −0.022 | 0 | 0 |
+| July | +0.151 | 13 | 3 |
+| August | +0.038 | 3 | 2 |
+| **September** | **+0.360** | **34** | **31** |
+| October | +0.389 | 29 | 0 |
+| November | +0.233 | 5 | 0 |
+| December | +0.084 | 0 | 0 |
+| Annual mean | +0.021 | 0 | 0 |
 
-| Station Coordinates | Geographic Sector | October Trend (°C/dec) | Theil-Sen (°C/dec) | $p$-value | Significance |
-| :--- | :--- | :---: | :---: | :---: | :---: |
-| **22.5°N, 90.000°E** |  Coastal Heart | **+0.4574** | +0.4354 | **0.0070** | $p < 0.01$ (Significant) |
-| **24.0°N, 90.625°E** | -Dhaka Corridor | **+0.4523** | +0.4292 | **0.0062** | $p < 0.01$ (Significant) |
-| **22.5°N, 91.875°E** | Coastal Noakhali / Hatiya | **+0.4464** | +0.4580 | **0.0024** | $p < 0.01$ (Significant) |
-| **23.0°N, 90.000°E** | Padma-Meghna Confluence | **+0.4379** | +0.4098 | **0.0105** | $p < 0.05$ (Significant) |
-| **22.0°N, 89.375°E** | Sundarbans Coastal Fringe | **+0.4036** | +0.3976 | **0.0041** | $p < 0.01$ (Significant) |
-| **22.0°N, 90.625°E** | Bhola Island Estuary | **+0.3407** | +0.3297 | **0.0074** | $p < 0.01$ (Significant) |
+### 4.3 Barisal coast cell (22.5°N, 90.0°E)
 
-All 34 filtered stations inside  exhibit positive post-monsoon warming trajectories, highlighting a systemic shift in South Asian monsoon withdrawal dynamics.
-
----
-
-## 🌊 5. Real-World Impact for Coastal  Disaster Resilience
-
- Division and the southern coastal fringe of  represent one of the most densely populated deltaic ecosystems on Earth, with over **16 million residents living within 0.5 to 3.0 meters of mean sea level**.
-
-### 5.1 Physical Consequences of the $+0.452^\circ\text{C/decade}$ Warming Hotspot
-1. **Prolonged Cyclone Vulnerability Window:**
-   October and November represent the second seasonal peak of North Indian Ocean cyclonic activity. A $+0.452^\circ\text{C/decade}$ rise in post-monsoon atmospheric temperatures prevents autumnal thermal venting, elevates coastal Sea Surface Temperatures (SST $> 29^\circ\text{C}$), and provides prolonged thermal fuel for Category 4 and 5 super-cyclones (such as **Cyclone Sidr (2007)**, **Cyclone Aila (2009)**, **Cyclone Amphan (2020)**, and **Cyclone Remal (2024)**).
-
-2. **Compound Tidal Surge & Inundation:**
-   Warmer ambient atmospheric conditions accelerate localized marine thermal expansion and enhance rainfall intensity during cyclonic landfall. The platform's built-in **1m to 5m Sea Level Rise & Storm Surge Inundation Simulator** models direct water overtopping across **Polders 56/1, 56/2 (Bhola)** and **Polders 43/1, 48 (Patuakhali)**.
-
-3. **Critical Infrastructure Safeguarding:**
-   Project Orion Space provides tactical geospatial layers mapping:
-   - **Payra Deep Sea Port & 1320MW Thermal Power Plant** (Patuakhali, elevation 2.5m–3.2m)
-   - **Bhola Natural Gas Field & Power Infrastructure** (elevation 1.8m)
-   - **Kuakata Coastal Highway & Seawall Embankments**
-   - **Over 1,500 designated Cyclone Shelters** mapped across , Barguna, and Bhola.
-
-4. **Agricultural Salinity Intrusion Forensics:**
-   By tracking soil moisture deficits and sea-level trends, coastal agricultural extension officers can predict saline water table encroachment into winter *Boro* rice and legume croplands months in advance.
+| Series | Sen slope (°C/decade) | Mann-Kendall p | After FDR |
+|---|---|---|---|
+| September | +0.400 | 0.00007 | significant |
+| October | +0.435 | 0.019 | not significant |
+| Annual mean | −0.021 | 0.89 | not significant |
 
 ---
 
-## 💻 6. Technical Architecture & Local Deployment
+## 5. Why it matters
 
-Project Orion Space is engineered as a zero-dependency, high-performance WebGL application:
-
-```
-┌────────────────────────────────────────────────────────────────────────┐
-│                PROJECT ORION SPACE: SYSTEM ARCHITECTURE                │
-├────────────────────────────────────────────────────────────────────────┤
-│                                                                        │
-│   [ Presentation & Interaction Layer ]                                 │
-│   ├── CesiumJS 3D Photorealistic Globe (60 FPS, WebGL2)                │
-│   ├── Custom GLSL Shaders: FLIR Ironbow, P43 NVG, CRT Scanlines, NOIR  │
-│   ├── Interactive HUD: Disaster Timeline, Trend Cards, Sparkline SVGs  │
-│   └── 7-Scene Automated Cinematic Flight Director                      │
-│                                                                        │
-│   [ Analytical & Scientific Engine ]                                   │
-│   ├── Client-Side Mann-Kendall Trend Calculator (JavaScript ES6)       │
-│   ├── Theil-Sen Non-Parametric Median Slope Estimator                  │
-│   ├── Pettitt's Change-Point Test for Climate Regime Shifts            │
-│   └── Rolling Z-Score Anomaly Normalization                            │
-│                                                                        │
-│   [ Geospatial & Earth Observation Ingestion ]                         │
-│   ├── NASA MERRA-2 25-Year Daily Reanalysis Telemetry                  │
-│   ├── NASA GIBS WMTS Real-Time Imagery (MODIS / VIIRS True-Color & LST)│
-│   ├── NASA GPM IMERG Precipitation Radar Stream                        │
-│   ├── Copernicus Sentinel-1 SAR Dual-Polarization Water Inundation     │
-│   ├── Copernicus Sentinel-5P TROPOMI Trace Gas (CH4 / NO2) Dispersion  │
-│   └── NASA GRACE / GRACE-FO Mascon Terrestrial Water Storage           │
-│                                                                        │
-└────────────────────────────────────────────────────────────────────────┘
-```
-
-### Local Verification & Quickstart
-```bash
-# Clone the verified repository
-git clone https://github.com/MD-Mushfiqur123/orion-space.git
-
-# Navigate into the project
-cd orion-space
-
-# Install dependencies
-npm install
-
-# Run the development server (Starts immediately on http://localhost:5173/)
-npm run dev
-
-# Run automated unit test suite
-npm test
-```
+September closes the monsoon in Bangladesh. It overlaps the growing season of Aman rice and leads into the post-monsoon cyclone season in the Bay of Bengal. A robust late-monsoon warming that the yearly average hides is exactly the kind of change the challenge asks teams to detect. We report the air-temperature trend only; we do not claim effects on cyclones or crops that this data cannot show.
 
 ---
 
-## 🏆 Project Authorship & Official Space Apps Certification
+## 6. The application
 
-- **Lead Developer & System Architect:** **Md Mushfiqur Rahim**
-- **GitHub Profile:** [@MD-Mushfiqur123](https://github.com/MD-Mushfiqur123)
-- **Team Name:** **Orion Space**
-- **Location:** 
-- **Event:** NASA International Space Apps Challenge 2026
-- **Challenge:** *Be An Earth System Trend Detective!*
-- **Dedicated To:** The resilient coastal communities of southern  who face the realities of planetary climate change every single day.
+- **CesiumJS 3D globe** with a **Climate Detective** panel (the Barisal September card) and a **trend agent** that flies to a place and opens an evidence card with the numbers above.
+- **NASA GIBS** true-colour MODIS/VIIRS imagery, **NASA FIRMS** fires, and weather, wind and earthquake layers grouped under *Earth Observation* and *Events*.
+- Pitch deck at `/pitch`.
 
+---
+
+## 7. Limits and next steps
+
+- Points are MERRA-2 reanalysis grid cells, not weather stations.
+- Lag-1 autocorrelation checked with trend-free pre-whitening (Yue et al. 2002): 9 of 442 series pre-whitened, FDR results unchanged.
+- Only T2M so far; next: precipitation (PRECTOTCORR) and humidity from the same API, and GPM IMERG rainfall.
+- Live feeds served by `server/` need the Node server; a static host shows the globe, GIBS imagery and the climate results.
+
+---
+
+## 8. Credits
+
+Built on **[God's Eye View](https://github.com/bilawalsidhu/gods-eye-view)** by Bilawal Sidhu (MIT License): the 3D engine, the layer system, the live-feed server and most inherited layers. Team Orion Space added the MERRA-2 dataset and analysis, the Climate Detective panel, the trend agent, the NASA GIBS cloud layer, the UI redesign and the pitch deck.
+
+Licensed under MIT. Third-party data belongs to its providers; see `DATA_SOURCES.md`.

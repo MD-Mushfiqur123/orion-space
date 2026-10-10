@@ -173,15 +173,16 @@ class OrionDeck {
     }
 
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Annual Mean'];
-    // Decadal warming trends (°C/decade)
-    const trends = [0.12, 0.08, -0.04, 0.02, 0.05, 0.01, 0.03, 0.02, 0.15, 0.457, 0.28, 0.14, 0.03];
+    // Theil-Sen trends (°C/decade), MERRA-2 T2M 2001-2025, Barisal coast cell 22.5°N 90.0°E.
+    // Source: analysis/results/t2m_trends_by_cell_month.csv (python3 analysis/trend_analysis.py)
+    const trends = [-0.06, -0.329, -0.378, -0.055, -0.561, -0.03, 0.186, 0.183, 0.4, 0.435, 0.152, -0.123, -0.021];
     const backgroundColors = trends.map((val, idx) => {
-      if (idx === 9) return '#ef4444'; // October Spike (Alert Red)
+      if (idx === 8) return '#ef4444'; // September: significant after FDR (Alert Red)
       if (idx === 12) return '#71717a'; // Annual flat (Muted Zinc)
       return '#27272a';
     });
     const borderColors = trends.map((val, idx) => {
-      if (idx === 9) return '#ffffff';
+      if (idx === 8) return '#ffffff';
       if (idx === 12) return '#a1a1aa';
       return '#3f3f46';
     });
@@ -223,8 +224,8 @@ class OrionDeck {
             callbacks: {
               label: (context) => {
                 const val = context.parsed.y;
-                if (context.dataIndex === 9) {
-                  return ` +${val}°C / decade (p=0.0070, 91.2% stations)`;
+                if (context.dataIndex === 8) {
+                  return ` +${val}°C / decade (Mann-Kendall p<0.001, survives FDR)`;
                 }
                 return ` ${val > 0 ? '+' : ''}${val}°C / decade`;
               }

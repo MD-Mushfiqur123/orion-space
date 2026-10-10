@@ -11,14 +11,14 @@ import {
 } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
-import { overpassProxy } from 'gods-eye-view/server/providers/overpass';
-import { militaryInstallationsProxy } from 'gods-eye-view/server/providers/military-installations';
+import { overpassProxy } from 'orion-space/server/providers/overpass';
+import { militaryInstallationsProxy } from 'orion-space/server/providers/military-installations';
 import {
   regionalBriefProxy,
   weatherEffectsProxy,
-} from 'gods-eye-view/server/providers/regional';
-import { openAiRealtimeProxy } from 'gods-eye-view/server/providers/openai';
-import { keySetupEndpoint } from 'gods-eye-view/server/standalone/key-setup';
+} from 'orion-space/server/providers/regional';
+import { openAiRealtimeProxy } from 'orion-space/server/providers/openai';
+import { keySetupEndpoint } from 'orion-space/server/standalone/key-setup';
 import { realtimeInstructions } from '../../server/providers/openai/instructions.js';
 import { GEV_REALTIME_TOOLS } from '../../server/providers/openai/tools.js';
 

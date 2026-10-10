@@ -6,7 +6,10 @@
  * (Rajshahi, Naogaon, Chapai Nawabganj, Bogra, Joypurhat, Dinajpur, Rangpur, Gaibandha).
  *
  * Project Orion Space - Orion Space OSINT & Tactical Climate System
- * Zero Placeholders - 100% Production Ready
+ *
+ * NOTE (Orion Space): this module is NOT wired into the running app, and the
+ * values it produces are SIMULATED (generated or hard-coded), not live data.
+ * Do not present its output as real observations.
  */
 
 import * as Cesium from 'cesium';

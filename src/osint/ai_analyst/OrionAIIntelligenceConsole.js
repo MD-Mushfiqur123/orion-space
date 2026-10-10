@@ -18,7 +18,6 @@
  *     command history, streaming output, and synthesized Web Audio tactical sound effects.
  *
  * Project Orion Space - Orion Space OSINT Master Suite
- * Zero Placeholders - 100% Production Ready Verified ES Module
  */
 
 import * as Cesium from 'cesium';

@@ -572,8 +572,7 @@ test('markup, startup ordering and accessibility remain pinned', () => {
   // unspaced em dash included. This is copy, not prose to be improved in a
   // passing edit — changing it needs the owner, not a nicer-sounding rewrite.
   assert.ok(
-    html.includes('<p id="first-run-description">It feels like a forbidden cockpit'
-      + '—then you realize the sources are public and the data is real.</p>'),
+    html.includes('<p id="first-run-description">Real NASA satellite and reanalysis data on a 3D globe. Ask what is changing, where, by how much, and whether it is significant.</p>'),
     'the owner-authored first-run line must ship exactly as written',
   );
 

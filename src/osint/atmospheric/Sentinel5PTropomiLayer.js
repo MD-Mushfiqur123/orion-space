@@ -5,6 +5,10 @@
  * OSINT Layer for CesiumJS. Visualizes high-resolution Methane (CH4) fugitive emissions,
  * super-emitter plumes, and Nitrogen Dioxide (NO2) toxic industrial gas corridors with
  * Gaussian dispersion physics, scientific false-color gradients, and analyst inspection telemetry.
+ *
+ * NOTE (Orion Space): this module is NOT wired into the running app, and the
+ * values it produces are SIMULATED (generated or hard-coded), not live data.
+ * Do not present its output as real observations.
  */
 
 import * as Cesium from 'cesium';

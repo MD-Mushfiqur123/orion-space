@@ -17,8 +17,27 @@ const FEED_STATE_LABELS = Object.freeze({
 
 // Presentation order is independent of catalog registration and startup order.
 const PANEL_GROUPS = [
+  // Orion Space: Earth-observation layers lead and start open; the inherited
+  // movement, camera, infrastructure and utility layers stay available but
+  // start collapsed so the trend-detective story is not buried.
+  {
+    label: 'Earth Observation',
+    ids: [
+      'weather-satellite',
+      'weather-radar',
+      'wind',
+      'weather-cyclones',
+      'weather-lightning',
+      'recent-imagery',
+    ],
+  },
+  {
+    label: 'Events',
+    ids: ['local-firms', 'fire-perimeters', 'earthquakes', 'rocket-launches'],
+  },
   {
     label: 'Movement',
+    collapsed: true,
     ids: [
       'satellites',
       'flights',
@@ -32,10 +51,12 @@ const PANEL_GROUPS = [
   },
   {
     label: 'Cameras',
-    ids: ['cctv', 'recent-imagery'],
+    collapsed: true,
+    ids: ['cctv'],
   },
   {
     label: 'Infrastructure',
+    collapsed: true,
     ids: [
       'alpr-cameras',
       'military-installations',
@@ -45,24 +66,14 @@ const PANEL_GROUPS = [
     ],
   },
   {
-    label: 'Events',
-    ids: ['rocket-launches', 'earthquakes', 'local-firms', 'fire-perimeters'],
-  },
-  {
-    label: 'Weather',
-    ids: [
-      'wind',
-      'weather-radar',
-      'weather-satellite',
-      'weather-lightning',
-      'weather-cyclones',
-    ],
-  },
-  {
     label: 'Utilities',
+    collapsed: true,
     ids: ['directions', 'radio'],
   },
 ];
+const COLLAPSED_GROUPS = new Set(
+  PANEL_GROUPS.filter(({ collapsed }) => collapsed).map(({ label }) => label),
+);
 const PANEL_ORDER = PANEL_GROUPS.flatMap(({ label, ids }) =>
   ids.map((id) => ({ id, label })),
 );
@@ -207,7 +218,8 @@ export class LayerPanel {
       if (group && group !== previousGroup) {
         const details = document.createElement('details');
         details.className = 'layer-group-accordion';
-        details.open = true; // start open
+        // Earth-observation groups start open; inherited extras start collapsed.
+        details.open = !COLLAPSED_GROUPS.has(group);
 
         const summary = document.createElement('summary');
         summary.className = 'layer-group-summary';
