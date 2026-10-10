@@ -8,7 +8,6 @@
  * sea level rise simulations, and multi-sensor planetary intelligence.
  *
  * Lead Architect: Md Mushfiqur Rahim (NASA Space Apps 2026 - Barisal)
- * 100% Production Ready - Zero Placeholders
  */
 
 import * as Cesium from 'cesium';
@@ -27,10 +26,10 @@ export const SECTORS = {
     heading: 0,
     pitch: -48,
     actionDesc:
-      'Warming Hotspot (+0.452°C/dec, p=0.0062) & Sea Level Surge Sector',
+      'September warming hotspot (+0.40°C/dec, p<0.001) & sea level surge sector',
     suggestedLayers: ['clouds', 'sea_level'],
     speech:
-      'Maneuvering to Barisal sector. Displaying post-monsoon warming anomaly.',
+      'Maneuvering to Barisal sector. Displaying the September warming trend.',
   },
   dhaka: {
     id: 'dhaka',
@@ -149,9 +148,9 @@ export const SECTORS = {
     altitude: 1500000,
     heading: 0,
     pitch: -65,
-    actionDesc: 'National 34-station meteorological reanalysis grid overview',
+    actionDesc: 'Nationwide view of the 34 MERRA-2 grid cells over Bangladesh',
     suggestedLayers: ['clouds'],
-    speech: 'Resetting to nationwide Bangladesh 34-station grid view.',
+    speech: 'Resetting to the nationwide Bangladesh grid view.',
   },
 };
 
@@ -1123,7 +1122,7 @@ export class OrionMapHarness {
   // NASA CLIMATE TELEMETRY & EVIDENCE HUD CARD
   // ==========================================================================
 
-  /** Hydrate 34-station MERRA-2 daily climate telemetry. */
+  /** Hydrate MERRA-2 (via NASA POWER) trend results for the 34 grid cells over Bangladesh. */
   async _loadClimateData() {
     try {
       const [spatialRes, seasonalRes] = await Promise.all([
@@ -1230,15 +1229,15 @@ export class OrionMapHarness {
           <div style="font-size: 9.5px; color: #a1a1aa; letter-spacing: 0.5px; margin-bottom: 6px; text-transform: uppercase;">STATISTICAL METRICS (THEIL-SEN &amp; MANN-KENDALL)</div>
           <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
             <span style="color: #a1a1aa;">Seasonal Slope:</span>
-            <span style="color: #ffffff; font-weight: 700;">${data.slope || '+0.457°C / decade'}</span>
+            <span style="color: #ffffff; font-weight: 700;">${data.slope || '+0.40°C / decade'}</span>
           </div>
           <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
             <span style="color: #a1a1aa;">Sen's Slope β:</span>
-            <span style="color: #ffffff;">${data.senSlope || '+0.0435°C / year'}</span>
+            <span style="color: #ffffff;">${data.senSlope || '+0.040°C / year'}</span>
           </div>
           <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
             <span style="color: #a1a1aa;">Mann-Kendall p-value:</span>
-            <span style="color: #ffffff; font-weight: 700;">${data.pValue || 'p = 0.0070 (p < 0.01 ★★★)'}</span>
+            <span style="color: #ffffff; font-weight: 700;">${data.pValue || 'p < 0.001'}</span>
           </div>
           <div style="display: flex; justify-content: space-between;">
             <span style="color: #a1a1aa;">Significance Verdict:</span>
@@ -1247,7 +1246,7 @@ export class OrionMapHarness {
         </div>
 
         <div style="font-size: 10.5px; color: #d4d4d8; background: rgba(0, 0, 0, 0.3); border-left: 2px solid #ffffff; padding: 8px 10px;">
-          ${data.narrative || 'Post-monsoon October warming is accelerating rapidly across the Barisal delta, with annual metrics masking this extreme seasonal phenomenon.'}
+          ${data.narrative || 'September warming on the Barisal coast is strong and significant, while the annual mean shows no significant trend: annual averages hide the seasonal signal.'}
         </div>
 
         <div style="display: flex; gap: 8px;">
@@ -1280,16 +1279,16 @@ export class OrionMapHarness {
   async handleFastestWarmingQuery() {
     await this.flyToSector(SECTORS.barisal);
     const speech =
-      'NASA MERRA-2 daily telemetry confirms the fastest warming sector is the Barisal coastal delta, with post-monsoon October warming of plus 0.457 degrees Celsius per decade, statistically significant at p equals 0.007.';
+      'NASA MERRA-2 data via NASA POWER shows the Barisal coast warming by about 0.40 degrees Celsius per decade in September between 2001 and 2025. The Mann-Kendall test gives p below 0.001, and the trend survives a false discovery rate correction.';
     this.showEvidenceCard({
-      title: 'FASTEST WARMING HOTSPOT',
+      title: 'SEPTEMBER WARMING HOTSPOT',
       sector: 'Barisal Coastal Belt [22.5°N, 90.0°E]',
-      slope: '+0.457°C / decade (+0.0457°C/yr)',
-      senSlope: '+0.0435°C / year (Theil-Sen)',
-      pValue: 'p = 0.0070 (p < 0.01 ★★★)',
-      significance: 'HIGHLY SIGNIFICANT',
+      slope: '+0.40°C / decade (September, 2001–2025)',
+      senSlope: '+0.040°C / year (Theil-Sen)',
+      pValue: 'p = 0.00007 (Mann-Kendall)',
+      significance: 'SIGNIFICANT AFTER FDR (q = 0.05)',
       narrative:
-        'Across 34 grid stations in Bangladesh, the Barisal coastal belt experiences the fastest post-monsoon thermal acceleration (+0.457°C/decade). Rising sea temperatures and delta low-elevation amplify thermal retention.',
+        'Across the 34 MERRA-2 grid cells over Bangladesh, September warms in every cell (median +0.36°C/decade). On the Barisal coast the rate is +0.40°C/decade, while the annual mean shows no significant trend.',
       speech,
     });
     this.speak(speech);
@@ -1302,18 +1301,18 @@ export class OrionMapHarness {
 
   /** Query 3: Statistical Significance Proof (Mann-Kendall & Theil-Sen) */
   async handleStatisticalSignificanceQuery() {
-    this._setStatus('Analyzing 34-station Mann-Kendall hypothesis tests...');
+    this._setStatus('Analyzing Mann-Kendall tests for 34 grid cells...');
     const speech =
-      'Statistical hypothesis testing confirms significant warming. Thirty-one of thirty-four stations across Bangladesh exhibit statistically significant October warming with p-values below 0.05.';
+      'September warming is significant in all thirty-four grid cells over Bangladesh, and thirty-one remain significant after a false discovery rate correction. October warms at a similar rate, but those trends do not survive the correction.';
     this.showEvidenceCard({
       title: 'MANN-KENDALL STATISTICAL PROOF',
-      sector: 'All-Bangladesh 34-Station Grid',
-      slope: '31 of 34 Stations Significant in Oct (91.2%)',
-      senSlope: "Median Sen's Slope: +0.038°C / year",
-      pValue: 'p < 0.0001 (Combined Test)',
-      significance: 'REJECT NULL HYPOTHESIS H0',
+      sector: 'All Bangladesh, 34 MERRA-2 grid cells',
+      slope: 'September: 34 of 34 cells p < 0.05 (31 after FDR)',
+      senSlope: "Median Sen's slope: +0.036°C / year",
+      pValue: 'Benjamini-Hochberg FDR, q = 0.05',
+      significance: 'ROBUST IN SEPTEMBER',
       narrative:
-        'The Mann-Kendall rank correlation test rejects the null hypothesis of no trend at the 99% confidence level. 33 stations in September and 31 stations in October demonstrate robust warming.',
+        'Mann-Kendall tests on 442 cell-month series, corrected for multiple testing. September warming is robust nationwide. October looks similar (29 of 34 cells p < 0.05) but none survive FDR, and the annual mean is flat. Reproduce with analysis/trend_analysis.py.',
       speech,
     });
     this.speak(speech);
@@ -1391,7 +1390,7 @@ export class OrionMapHarness {
   async handleCropAdvisoryQuery() {
     this._setStatus('🌱 Analyzing agricultural crop suitability & weather impact...');
     const sec = this.activeSector || SECTORS.barisal;
-    const speech = `Agricultural Intelligence for ${sec.name}: Due to post-monsoon thermal acceleration (+0.457°C/decade) and current 30°C temperature, Aman paddy requires controlled irrigation. For upcoming Rabi crops, delayed sowing of wheat and mustard by 7 to 10 days is advised to avoid early seedling heat stress.`;
+    const speech = `Agricultural Intelligence for ${sec.name}: Due to September warming (about +0.40°C/decade) and current 30°C temperature, Aman paddy requires controlled irrigation. For upcoming Rabi crops, delayed sowing of wheat and mustard by 7 to 10 days is advised to avoid early seedling heat stress.`;
     
     this.showEvidenceCard({
       title: 'FARMER CROP ADVISORY & CLIMATE ACTION',

@@ -11,7 +11,6 @@
  * Feni/Muhuri flash flood corridor, Kurigram/Jamuna floodplains, and the coastal delta).
  *
  * Project Orion Space - Orion Space OSINT & Satellite Intelligence
- * Zero Placeholders - 100% Production Ready
  */
 
 import * as Cesium from 'cesium';

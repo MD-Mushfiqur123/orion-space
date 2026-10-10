@@ -1,107 +1,111 @@
 <div align="center">
 
-# 🛰️ Orion Space — Earth System Trend Detective
+# 🛰️ Orion Space: Earth System Trend Detective
 
-[![NASA Space Apps 2026](https://img.shields.io/badge/NASA_Space_Apps-2026-blue.svg?style=for-the-badge&logo=nasa)](https://www.spaceappschallenge.org/)
+[![NASA Space Apps 2026](https://img.shields.io/badge/NASA_Space_Apps-2026-blue.svg?style=for-the-badge)](https://www.spaceappschallenge.org/2026/challenges/be-an-earth-system-trend-detective/)
 [![Team](https://img.shields.io/badge/Team-Orion_Space-0284c7?style=for-the-badge)](https://github.com/MD-Mushfiqur123/orion-space)
-[![Local Event](https://img.shields.io/badge/Local_Event-,_-10b981?style=for-the-badge)](https://github.com/MD-Mushfiqur123/orion-space)
-[![Lead Developer](https://img.shields.io/badge/Lead_Developer-Md_Mushfiqur_Rahim-f59e0b?style=for-the-badge&logo=github)](https://github.com/MD-Mushfiqur123)
+[![Local Event](https://img.shields.io/badge/Local_Event-Barisal,_Bangladesh-10b981?style=for-the-badge)](https://github.com/MD-Mushfiqur123/orion-space)
 
-### Real-Time 3D Geospatial Intelligence & Climate Trend Analytics Console
-**Official Entry for the NASA Space Apps Challenge 2026: *Be An Earth System Trend Detective!***
+**Team Orion Space · Barisal, Bangladesh · NASA Space Apps Challenge 2026**
+**Challenge: *Be An Earth System Trend Detective!***
 
 </div>
 
 ---
 
-## 🧭 Executive Summary
-**Orion Space** is an open-source, client-side 3D planetary intelligence platform engineered for the **NASA Space Apps Challenge 2026**. Designed specifically around the challenge ***"Be An Earth System Trend Detective!"***, the console merges **25 years of NASA MERRA-2 atmospheric reanalysis data (2000–2025/2026)** with real-time **NASA GIBS satellite cloud streams**, **NASA GPM precipitation**, and **NASA GRACE-FO gravimetry** inside an interactive 3D digital twin of planet Earth.
+## What we found
 
-The scientific core focuses directly on ** and Coastal **—one of the world's most vulnerable climate frontiers—uncovering an unprecedented, statistically verified post-monsoon warming trend of **$+0.452^\circ\text{C/decade}$ ($p = 0.0062$)** across a national 34-station meteorological grid.
+We tested 25 years (2001–2025) of NASA **MERRA-2** 2-metre air temperature (T2M), pulled through the **NASA POWER** API, for the 34 MERRA-2 grid cells whose centres fall inside Bangladesh. Each month and the annual mean were tested separately with the **Mann-Kendall** test and the **Theil-Sen** slope, and every p-value was corrected for multiple testing with **Benjamini-Hochberg FDR** (q = 0.05).
 
----
+| Question | Answer |
+|---|---|
+| **What** is changing? | Late-monsoon air temperature, above all in **September**. |
+| **Where**? | Everywhere in Bangladesh; on the **Barisal coast** (22.5°N, 90.0°E) the September rate is +0.40 °C/decade. |
+| **How much**? | September median +0.36 °C/decade across the 34 cells (Theil-Sen). |
+| **Is it significant**? | September: significant in **34 of 34** cells at p < 0.05, **31 of 34** after FDR. Barisal coast: Mann-Kendall p = 0.00007. |
 
-## ⚡ 1-Minute Quick Start (Zero API Keys Required!)
-The platform works **100% out of the box** without registering for any API keys:
+The annual mean shows **no significant trend in any cell** (median +0.02 °C/decade). Spring months (Feb–May) lean toward cooling but none of it is significant. October warms at a similar rate to September (median +0.39 °C/decade, 29 of 34 cells at p < 0.05), but **none of those cells survive the FDR correction**, so we do not claim it.
+
+**The point:** a yearly average hides a strong, robust seasonal signal. That is what the 3D globe is built to show.
+
+Every number above is reproducible:
 
 ```bash
-# 1. Clone the repository
+pip install numpy scipy
+python3 analysis/trend_analysis.py
+```
+
+Full method and outputs: [`analysis/README.md`](analysis/README.md).
+
+### Limits we are open about
+- The 34 points are **MERRA-2 reanalysis grid cells** (about 0.5° × 0.625°), not weather stations.
+- Lag-1 autocorrelation is not corrected (no pre-whitening); 25 annual values per series.
+- T2M is the only variable analysed so far.
+
+---
+
+## What the app does
+
+- **3D globe (CesiumJS)** with a **Climate Detective** panel that shows the Barisal September trend card.
+- **Trend agent** ("AGENT HARNESS" in the dock) answers questions like *"Where is it warming fastest?"* or *"Is it significant?"* by flying to the place and opening an evidence card with the numbers above.
+- **NASA GIBS** true-colour imagery (MODIS Terra/Aqua, VIIRS) streamed as a live cloud layer.
+- **NASA FIRMS** active fires, plus earthquakes, wind, weather radar and satellite layers in the **Earth Observation** and **Events** groups of the layer panel.
+- Extra layers inherited from the base project (aircraft, vessels, traffic, cameras, infrastructure, radio) are still available but start collapsed.
+- A short pitch deck lives at `/pitch`.
+
+---
+
+## Quick start
+
+Needs **Node.js 24.14+** (see `engines` in `package.json`). No API keys are required for the core experience.
+
+```bash
 git clone https://github.com/MD-Mushfiqur123/orion-space.git
-
-# 2. Enter project directory
 cd orion-space
-
-# 3. Install dependencies
 npm install
-
-# 4. Start local development console
-npm run dev
-```
-Open **`http://localhost:5173/`** in your browser.
-
-> [!NOTE]
-> All core telemetry—NASA GIBS cloud streaming, NASA POWER API queries, OpenSky live flights, CelesTrak NORAD satellites, and global weather feeds—runs seamlessly without keys. For optional Google Photorealistic 3D Tiles or high-rate NASA FIRMS fire feeds, refer to [`API_KEY_MANUAL.md`](API_KEY_MANUAL.md).
-
----
-
-## 🔬 Scientific Datasets & NASA Missions
-Orion Space integrates official NASA Earth observation datasets and missions directly:
-
-1. **NASA MERRA-2 Reanalysis (Goddard Space Flight Center / GMAO)**
-   - 25-Year daily climate records across 34 spatial grid points covering all 8 administrative divisions of .
-   - Non-parametric **Mann-Kendall trend test** ($\tau = +0.642$) and **Theil-Sen slope estimator** ($\beta = +0.0429^\circ\text{C/yr}$) confirming significant post-monsoon warming ($p < 0.01$) centered over the  coast.
-2. **NASA GIBS WMTS (EOSDIS)**
-   - Real-time True Color satellite cloud swaths from **MODIS** (Terra & Aqua) and **VIIRS** (Suomi-NPP & NOAA-20).
-   - Toggled via the **`☁️ REAL CLOUDS`** command dock button with automatic yesterday fallback and zero 404 texture anomalies.
-3. **NASA POWER API (Langley Research Center)**
-   - On-demand daily surface meteorological and solar irradiance time series.
-4. **NASA GPM IMERG (Goddard Space Flight Center & JAXA)**
-   - High-resolution multi-satellite precipitation radar monitoring for monsoon extreme rainfall and cyclonic depression tracking.
-5. **NASA GRACE / GRACE-FO (Jet Propulsion Laboratory)**
-   - Terrestrial Water Storage (TWS) gravity anomaly tracking for groundwater depletion in the Barind Tract.
-6. **NASA FIRMS (EOSDIS)**
-   - Near real-time thermal anomaly and wildfire detection via MODIS and VIIRS 375m channels.
-
----
-
-## 🌐 Key Capabilities & System Features
-- **Photorealistic 3D Globe:** High-altitude  focus (MSAA 4x, atmospheric scattering, realistic day/night terminator).
-- **Tactical Shaders:** Real-time post-processing shaders including **FLIR Thermal (Ironbow)**, **P43 Green Phosphor Night Vision (NVG)**, and **Swiss Monochrome**.
-- **Live Airspace & Satellite Feeds:** Live tracking of commercial aviation (OpenSky Network) and low Earth orbit satellites (CelesTrak NORAD TLEs).
-- **Interactive Sea Level Rise Simulator:** 1m to 5m storm surge and sea level inundation model over , Bhola, and Patuakhali coastal polders.
-- **Global Radio & ATC Streams:** Instant streaming of regional broadcasts and air traffic frequencies via Radio-Browser API.
-
----
-
-## 📁 Repository Structure
-```
-orion-space/
-├── API_KEY_MANUAL.md                   # Complete credentials and zero-key guide
-├── NASA_SPACEAPPS_2026_SUBMISSION.md   # Official NASA Space Apps submission dossier
-├── package.json                        # Project manifest and scripts
-├── vite.config.js                      # Vite bundler configuration
-├── index.html                          # Main application entry point
-├── src/
-│   ├── main.js                         # Application bootstrapper
-│   ├── layers/
-│   │   ├── weather/                    # NASA GIBS real-time cloud stream
-│   │   ├── flights/                    # OpenSky live aircraft telemetry
-│   │   └── satellites/                 # CelesTrak NORAD orbit propagation
-│   ├── osint/
-│   │   ├── climate/                    # GRACE groundwater & Sea Level Rise simulator
-│   │   └── satellite/                  # Sentinel-1 SAR & NASA FIRMS thermal layer
-│   └── ui/
-│       ├── templates/                  # Swiss Monochrome minimalist UI templates
-│       └── styles/                     # Pure dark theme CSS stylesheets
+npm run dev        # http://localhost:5173/
 ```
 
+- `npm run build` creates a static build in `dist/`.
+- `npm test` runs the unit tests.
+- Optional keys (Google Photorealistic 3D Tiles, FIRMS, and others) are described in [`API_KEY_MANUAL.md`](API_KEY_MANUAL.md).
+
+### Deployment note
+Live feeds such as flights, vessels, FIRMS and the weather proxies are served by the Node middleware in `server/`, which runs inside the Vite dev server (`npm run dev` / `npm run preview`). A purely static host (for example the current `vercel.json` static build) serves the globe, the GIBS imagery and the bundled climate results, but **not** those `/api` routes. For a full live demo, run the app with Node.
+
 ---
 
-## 🏆 Project Authorship & Credits
-- **Lead Developer & System Architect:** **Md Mushfiqur Rahim** ([@MD-Mushfiqur123](https://github.com/MD-Mushfiqur123))
-- **Team Name:** **Orion Space**
-- **Local Event:** ****
-- **Challenge:** **Be An Earth System Trend Detective!** — NASA Space Apps Challenge 2026
+## Data sources
 
-*Licensed under the [MIT License](LICENSE).*
+| Source | Provider | Used for |
+|---|---|---|
+| MERRA-2 T2M via NASA POWER Monthly API | NASA GSFC GMAO / NASA LaRC | Trend analysis (`public/data/climate/`) |
+| GIBS WMTS (MODIS, VIIRS Corrected Reflectance) | NASA EOSDIS | Live true-colour cloud imagery |
+| FIRMS | NASA EOSDIS | Active fire detections |
+| Others (USGS earthquakes, NOAA/NHC, OpenSky, CelesTrak, …) | See [`DATA_SOURCES.md`](DATA_SOURCES.md) | Context layers |
 
+The `src/osint/` folder holds experimental modules (GRACE, Sentinel-1/5P, lightning, sea-level) that are **not wired into the running app**; some of them generate simulated values and are marked as such in their file headers.
+
+---
+
+## Built on
+
+Orion Space is built on top of **[God's Eye View](https://github.com/bilawalsidhu/gods-eye-view)** by **Bilawal Sidhu**, an open-source (MIT) CesiumJS spatial-intelligence viewer. The 3D globe engine, the layer system, the live-feed server and most of the inherited layers come from that project, and its copyright notice is kept in [`LICENSE`](LICENSE).
+
+**Team Orion Space's own work** for this challenge:
+- The MERRA-2 / NASA POWER temperature dataset for Bangladesh and the trend analysis (`analysis/`, `public/data/climate/`).
+- The Climate Detective panel, the trend agent (`src/agent/OrionMapHarness.js`) and the Bangladesh focus.
+- The NASA GIBS real-cloud layer integration, the UI redesign (Tailwind + shadcn) and the pitch deck (`public/pitch/`).
+
+---
+
+## Team
+
+- **Md Mushfiqur Rahim** ([@MD-Mushfiqur123](https://github.com/MD-Mushfiqur123)), lead developer
+- [@nabeulislam](https://github.com/nabeulislam), UI redesign
+- **Fahmid Hasan Taohid** ([@fahmidhasann](https://github.com/fahmidhasann)), review and analysis
+- *(add the remaining team members here)*
+
+Local event: **Barisal, Bangladesh** · Challenge: **Be An Earth System Trend Detective!**
+
+Licensed under the [MIT License](LICENSE). Third-party data is owned by its providers; see [`DATA_SOURCES.md`](DATA_SOURCES.md).

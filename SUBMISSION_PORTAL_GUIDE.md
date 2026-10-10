@@ -1,97 +1,68 @@
-# 🚀 NASA Space Apps Challenge 2026 — Official Submission Copy-Paste Guide
-> **Team:** Orion Space  
-> **Challenge:** *Be An Earth System Trend Detective!*  
-> **Lead Developer & System Architect:** **Md Mushfiqur Rahim**  
-> **Location:**   
-> **Repository:** https://github.com/MD-Mushfiqur123/orion-space  
+# NASA Space Apps Challenge 2026: Submission Copy-Paste Guide
+
+> **Team:** Orion Space · **Local event:** Barisal, Bangladesh
+> **Challenge:** *Be An Earth System Trend Detective!*
+> **Repository:** https://github.com/MD-Mushfiqur123/orion-space
+
+Every number below comes from `python3 analysis/trend_analysis.py`. If the analysis changes, re-run it and update this file, the README and the pitch deck together.
 
 ---
 
-## 📋 FIELD 1: Project Title
+## Field 1: Project title
 ```text
-Project Orion Space: Earth System Trend Detective
+Orion Space: Earth System Trend Detective
 ```
 
----
+## Field 2: Team
+- **Team name:** `Orion Space`
+- **Members:** list every registered teammate (all must be registered for the Barisal local event).
 
-## 📋 FIELD 2: Team Name & Members
-- **Team Name:** `Orion Space`
-- **Lead Developer & System Architect:** `Md Mushfiqur Rahim`
-- **Location:** ``
-
----
-
-## 📋 FIELD 3: Selected Challenge
+## Field 3: Challenge
 ```text
 Be An Earth System Trend Detective!
 ```
 
----
-
-## 📋 FIELD 4: Short Description (High-Level Summary)
+## Field 4: High-level summary
 ```text
-Project Orion Space is a 3D satellite digital twin and non-parametric climate forensics engine engineered from coastal . Integrating 25 years of NASA MERRA-2 daily reanalysis and GIBS satellite imagery, it answers NASA's 4 core questions: detecting the +0.457°C/decade post-monsoon warming hotspot in the  coastal delta with robust Mann-Kendall statistical significance (p=0.0070).
+Orion Space is a 3D globe that shows how Bangladesh's air temperature is changing, using 25 years (2001-2025) of NASA MERRA-2 data from the NASA POWER API. For each of the 34 MERRA-2 grid cells over Bangladesh we tested every month and the annual mean with the Mann-Kendall test and the Theil-Sen slope, and corrected for multiple testing (Benjamini-Hochberg FDR). The annual mean shows no significant trend anywhere, but September is warming in all 34 cells (31 remain significant after FDR), by +0.40 °C per decade on the Barisal coast (p < 0.001). The app puts this on a CesiumJS globe with live NASA GIBS imagery and FIRMS fires, and a trend agent that flies to a place and shows the evidence.
 ```
 
----
+## Field 5: Project details
 
-## 📋 FIELD 5: Detailed Project Description
+**What it does.** Answers the challenge's four questions for Bangladesh's 2-metre air temperature:
 
-### 1. Challenge & Context
-'s southern coastal delta—home to 16 million people living within 0.5–3m of sea level—stands at the extreme frontlines of planetary climate disruption. The official NASA 2026 challenge *"Be An Earth System Trend Detective!"* asks four critical scientific questions:
-1. **What is changing?** (Surface temperature, precipitation, and sea level)
-2. **Where is it changing?** (Across a 34-station national meteorological grid)
-3. **How much is it changing?** (Quantified via Theil-Sen robust median slope)
-4. **Is it Significant?** (Statistical significance verified via autocorrelation-corrected Mann-Kendall tests, p=0.0070 in )
+1. **What is changing?** Late-monsoon air temperature, above all in September.
+2. **Where?** All of Bangladesh; fastest robust signal on the Barisal coast (22.5°N, 90.0°E).
+3. **How much?** September median +0.36 °C/decade across the 34 cells; +0.40 °C/decade on the Barisal coast (Theil-Sen).
+4. **Is it significant?** September: 34 of 34 cells at p < 0.05, 31 of 34 after FDR (q = 0.05). The annual mean: 0 of 34. October warms at a similar rate but no cell survives FDR, so we do not claim it.
 
-### 2. Our Approach: "LLM ≠ Scientific Calculator"
-Rather than relying on black-box AI generators prone to hallucinations, Project Orion Space separates computation from interface:
-- **Scientific Engine (Source of Truth):** Directly ingests 25 years (2001–2025) of NASA MERRA-2 daily reanalysis data via NASA POWER API.
-- **Statistical Rigor:** Calculates OLS linear regression, Theil-Sen non-parametric median slopes, Mann-Kendall rank correlation p-values, and Pettitt's changepoint tests.
-- **Orion Map Harness Agent:** An autonomous in-console voice and natural-language interface allowing operators and judges to command the globe, fly to anomalies, and inspect evidence dossiers in English, Bangla, and Banglish.
+**How it works.**
+- Data: NASA POWER Monthly API (source MERRA-2), T2M, 2001–2025, 104 grid cells; the 34 with centres inside Bangladesh are analysed.
+- Statistics: Mann-Kendall (tie-corrected), Theil-Sen slope, Benjamini-Hochberg FDR over 442 tests. Open, reproducible Python script in `analysis/`.
+- App: CesiumJS 3D globe; Climate Detective panel; trend agent with evidence cards; NASA GIBS MODIS/VIIRS true-colour layer; NASA FIRMS fires.
 
-### 3. Key Scientific Breakthrough: Seasonal Dissociation &  Hotspot
-- **Annual Mean Concealment:** Evaluating only annual averages masks extreme seasonal vulnerabilities (+0.03°C/decade annual trend).
-- **Post-Monsoon Warming Hotspot:** In October (critical autumn transition), Southern  experiences rapid warming of **+0.457°C / decade** (+0.0457°C / year) with **Theil-Sen slope of +0.0435°C / year** and **p = 0.0070** ($p < 0.01$, highly significant).
-- **National Significance:** **31 of 34 stations** in October (91.2%) and **33 of 34 stations** in September (97.1%) exhibit statistically significant warming ($p < 0.05$).
-- **Physical Impact:** This thermal delay elevates Bay of Bengal Sea Surface Temperatures (>29°C), extending cyclone seasons (Sidr, Aila, Remal) and amplifying saline water intrusion into coastal agriculture.
+**Why it matters.** Yearly averages are what most people see, and here they say "nothing is happening". A month-by-month view shows a robust late-monsoon warming that matters for the Aman rice season and the run-up to the post-monsoon cyclone season.
 
-### 4. Technical Architecture & Multi-Sensor Fusion
-- **CesiumJS 3D WebGL Engine:** Photorealistic 60 FPS globe rendering digital elevation models and 1m–5m sea level surge inundation.
-- **Live NASA GIBS WMTS Streaming:** Near real-time satellite cloud overlays from MODIS Terra/Aqua and VIIRS.
-- **Tactical Sensor Modes:** Real-time GLSL post-processing shaders including FLIR Thermal (Ironbow), P43 Night Vision (NVG), and Swiss Monochrome Noir.
+**Limits.** Grid cells, not stations; no autocorrelation correction yet; one variable (T2M).
 
----
+**Built on.** The 3D engine and layer system come from the open-source (MIT) project God's Eye View by Bilawal Sidhu. Our team's work is the dataset, the analysis, the Climate Detective panel, the trend agent and the Bangladesh focus.
 
-## 📋 FIELD 6: Space Agency Data & Resources Used
-1. **NASA MERRA-2 (Modern-Era Retrospective analysis for Research and Applications, Version 2):**
-   - 2-meter air temperature ($T_{2\text{M}}$), surface skin temperature, and precipitation flux across 34 grid points in .
-   - Accessed via NASA POWER API: `https://power.larc.nasa.gov/`
-2. **NASA GIBS (Global Imagery Browse Services):**
-   - High-resolution daily satellite imagery (MODIS Corrected Reflectance True-Color, Land Surface Temperature).
-   - WMTS Endpoint: `https://gibs.earthdata.nasa.gov/wmts/epsg4326/best/`
-3. **NASA GPM IMERG (Global Precipitation Measurement):**
-   - Calibrated 30-minute precipitation radar tracking monsoon convective surges and Bay of Bengal cyclonic rainfall.
-4. **NASA/GFZ GRACE & GRACE-FO:**
-   - Satellite gravimetry mascon data tracking groundwater depletion trends in the Northwest Barind Tract.
-5. **ESA Copernicus Sentinel-1 SAR & Sentinel-5P TROPOMI:**
-   - C-band SAR radar flood inundation mapping and hyperspectral methane ($\text{CH}_4$) / $\text{NO}_2$ plume monitoring.
+## Field 6: Space agency data used
+1. **NASA MERRA-2 via NASA POWER** (T2M monthly, 2001–2025): https://power.larc.nasa.gov/
+2. **NASA GIBS** WMTS, MODIS Terra/Aqua and VIIRS Corrected Reflectance: https://gibs.earthdata.nasa.gov/
+3. **NASA FIRMS** active fire detections: https://firms.modaps.eosdis.nasa.gov/
 
----
+## Field 7: Links
+- Repository: https://github.com/MD-Mushfiqur123/orion-space
+- Analysis and method: https://github.com/MD-Mushfiqur123/orion-space/tree/main/analysis
+- Demo video: *(add link)*
+- Live demo: *(add link; run with Node so the `/api` live feeds work)*
 
-## 📋 FIELD 7: Project Links
-- **GitHub Repository (Code & Telemetry):** https://github.com/MD-Mushfiqur123/orion-space
-- **Submission Dossier:** https://github.com/MD-Mushfiqur123/orion-space/blob/main/NASA_SPACEAPPS_2026_SUBMISSION.md
-- **API Manual (Zero-Key Setup):** https://github.com/MD-Mushfiqur123/orion-space/blob/main/API_KEY_MANUAL.md
-
----
-
-## 📋 FIELD 8: 7-Slide Pitch Structure (For Presentation Deck / 2-Min Pitch)
-- **Slide 1:** Title,  (), NASA Space Apps 2026.
-- **Slide 2:** The Problem — Coastal  at the frontlines & why static 2D climate reports fail.
-- **Slide 3:** The Scientific Engine — NASA MERRA-2 daily data + Theil-Sen & Mann-Kendall statistical proof.
-- **Slide 4:** The Discovery — Post-Monsoon  Hotspot (+0.457°C/decade, p=0.0070) & Seasonal Dissociation.
-- **Slide 5:** The Platform — 3D CesiumJS globe, NASA GIBS live clouds, FLIR thermal shaders, 1m–5m surge simulation.
-- **Slide 6:** Autonomous Map Harness Agent — Voice & multi-lingual command interface with floating evidence dossiers.
-- **Slide 7:** Real-World Impact & Open Source Roadmap for disaster managers and coastal delta resilience.
-
+## Field 8: Pitch outline
+1. Title, team, Barisal.
+2. Problem: yearly averages hide seasonal change.
+3. Data and method: MERRA-2 via POWER, Mann-Kendall, Theil-Sen, FDR.
+4. Finding: September warming everywhere, +0.40 °C/decade on the Barisal coast; annual mean flat.
+5. Demo: globe, Climate Detective panel, trend agent.
+6. Limits and next steps: more variables (rainfall, humidity), autocorrelation correction.
+7. Credits: built on God's Eye View (MIT).

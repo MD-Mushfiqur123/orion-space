@@ -11,7 +11,6 @@
  * and synthesized Web Audio tactical alert horns.
  *
  * Project Orion Space - Orion Space OSINT Airspace Suite
- * Zero Placeholders - 100% Production Ready
  */
 
 import * as Cesium from 'cesium';

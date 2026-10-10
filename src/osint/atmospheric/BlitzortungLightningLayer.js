@@ -5,6 +5,10 @@
  * OSINT Layer for CesiumJS. Features millisecond strike flash rendering, speed-of-sound acoustic
  * thunder shockwave ring expansion animations, polarity/superbolt discrimination, temporal heat
  * trails, and real-time convective storm clustering.
+ *
+ * NOTE (Orion Space): this module is NOT wired into the running app, and the
+ * values it produces are SIMULATED (generated or hard-coded), not live data.
+ * Do not present its output as real observations.
  */
 
 import * as Cesium from 'cesium';

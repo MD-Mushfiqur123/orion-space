@@ -17,7 +17,7 @@ These services work immediately with zero signups or tokens:
 | :--- | :--- | :--- | :--- |
 | **NASA GIBS WMTS** | NASA EOSDIS (MODIS / VIIRS) | `https://gibs.earthdata.nasa.gov/wmts/...` | Streams real-time satellite cloud cover directly onto the 3D globe via the `☁️ REAL CLOUDS` button. |
 | **NASA POWER API** | NASA Langley Research Center | `https://power.larc.nasa.gov/api/temporal/daily/point` | Daily 25-year temperature and solar radiation timeseries for any coordinate. |
-| **NASA MERRA-2 Telemetry** | NASA Goddard GSFC / GMAO | Bundled 25-Year Reanalysis Dataset | 34 station  climate records with Mann-Kendall and Sen's slope metrics. |
+| **NASA MERRA-2 Telemetry** | NASA Goddard GSFC / GMAO via NASA POWER | Bundled 25-year reanalysis dataset | T2M for 34 grid cells over Bangladesh; trends reproduced by `analysis/trend_analysis.py`. |
 | **CelesTrak NORAD TLEs** | CelesTrak / Space-Track | `/api/celestrak/stations` | Live orbital telemetry for ISS, Bangabandhu Satellite-1, and 6,000+ active satellites. |
 | **OpenSky Network (Public)** | OpenSky Network | `/api/opensky/states/all` | Live commercial and general aviation flight tracker across the globe. |
 | **Open-Meteo Weather** | National Weather Services | `https://api.open-meteo.com/v1/forecast` | Current temperature, wind vectors, and humidity telemetry. |
