@@ -1,144 +1,106 @@
 
-<aside id="right-context-rail" class="flex flex-col gap-4">
-  
-  <!-- Top Live Weather & Atmospheric Telemetry Box -->
-  <div id="live-weather-telemetry-panel" class="panel-collapsible active" data-panel-id="live-weather-telemetry-panel">
-    <div class="panel-header flex items-center justify-between pb-3 mb-3 border-b border-white/8">
-      <div class="flex items-center gap-2">
-        <span class="material-symbols-outlined text-[14px] text-zinc-400">partly_cloudy_day</span>
-        <span class="text-[10px] font-bold tracking-[0.12em] text-zinc-300 uppercase">Live Weather &amp; Climate</span>
+<aside id="right-context-rail" class="flex flex-col gap-4" aria-label="Trend insights and live conditions">
+
+  <!-- 1 · THE HEADLINE: the trend this project detected (NASA MERRA-2).
+       Kept first so a judge sees the finding before anything else. -->
+  <section id="climate-detective-panel" class="panel-collapsible active orion-card orion-card--hero" data-panel-id="climate-detective-panel" aria-labelledby="climate-detective-title">
+    <header class="panel-header orion-card__header">
+      <span class="material-symbols-outlined orion-card__icon orion-card__icon--accent" aria-hidden="true">search_insights</span>
+      <h2 id="climate-detective-title" class="orion-card__title">Trend Detective</h2>
+    </header>
+
+    <div class="climate-detective-body orion-trend">
+      <div class="orion-trend__hero">
+        <div class="orion-trend__place">
+          <span class="orion-dot orion-dot--warm" aria-hidden="true"></span>
+          Barisal · September
+          <span class="orion-chip orion-chip--source">NASA MERRA-2</span>
+        </div>
+        <div class="orion-trend__value">+0.40°C <span class="orion-trend__unit">per decade</span></div>
+        <p class="orion-trend__story">September in Barisal has warmed about 0.4°C every decade since 2001. Across Bangladesh, 31 of 34 grid cells show the same significant September warming.</p>
       </div>
-      <span id="weather-pulse-badge" class="inline-flex items-center gap-1 text-[8px] text-emerald-400 font-mono font-bold tracking-widest px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">
-        <span class="w-1 h-1 rounded-full bg-emerald-400 animate-pulse inline-block"></span>LIVE
+
+      <dl class="orion-stats">
+        <div class="orion-stat"><dt>Period</dt><dd>2001–2025</dd></div>
+        <div class="orion-stat"><dt>Grid cells</dt><dd>34</dd></div>
+        <div class="orion-stat"><dt>Mann-Kendall τ</dt><dd class="orion-mono">+0.57</dd></div>
+        <div class="orion-stat"><dt>Sen's slope</dt><dd class="orion-mono">+0.040°C/yr</dd></div>
+      </dl>
+
+      <p class="orion-trend__footnote">p &lt; 0.001 · survives FDR correction · annual mean shows no significant trend</p>
+    </div>
+  </section>
+
+  <!-- 2 · Live conditions at the hotspot (Open-Meteo, refreshed by main.js). -->
+  <section id="live-weather-telemetry-panel" class="panel-collapsible active orion-card" data-panel-id="live-weather-telemetry-panel" aria-labelledby="live-weather-title">
+    <header class="panel-header orion-card__header">
+      <span class="material-symbols-outlined orion-card__icon" aria-hidden="true">partly_cloudy_day</span>
+      <h2 id="live-weather-title" class="orion-card__title">Live in Barisal</h2>
+      <span id="weather-pulse-badge" class="orion-chip orion-chip--live">
+        <span class="orion-live-dot inline-block"></span>LIVE
       </span>
-    </div>
-    
-    <div class="flex flex-col gap-2.5">
-      <div class="grid grid-cols-2 gap-3">
-        <!-- Temp Card -->
-        <div class="relative overflow-hidden p-3.5 bg-white/[0.03] backdrop-blur-md rounded-2xl border border-white/[0.08] hover:border-white/[0.15] hover:bg-white/[0.05] transition-all group shadow-[0_4px_24px_rgba(0,0,0,0.2)]">
-          <div class="absolute inset-0 bg-gradient-to-br from-white/[0.04] to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-          <div class="flex items-center gap-2 mb-3">
-            <div class="w-6 h-6 rounded-lg bg-orange-500/10 flex items-center justify-center border border-orange-500/20 group-hover:scale-110 transition-transform duration-300">
-              <span class="material-symbols-outlined text-[13px] text-orange-400">device_thermostat</span>
-            </div>
-            <span class="text-[9px] text-zinc-400 font-medium tracking-widest uppercase">Surface Temp</span>
-          </div>
-          <div class="flex items-baseline gap-1">
-            <div id="weather-val-temp" class="text-xl font-bold text-white font-mono tracking-tight tabular-nums">28.4</div>
-            <span class="text-[10px] text-zinc-500 font-medium font-sans">&deg;C</span>
-          </div>
-        </div>
+    </header>
 
-        <!-- Precip Card -->
-        <div class="relative overflow-hidden p-3.5 bg-white/[0.03] backdrop-blur-md rounded-2xl border border-white/[0.08] hover:border-white/[0.15] hover:bg-white/[0.05] transition-all group shadow-[0_4px_24px_rgba(0,0,0,0.2)]">
-          <div class="absolute inset-0 bg-gradient-to-br from-white/[0.04] to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-          <div class="flex items-center gap-2 mb-3">
-            <div class="w-6 h-6 rounded-lg bg-blue-500/10 flex items-center justify-center border border-blue-500/20 group-hover:scale-110 transition-transform duration-300">
-              <span class="material-symbols-outlined text-[13px] text-blue-400">water_drop</span>
-            </div>
-            <span class="text-[9px] text-zinc-400 font-medium tracking-widest uppercase">Precipitation</span>
-          </div>
-          <div class="flex items-baseline gap-1">
-            <div id="weather-val-precip" class="text-xl font-bold text-white font-mono tracking-tight tabular-nums">12.5</div>
-            <span class="text-[10px] text-zinc-500 font-medium font-sans">mm/h</span>
-          </div>
-        </div>
-
-        <!-- Wind Card -->
-        <div class="relative overflow-hidden p-3.5 bg-white/[0.03] backdrop-blur-md rounded-2xl border border-white/[0.08] hover:border-white/[0.15] hover:bg-white/[0.05] transition-all group shadow-[0_4px_24px_rgba(0,0,0,0.2)]">
-          <div class="absolute inset-0 bg-gradient-to-br from-white/[0.04] to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-          <div class="flex items-center gap-2 mb-3">
-            <div class="w-6 h-6 rounded-lg bg-sky-500/10 flex items-center justify-center border border-sky-500/20 group-hover:scale-110 transition-transform duration-300">
-              <span class="material-symbols-outlined text-[13px] text-sky-400">air</span>
-            </div>
-            <span class="text-[9px] text-zinc-400 font-medium tracking-widest uppercase">Wind Velocity</span>
-          </div>
-          <div class="flex items-baseline gap-1">
-            <div id="weather-val-wind" class="text-xl font-bold text-white font-mono tracking-tight tabular-nums">18.2</div>
-            <span class="text-[10px] text-zinc-500 font-medium font-sans">km/h</span>
-          </div>
-        </div>
-
-        <!-- NO2 Card -->
-        <div class="relative overflow-hidden p-3.5 bg-white/[0.03] backdrop-blur-md rounded-2xl border border-white/[0.08] hover:border-white/[0.15] hover:bg-white/[0.05] transition-all group shadow-[0_4px_24px_rgba(0,0,0,0.2)]">
-          <div class="absolute inset-0 bg-gradient-to-br from-white/[0.04] to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-          <div class="flex items-center gap-2 mb-3">
-            <div class="w-6 h-6 rounded-lg bg-amber-500/10 flex items-center justify-center border border-amber-500/20 group-hover:scale-110 transition-transform duration-300">
-              <span class="material-symbols-outlined text-[13px] text-amber-400">cloud</span>
-            </div>
-            <span class="text-[9px] text-zinc-400 font-medium tracking-widest uppercase">Tropo NO2</span>
-          </div>
-          <div class="flex items-baseline gap-1">
-            <div id="weather-val-no2" class="text-xl font-bold text-white font-mono tracking-tight tabular-nums">48.1</div>
-            <span class="text-[10px] text-zinc-500 font-medium font-sans">&micro;mol</span>
-          </div>
-        </div>
+    <div class="orion-metrics">
+      <div class="orion-metric">
+        <span class="orion-metric__label"><span class="material-symbols-outlined orion-metric__icon orion-tone-warm" aria-hidden="true">device_thermostat</span>Temp</span>
+        <span class="orion-metric__value"><span id="weather-val-temp">28.4</span><small>°C</small></span>
       </div>
-      
-      <div class="px-1 pt-2 border-t border-white/[0.06]">
-        <div class="flex items-center gap-1.5 text-[9px] text-zinc-500 leading-relaxed">
-          <span class="material-symbols-outlined text-[11px]">satellite_alt</span>
-          <span><strong class="text-zinc-400">Copernicus Sentinel-5P</strong> / NASA GPM · NRT</span>
-        </div>
+      <div class="orion-metric">
+        <span class="orion-metric__label"><span class="material-symbols-outlined orion-metric__icon orion-tone-water" aria-hidden="true">water_drop</span>Rain</span>
+        <span class="orion-metric__value"><span id="weather-val-precip">12.5</span><small>mm/h</small></span>
+      </div>
+      <div class="orion-metric">
+        <span class="orion-metric__label"><span class="material-symbols-outlined orion-metric__icon orion-tone-sky" aria-hidden="true">air</span>Wind</span>
+        <span class="orion-metric__value"><span id="weather-val-wind">18.2</span><small>km/h</small></span>
+      </div>
+      <div class="orion-metric">
+        <span class="orion-metric__label"><span class="material-symbols-outlined orion-metric__icon orion-tone-amber" aria-hidden="true">cloud</span>NO₂</span>
+        <span class="orion-metric__value"><span id="weather-val-no2">48.1</span><small>µmol</small></span>
       </div>
     </div>
-  </div>
+    <p class="orion-card__source">
+      <span class="material-symbols-outlined" aria-hidden="true">satellite_alt</span>
+      Weather: Open-Meteo · NO₂: sample value
+    </p>
+  </section>
 
-  <!-- NASA Climate Detective Analytics Panel -->
-  <div id="climate-detective-panel" class="panel-collapsible active" data-panel-id="climate-detective-panel">
-    <div class="panel-header flex items-center gap-2 pb-3 mb-3 border-b border-white/8">
-      <span class="material-symbols-outlined text-[14px] text-red-400">search_insights</span>
-      <span class="text-[10px] font-bold tracking-[0.12em] text-zinc-300 uppercase">Climate Detective</span>
-    </div>
-    <div class="climate-detective-body flex flex-col gap-2.5">
-      <!-- Hotspot card -->
-      <div class="relative overflow-hidden p-4 bg-gradient-to-br from-red-500/[0.08] via-transparent to-transparent border border-red-500/15 rounded-2xl">
-        <div class="absolute top-0 right-0 w-20 h-20 bg-red-500/5 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2"></div>
-        <div class="flex items-center gap-1.5 mb-2">
-          <span class="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse inline-block"></span>
-          <div class="text-[9px] font-bold text-red-400 tracking-[0.15em] uppercase">Barisal Hotspot</div>
-        </div>
-        <div class="text-[28px] font-bold text-white mb-1 tracking-tight font-display leading-none">+0.40°C <span class="text-zinc-500 text-lg font-normal">/ dec</span></div>
-        <div class="text-[9px] text-zinc-500 mt-1.5">September · Mann-Kendall p &lt; 0.001 · survives FDR</div>
-      </div>
-      
-      <!-- Stats -->
-      <div class="grid grid-cols-2 gap-1.5">
-        <div class="p-2.5 bg-white/[0.02] rounded-lg border border-white/[0.05]">
-          <div class="text-[8px] text-zinc-600 uppercase tracking-wider mb-0.5">Period</div>
-          <div class="text-[10px] text-zinc-300 font-medium">2001–2025</div>
-          <div class="text-[8px] text-zinc-500">(MERRA-2)</div>
-        </div>
-        <div class="p-2.5 bg-white/[0.02] rounded-lg border border-white/[0.05]">
-          <div class="text-[8px] text-zinc-600 uppercase tracking-wider mb-0.5">Grid Points</div>
-          <div class="text-[10px] text-zinc-300 font-medium">34 grid cells</div>
-        </div>
-        <div class="p-2.5 bg-white/[0.02] rounded-lg border border-white/[0.05]">
-          <div class="text-[8px] text-zinc-600 uppercase tracking-wider mb-0.5">Test</div>
-          <div class="text-[10px] text-zinc-300 font-medium font-mono">τ +0.57</div>
-          <div class="text-[8px] text-zinc-500">Mann-Kendall</div>
-        </div>
-        <div class="p-2.5 bg-white/[0.02] rounded-lg border border-white/[0.05]">
-          <div class="text-[8px] text-zinc-600 uppercase tracking-wider mb-0.5">Slope β</div>
-          <div class="text-[10px] text-zinc-300 font-medium font-mono">+0.040°C/yr</div>
-          <div class="text-[8px] text-zinc-500">Sen's Slope</div>
-        </div>
-      </div>
-    </div>
-  </div>
+  <!-- 3 · Why the trend matters: recent climate disasters in Bangladesh. -->
+  <section id="disaster-panel" class="panel-collapsible active orion-card" data-panel-id="disaster-panel" aria-labelledby="disaster-title">
+    <header class="panel-header orion-card__header">
+      <span class="material-symbols-outlined orion-card__icon" aria-hidden="true">history</span>
+      <h2 id="disaster-title" class="orion-card__title">Why it matters</h2>
+          </header>
+    <ol class="orion-events">
+      <li class="orion-event">
+        <span class="orion-event__icon orion-tone-water material-symbols-outlined" aria-hidden="true">flood</span>
+        <span class="orion-event__text"><strong>Feni-Noakhali Flood</strong><small>Inland flash flood, 5.8M affected</small></span>
+        <span class="orion-event__year">2024</span>
+      </li>
+      <li class="orion-event">
+        <span class="orion-event__icon orion-tone-water material-symbols-outlined" aria-hidden="true">water</span>
+        <span class="orion-event__text"><strong>Sylhet Mega Flood</strong><small>122-year record, 7.2M displaced</small></span>
+        <span class="orion-event__year">2022</span>
+      </li>
+      <li class="orion-event">
+        <span class="orion-event__icon orion-tone-warm material-symbols-outlined" aria-hidden="true">cyclone</span>
+        <span class="orion-event__text"><strong>Cyclone Sidr</strong><small>Category 4, 3,406 casualties</small></span>
+        <span class="orion-event__year">2007</span>
+      </li>
+    </ol>
+  </section>
 
-  <!-- Live Global Radio Tuner -->
-  <div id="global-radio-panel" class="panel-collapsible active" data-panel-id="global-radio-panel">
-    <div class="panel-header flex items-center gap-2 pb-3 mb-3 border-b border-white/8">
-      <span class="material-symbols-outlined text-[14px] text-zinc-400">radio</span>
-      <span class="text-[10px] font-bold tracking-[0.12em] text-zinc-300 uppercase">Live Global Radio</span>
-    </div>
-    <div class="flex flex-col gap-2.5">
-      <input type="search" id="radio-country-input" class="w-full bg-black/30 border border-white/[0.08] rounded-lg px-3 py-2 text-[11px] text-white placeholder-zinc-600 focus:outline-none focus:border-white/25 transition-all font-sans" placeholder="Search country or station" autocomplete="off" spellcheck="false" />
-      
-      <div class="relative">
-        <select id="live-radio-selector" class="w-full bg-black/30 border border-white/[0.08] rounded-lg px-3 py-2.5 text-[11px] text-white focus:outline-none focus:border-white/25 cursor-pointer appearance-none pr-8 font-sans">
+  <!-- 4 · Extras. Radio stays fully working, just out of the story's way. -->
+  <section id="global-radio-panel" class="panel-collapsible active orion-card orion-card--quiet" data-panel-id="global-radio-panel" aria-labelledby="radio-title">
+    <header class="panel-header orion-card__header">
+      <span class="material-symbols-outlined orion-card__icon" aria-hidden="true">radio</span>
+      <h2 id="radio-title" class="orion-card__title">Live Radio</h2>
+          </header>
+    <div class="orion-radio">
+      <input type="search" id="radio-country-input" class="orion-input" placeholder="Country, then Enter (e.g. Bangladesh)" aria-label="Search radio stations by country" autocomplete="off" spellcheck="false" />
+
+      <div class="orion-select-wrap">
+        <select id="live-radio-selector" class="orion-input orion-select" aria-label="Radio station">
           <option value="https://stream.zeno.fm/f3wvbbqmdg8uv">BD Bangladesh Betar (Dhaka)</option>
           <option value="https://stream.zeno.fm/0r0xa792kwzuv">BD Radio Foorti 88.0 FM</option>
           <option value="https://stream.zeno.fm/k22222">BD Radio Today 89.6 FM</option>
@@ -148,70 +110,18 @@
           <option value="https://stream.zeno.fm/4m6g91k2kwzuv">IN AIR Vividh Bharati</option>
           <option value="https://ice1.somafm.com/defcon-128-mp3">GL DEF CON Military</option>
         </select>
-        <span class="material-symbols-outlined text-[16px] text-zinc-500 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none">expand_more</span>
+        <span class="material-symbols-outlined orion-select-wrap__chevron" aria-hidden="true">expand_more</span>
       </div>
-      
-      <div class="grid grid-cols-[1fr_auto] gap-2">
-        <button id="radio-play-toggle-btn" class="flex items-center justify-center gap-2 bg-white text-black font-bold text-[11px] py-2.5 rounded-xl hover:bg-zinc-100 transition-all active:scale-[0.97] shadow-[0_0_20px_rgba(255,255,255,0.15)] tracking-wide">
-          <span class="material-symbols-outlined text-[16px]">play_arrow</span> TUNE &amp; PLAY
+
+      <div class="orion-radio__actions">
+        <button id="radio-play-toggle-btn" type="button" class="orion-btn orion-btn--primary">
+          <span class="material-symbols-outlined" aria-hidden="true">play_arrow</span> Play
         </button>
-        <button id="radio-stop-toggle-btn" class="flex items-center justify-center bg-white/[0.04] border border-white/[0.08] text-zinc-400 hover:text-white font-bold text-[11px] px-3 py-2.5 rounded-xl hover:bg-white/[0.08] transition-all active:scale-[0.97] tracking-wide">
-          STOP
-        </button>
+        <button id="radio-stop-toggle-btn" type="button" class="orion-btn">Stop</button>
       </div>
-      
-      <div id="radio-now-playing" class="text-[9px] text-zinc-600 font-mono text-center">
-        Radio Ready · Select station &amp; play
-      </div>
+
+      <div id="radio-now-playing" class="orion-radio__status" role="status" aria-live="polite">Pick a station and press Play</div>
       <audio id="global-radio-audio-player" preload="none"></audio>
     </div>
-  </div>
-
-  <!-- Bangladesh Climate Disasters Timeline -->
-  <div id="disaster-panel" class="panel-collapsible active" data-panel-id="disaster-panel">
-    <div class="panel-header flex items-center gap-2 pb-3 mb-3 border-b border-white/8">
-      <span class="material-symbols-outlined text-[14px] text-amber-400">history</span>
-      <span class="text-[10px] font-bold tracking-[0.12em] text-zinc-300 uppercase">Historical Events</span>
-    </div>
-    <div class="flex flex-col gap-2.5">
-      <div class="group relative flex items-center gap-3 p-3.5 bg-white/[0.02] backdrop-blur-md border border-white/[0.05] rounded-2xl hover:border-blue-500/30 hover:bg-blue-500/[0.04] transition-all cursor-default shadow-[0_4px_24px_rgba(0,0,0,0.15)]">
-        <div class="flex-shrink-0 w-9 h-9 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
-          <span class="material-symbols-outlined text-[16px] text-blue-400">flood</span>
-        </div>
-        <div class="flex flex-col gap-1 min-w-0 flex-1">
-          <div class="flex items-center justify-between">
-            <div class="text-[10px] font-bold text-white tracking-wide truncate">Feni-Noakhali Flood</div>
-            <div class="text-[8px] font-mono font-bold text-blue-400 bg-blue-400/10 px-1.5 py-0.5 rounded border border-blue-400/20">2024</div>
-          </div>
-          <div class="text-[9px] text-zinc-400 truncate">Inland flash flood, 5.8M affected</div>
-        </div>
-      </div>
-
-      <div class="group relative flex items-center gap-3 p-3.5 bg-white/[0.02] backdrop-blur-md border border-white/[0.05] rounded-2xl hover:border-blue-500/30 hover:bg-blue-500/[0.04] transition-all cursor-default shadow-[0_4px_24px_rgba(0,0,0,0.15)]">
-        <div class="flex-shrink-0 w-9 h-9 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
-          <span class="material-symbols-outlined text-[16px] text-blue-400">water</span>
-        </div>
-        <div class="flex flex-col gap-1 min-w-0 flex-1">
-          <div class="flex items-center justify-between">
-            <div class="text-[10px] font-bold text-white tracking-wide truncate">Sylhet Mega Flood</div>
-            <div class="text-[8px] font-mono font-bold text-blue-400 bg-blue-400/10 px-1.5 py-0.5 rounded border border-blue-400/20">2022</div>
-          </div>
-          <div class="text-[9px] text-zinc-400 truncate">122-year record, 7.2M displaced</div>
-        </div>
-      </div>
-
-      <div class="group relative flex items-center gap-3 p-3.5 bg-white/[0.02] backdrop-blur-md border border-white/[0.05] rounded-2xl hover:border-red-500/30 hover:bg-red-500/[0.04] transition-all cursor-default shadow-[0_4px_24px_rgba(0,0,0,0.15)]">
-        <div class="flex-shrink-0 w-9 h-9 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
-          <span class="material-symbols-outlined text-[16px] text-red-400">cyclone</span>
-        </div>
-        <div class="flex flex-col gap-1 min-w-0 flex-1">
-          <div class="flex items-center justify-between">
-            <div class="text-[10px] font-bold text-white tracking-wide truncate">Cyclone Sidr</div>
-            <div class="text-[8px] font-mono font-bold text-red-400 bg-red-400/10 px-1.5 py-0.5 rounded border border-red-400/20">2007</div>
-          </div>
-          <div class="text-[9px] text-zinc-400 truncate">Category 4, 3,406 casualties</div>
-        </div>
-      </div>
-    </div>
-  </div>
+  </section>
 </aside>

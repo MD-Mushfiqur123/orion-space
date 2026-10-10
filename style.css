@@ -6,6 +6,7 @@
 @import './src/ui/styles/premium-polish.css';
 @import './src/ui/styles/orion-glass.css';
 @import './src/ui/styles/orion-final-polish.css';
+@import './src/ui/styles/orion-organized.css';
 
 @import "tailwindcss";
 @source "./src";

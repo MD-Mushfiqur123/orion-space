@@ -8,15 +8,16 @@
   </div>
 
   <!-- Title and Top Menu -->
-  <div class="fixed top-4 left-4 z-[100] flex items-center gap-2 pointer-events-auto">
-    <button id="mobile-features-menu-btn" class="w-10 h-10 rounded-2xl bg-black/60 backdrop-blur-3xl border border-white/20 text-white flex items-center justify-center shadow-[0_8px_32px_rgba(0,0,0,0.6)] active:scale-95 transition-all hover:bg-white/10 hover:border-white/30" title="Open All Features & Layers">
-      <span class="material-symbols-outlined text-[20px]">more_vert</span>
+  <div id="orion-topbar" class="fixed top-4 left-4 z-[100] flex items-center gap-2 pointer-events-auto">
+    <!-- Phones only: opens the layers + insights drawers (wired in src/main.js). -->
+    <button id="mobile-features-menu-btn" type="button" aria-label="Open data layers and trend insights" title="Data layers &amp; insights">
+      <span class="material-symbols-outlined" aria-hidden="true">menu</span>
     </button>
-    
-    <div id="title-bar" class="bg-black/40 backdrop-blur-3xl border border-white/10 rounded-2xl px-5 py-2.5 shadow-[0_8px_32px_rgba(0,0,0,0.5)] flex flex-col items-start pointer-events-none w-max">
-      <h1 class="text-xs sm:text-sm font-bold tracking-[0.2em] text-white m-0 whitespace-nowrap">PROJECT: <span class="font-black">ORION SPACE</span></h1>
-      <p class="subtitle whitespace-nowrap hidden sm:block" style="letter-spacing: 0.8px;">NASA SPACE APPS CHALLENGE 2026 &middot; TEAM ORION SPACE (BARISAL)</p>
-      <p class="text-[8px] sm:text-[9px] tracking-[0.05em] text-zinc-400 font-mono mt-0.5 whitespace-nowrap">CHALLENGE: BE AN EARTH SYSTEM TREND DETECTIVE</p>
+
+    <div id="title-bar" class="pointer-events-none">
+      <h1 class="orion-title">ORION <span>SPACE</span></h1>
+      <p class="subtitle orion-subtitle">Earth System Trend Detective</p>
+      <span class="orion-badge" title="NASA Space Apps Challenge 2026 · Team Orion Space (Barisal)">NASA Space Apps 2026</span>
     </div>
   </div>
 
