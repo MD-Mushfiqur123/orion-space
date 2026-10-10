@@ -174,7 +174,7 @@ class OrionDeck {
 
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Annual Mean'];
     // Theil-Sen trends (°C/decade), MERRA-2 T2M 2001-2025, Barisal coast cell 22.5°N 90.0°E.
-    // Source: analysis/output/t2m_trends_by_cell_month.csv (python3 analysis/trend_analysis.py)
+    // Source: analysis/results/t2m_trends_by_cell_month.csv (python3 analysis/trend_analysis.py)
     const trends = [-0.06, -0.329, -0.378, -0.055, -0.561, -0.03, 0.186, 0.183, 0.4, 0.435, 0.152, -0.123, -0.021];
     const backgroundColors = trends.map((val, idx) => {
       if (idx === 8) return '#ef4444'; // September: significant after FDR (Alert Red)

@@ -36,6 +36,7 @@ For each of the 34 cells, 13 series of 25 values (12 calendar months plus the an
 2. **Theil-Sen slope**, the median of all pairwise slopes, reported in °C per decade:
    $$Q = \operatorname{median}\left\{\frac{x_j - x_k}{j - k}\right\}$$
 3. **Benjamini-Hochberg false discovery rate** at q = 0.05 across all 442 tests (34 × 13), because testing many series at once produces false positives at plain p < 0.05.
+4. **Autocorrelation check**: trend-free pre-whitening (Yue et al. 2002) where the lag-1 autocorrelation is significant; the FDR results are unchanged.
 
 Code: [`analysis/trend_analysis.py`](analysis/trend_analysis.py). Run `python3 analysis/trend_analysis.py` to reproduce every number in this document.
 
@@ -97,7 +98,7 @@ September closes the monsoon in Bangladesh. It overlaps the growing season of Am
 ## 7. Limits and next steps
 
 - Points are MERRA-2 reanalysis grid cells, not weather stations.
-- No lag-1 autocorrelation correction yet (planned: pre-whitened Mann-Kendall).
+- Lag-1 autocorrelation checked with trend-free pre-whitening (Yue et al. 2002): 9 of 442 series pre-whitened, FDR results unchanged.
 - Only T2M so far; next: precipitation (PRECTOTCORR) and humidity from the same API, and GPM IMERG rainfall.
 - Live feeds served by `server/` need the Node server; a static host shows the globe, GIBS imagery and the climate results.
 

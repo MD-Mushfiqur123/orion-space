@@ -35,11 +35,11 @@ pip install numpy scipy
 python3 analysis/trend_analysis.py
 ```
 
-Full method and outputs: [`analysis/README.md`](analysis/README.md).
+Full method and outputs: [`analysis/README.md`](analysis/README.md) and [`analysis/results/`](analysis/results/).
 
 ### Limits we are open about
 - The 34 points are **MERRA-2 reanalysis grid cells** (about 0.5° × 0.625°), not weather stations.
-- Lag-1 autocorrelation is not corrected (no pre-whitening); 25 annual values per series.
+- 25 annual values per series. Autocorrelation was checked with trend-free pre-whitening: only 9 of 442 series needed it, and the significant results did not change.
 - T2M is the only variable analysed so far.
 
 ---

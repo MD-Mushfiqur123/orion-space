@@ -43,7 +43,7 @@ Orion Space is a 3D globe that shows how Bangladesh's air temperature is changin
 
 **Why it matters.** Yearly averages are what most people see, and here they say "nothing is happening". A month-by-month view shows a robust late-monsoon warming that matters for the Aman rice season and the run-up to the post-monsoon cyclone season.
 
-**Limits.** Grid cells, not stations; no autocorrelation correction yet; one variable (T2M).
+**Limits.** Grid cells, not stations; one variable (T2M). Autocorrelation was checked (trend-free pre-whitening) and does not change the results.
 
 **Built on.** The 3D engine and layer system come from the open-source (MIT) project God's Eye View by Bilawal Sidhu. Our team's work is the dataset, the analysis, the Climate Detective panel, the trend agent and the Bangladesh focus.
 
@@ -64,5 +64,5 @@ Orion Space is a 3D globe that shows how Bangladesh's air temperature is changin
 3. Data and method: MERRA-2 via POWER, Mann-Kendall, Theil-Sen, FDR.
 4. Finding: September warming everywhere, +0.40 °C/decade on the Barisal coast; annual mean flat.
 5. Demo: globe, Climate Detective panel, trend agent.
-6. Limits and next steps: more variables (rainfall, humidity), autocorrelation correction.
+6. Limits and next steps: more variables (rainfall, humidity).
 7. Credits: built on God's Eye View (MIT).

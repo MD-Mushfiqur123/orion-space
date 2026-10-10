@@ -6,8 +6,8 @@ Reproducible trend analysis for Orion Space (NASA Space Apps 2026,
 Input : public/data/climate/bangladesh_t2m_regional_raw.json
         (NASA POWER Monthly & Annual API v2.10, source MERRA-2, T2M in deg C,
          2001-2025, 104 native MERRA-2 grid cells over Bangladesh)
-Output: analysis/output/t2m_trends_by_cell_month.csv  (one row per cell x month + annual)
-        analysis/output/summary.md
+Output: analysis/results/t2m_trends_by_cell_month.csv  (one row per cell x month + annual)
+        analysis/results/summary.md
 
 Methods
 - Mann-Kendall test with tie-corrected variance (two-sided).
@@ -15,8 +15,13 @@ Methods
 - Benjamini-Hochberg false discovery rate (q = 0.05) across all tests
   inside Bangladesh, because many cells x months are tested at once.
 
+- Autocorrelation check: trend-free pre-whitening (Yue et al. 2002, TFPW).
+  When the lag-1 autocorrelation of the detrended series is significant
+  (|r1| > 1.96/sqrt(n)), the series is pre-whitened and re-tested; the
+  pre-whitened p-values get their own FDR correction.
+
 Note: the points are MERRA-2 reanalysis grid cells (~0.5 x 0.625 deg),
-not weather stations. Lag-1 autocorrelation is not corrected here.
+not weather stations.
 
 Usage: python3 analysis/trend_analysis.py   (needs numpy + scipy)
 """
@@ -28,7 +33,7 @@ from scipy.stats import norm
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RAW = os.path.join(ROOT, "public/data/climate/bangladesh_t2m_regional_raw.json")
 BOUNDARY = os.path.join(ROOT, "public/data/climate/bangladesh_boundary.geojson")
-OUT = os.path.join(ROOT, "analysis/output")
+OUT = os.path.join(ROOT, "analysis/results")
 MONTHS = ["January","February","March","April","May","June","July",
           "August","September","October","November","December","Annual"]
 
@@ -43,6 +48,15 @@ def mann_kendall(x):
 def sen_slope(x):
     x = np.asarray(x, float)
     return float(np.median([(x[j]-x[i])/(j-i) for i, j in combinations(range(len(x)), 2)]))
+
+def tfpw_p(x):
+    """Mann-Kendall p after trend-free pre-whitening (Yue et al. 2002)."""
+    x = np.asarray(x, float); n = len(x); b = sen_slope(x); t = np.arange(n)
+    d = x - b*t; d0 = d - d.mean()
+    r1 = float(np.sum(d0[1:]*d0[:-1]) / np.sum(d0*d0))
+    if abs(r1) <= 1.96/math.sqrt(n):
+        return mann_kendall(x)[2], r1, False
+    return mann_kendall(d[1:] - r1*d[:-1] + b*t[1:])[2], r1, True
 
 def _in_ring(lon, lat, ring):
     inside = False
@@ -83,10 +97,12 @@ def main():
             if any(v == fill for v in series):
                 continue
             s, z, p = mann_kendall(series)
+            p_pw, r1, prewhitened = tfpw_p(series)
             rows.append(dict(latitude=lat, longitude=lon,
                              inside_bangladesh=inside_bangladesh(lon, lat, polys), month=name, n_years=len(series),
                              mk_S=int(s), mk_Z=round(z, 4), p_value=round(p, 6),
-                             sen_slope_c_per_decade=round(10*sen_slope(series), 4)))
+                             sen_slope_c_per_decade=round(10*sen_slope(series), 4),
+                             lag1_r=round(r1, 4), prewhitened=prewhitened, p_value_tfpw=round(p_pw, 6)))
     # FDR family: every test whose cell centre is inside Bangladesh
     # (34 cells x 13 series). Cells outside are corrected as their own family.
     for flag in (True, False):
@@ -94,6 +110,8 @@ def main():
         for r, sig in zip(fam, bh_fdr([r["p_value"] for r in fam])):
             r["significant_p05"] = r["p_value"] < 0.05
             r["significant_fdr05"] = bool(sig)
+        for r, sig in zip(fam, bh_fdr([r["p_value_tfpw"] for r in fam])):
+            r["significant_fdr05_tfpw"] = bool(sig)
     os.makedirs(OUT, exist_ok=True)
     with open(os.path.join(OUT, "t2m_trends_by_cell_month.csv"), "w", newline="") as fh:
         w = csv.DictWriter(fh, fieldnames=list(rows[0])); w.writeheader(); w.writerows(rows)
@@ -106,6 +124,7 @@ def main():
              f"- Tests inside Bangladesh (34 cells x 12 months + annual): {len(bd)}; FDR family = these tests",
              f"- Inside Bangladesh, significant at p<0.05: {sum(r['significant_p05'] for r in bd)} of {len(bd)}",
              f"- Inside Bangladesh, significant after Benjamini-Hochberg FDR (q=0.05): {sum(r['significant_fdr05'] for r in bd)} of {len(bd)}",
+             f"- Series with significant lag-1 autocorrelation (pre-whitened): {sum(r['prewhitened'] for r in bd)} of {len(bd)}; significant after FDR on pre-whitened p-values: {sum(r['significant_fdr05_tfpw'] for r in bd)} of {len(bd)}",
              f"- Annual-mean cells with significant warming (p<0.05): {sum(r['significant_p05'] and r['sen_slope_c_per_decade']>0 for r in annual)} of {len(annual)}",
              "", "## Fastest monthly warming inside Bangladesh (Theil-Sen)", "",
              "| Lat | Lon | Month | Sen slope (°C/decade) | p | FDR-significant |", "|---|---|---|---|---|---|"]
