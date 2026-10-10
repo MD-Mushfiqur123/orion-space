@@ -220,28 +220,14 @@ export function createCycloneSource({
       );
       try {
         signal?.throwIfAborted();
-        let response;
-        try {
-          response = await fetchImpl('/api/cyclones', {
-            signal: controller.signal,
-            cache: 'no-store',
-            redirect: 'error',
-          });
-        } catch {}
-
-        if (!response || !response.ok) {
-          // Static fallback: Calm / Active basins with zero storm advisories
-          return {
-            schemaVersion: 1,
-            source: 'NOAA NHC / CPHC',
-            attribution: 'National Hurricane Center',
-            coverage: 'Atlantic and eastern/central North Pacific',
-            fetchedAt: Date.now(),
-            stale: false,
-            unavailable: false,
-            reason: null,
-            storms: [],
-          };
+        const response = await fetchImpl('/api/cyclones', {
+          signal: controller.signal,
+          cache: 'no-store',
+          redirect: 'error',
+        });
+        if (!response.ok) {
+          await response.body?.cancel();
+          throw new Error(`Cyclone HTTP ${response.status}`);
         }
         const result = await readResponseJsonCapped(
           response,

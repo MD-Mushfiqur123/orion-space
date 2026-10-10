@@ -10,7 +10,11 @@ export function readStylesheet(file, ancestors = new Set()) {
   const next = new Set(ancestors).add(resolved);
   return readFileSync(resolved, 'utf8').replace(
     /@import ['"]([^'"]+)['"];\s*/g,
-    (_, imported) =>
-      readStylesheet(path.resolve(path.dirname(resolved), imported), next),
+    (statement, imported) =>
+      // Package imports (e.g. "tailwindcss") are resolved by the bundler, not
+      // from disk next to the stylesheet; leave them in place.
+      /^[./]/.test(imported)
+        ? readStylesheet(path.resolve(path.dirname(resolved), imported), next)
+        : statement,
   );
 }
