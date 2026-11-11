@@ -1,11 +1,17 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import { BANGLADESH_DISTRICTS, findDistrictSector } from './bangladeshDistricts.js';
+import {
+  BANGLADESH_DISTRICTS,
+  findDistrictSector,
+} from './bangladeshDistricts.js';
 
 describe('Bangladesh Districts Registry', () => {
   it('contains all 64 districts', () => {
     const keys = Object.keys(BANGLADESH_DISTRICTS);
-    assert.ok(keys.length >= 64, `Expected at least 64 districts, found ${keys.length}`);
+    assert.ok(
+      keys.length >= 64,
+      `Expected at least 64 districts, found ${keys.length}`,
+    );
   });
 
   it('correctly resolves Pirojpur', () => {
