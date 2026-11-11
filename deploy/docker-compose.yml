@@ -1,0 +1,77 @@
+services:
+  # ----------------------------------------------------------------------------
+  # Private Model Inference Runtime (vLLM or PyTorch Server)
+  # Internal network only; NEVER exposed to public internet
+  # ----------------------------------------------------------------------------
+  orion-model-inference:
+    image: vllm/vllm-openai:latest
+    container_name: orion-model-inference
+    restart: unless-stopped
+    command: >
+      --model /models/orion-qwen3-0.6b-merged
+      --served-model-name orion-qwen3-0.6b
+      --host 0.0.0.0
+      --port 8000
+      --max-model-len 2048
+      --gpu-memory-utilization 0.85
+      --trust-remote-code
+      --disable-log-requests
+      --api-key ${ORION_MODEL_API_KEY}
+    volumes:
+      - ./outputs:/models:ro
+    environment:
+      - ORION_MODEL_API_KEY=${ORION_MODEL_API_KEY}
+      - VLLM_LOGGING_LEVEL=INFO
+    networks:
+      - orion-internal
+    # For GPU acceleration:
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f -H \"Authorization: Bearer $$ORION_MODEL_API_KEY\" http://localhost:8000/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  # ----------------------------------------------------------------------------
+  # Orion Node.js Agent Backend
+  # Houses Tool Registry, NASA APIs, Climate Engine, and Map Orchestrator
+  # ----------------------------------------------------------------------------
+  orion-agent-backend:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    container_name: orion-agent-backend
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3000:3000"
+    environment:
+      - NODE_ENV=production
+      - ORION_AGENT_PORT=3000
+      - ORION_AGENT_HOST=0.0.0.0
+      - ORION_MODEL_PROVIDER=qwen3
+      - ORION_MODEL_BASE_URL=http://orion-model-inference:8000
+      - ORION_MODEL_NAME=orion-qwen3-0.6b
+      - ORION_MODEL_API_KEY=${ORION_MODEL_API_KEY}
+      - ORION_CORS_ORIGIN=${ORION_CORS_ORIGIN:-https://md-mushfiqur123.github.io}
+      - NASA_EARTHDATA_TOKEN=${NASA_EARTHDATA_TOKEN:-}
+      - FIRMS_MAP_KEY=${FIRMS_MAP_KEY:-}
+    depends_on:
+      orion-model-inference:
+        condition: service_healthy
+    networks:
+      - orion-internal
+      - orion-public
+
+networks:
+  orion-internal:
+    internal: true
+  orion-public:
+    driver: bridge
+
