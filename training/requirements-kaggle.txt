@@ -1,0 +1,12 @@
+# Kaggle T4 / CUDA LoRA SFT dependencies for Qwen/Qwen3-0.6B
+# Qwen3 architecture requires transformers >= 4.51.0
+transformers>=4.51.0,<5.0.0
+peft>=0.15.0
+trl>=0.16.0
+datasets>=3.2.0
+accelerate>=1.4.0
+bitsandbytes>=0.45.0
+safetensors>=0.5.0
+huggingface-hub>=0.29.0
+numpy>=1.26.0
+scipy>=1.11.0
