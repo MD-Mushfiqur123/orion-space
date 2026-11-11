@@ -1,0 +1,18 @@
+# Never commit model checkpoints, adapter weights, or generated full training runs
+outputs/
+checkpoints/
+adapters/
+merged/
+eval_outputs/
+artifacts/
+wandb/
+.cache/
+__pycache__/
+*.pyc
+*.safetensors
+*.bin
+*.pt
+*.pth
+*.ckpt
+*.gguf
+*.onnx
