@@ -11,13 +11,16 @@
  */
 
 import * as Cesium from 'cesium';
+import { BANGLADESH_DISTRICTS, findDistrictSector } from './bangladeshDistricts.js';
 
 // ============================================================================
 // GEOSPATIAL SECTOR REGISTRY
 // ============================================================================
 
 export const SECTORS = {
+  ...BANGLADESH_DISTRICTS,
   barisal: {
+    ...BANGLADESH_DISTRICTS.barisal,
     id: 'barisal',
     name: 'Barisal Coastal Belt & Climate Hotspot',
     lat: 22.701,
@@ -801,13 +804,19 @@ export class OrionMapHarness {
     }
 
     // Fallback: Unknown command
-    const msg = `Agent did not recognize "${rawCommand}". Try "Barisal", "Clouds", "Sea level", or "FLIR".`;
+    const msg = `Agent did not recognize "${rawCommand}". Try any Bangladesh district (e.g., "Pirojpur", "Barisal", "Sylhet", "Dhaka") or layers ("Clouds", "Sea level", "FLIR").`;
     this._setStatus(msg);
     this.speak('Command not recognized. Please specify a location or layer.');
   }
 
   /** Resolves geographic sector from natural language query. */
   _resolveSector(text) {
+    // 1. First consult comprehensive 64 districts & divisions registry
+    const matchedDistrict = findDistrictSector(text);
+    if (matchedDistrict) {
+      return matchedDistrict;
+    }
+
     if (
       text.includes('barisal') ||
       text.includes('barishal') ||
@@ -920,7 +929,8 @@ export class OrionMapHarness {
     this._setStatus(
       `🚀 Maneuvering to ${sector.name} (${sector.actionDesc})...`,
     );
-    this.speak(sector.speech);
+    const speechText = sector.speech || `Navigating to ${sector.name}. Sector live.`;
+    this.speak(speechText);
 
     const dest = Cesium.Cartesian3.fromDegrees(
       sector.lon,
