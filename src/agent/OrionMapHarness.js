@@ -11,7 +11,17 @@
  */
 
 import * as Cesium from 'cesium';
-import { BANGLADESH_DISTRICTS, findDistrictSector } from './bangladeshDistricts.js';
+import {
+  classifyLocalCommand,
+  escapeHtml,
+  sanitizeEvidenceCard,
+  sanitizeMapActions,
+} from './agentContract.js';
+import {
+  BANGLADESH_DISTRICTS,
+  findDistrictSector,
+} from './bangladeshDistricts.js';
+import { createOrionAgentClient } from './orionAgentClient.js';
 
 // ============================================================================
 // GEOSPATIAL SECTOR REGISTRY
@@ -177,6 +187,9 @@ export class OrionMapHarness {
     this.orbitInterval = null;
     this.activeSector = SECTORS.bangladesh;
     this.history = [];
+    this.agentTurns = [];
+    this.agentClient = options.agentClient || createOrionAgentClient();
+    this.activeShader = 'normal';
     this.isVisible = false;
 
     // Real NASA Climate Telemetry Storage
@@ -250,7 +263,7 @@ export class OrionMapHarness {
     // overridden by the polish sheet.
     container.className = 'flex-col font-sans pointer-events-auto hidden';
 
-        container.innerHTML = `
+    container.innerHTML = `
       <!-- Orion Agent Premium Intelligence UI -->
       <div class="flex flex-col w-full" style="font-family: 'Inter', -apple-system, sans-serif;">
 
@@ -398,7 +411,8 @@ export class OrionMapHarness {
 
     speechBtn?.addEventListener('click', () => {
       this.speechEnabled = !this.speechEnabled;
-      const iconHtml = '<span class="material-symbols-outlined text-[13px]">volume_up</span>';
+      const iconHtml =
+        '<span class="material-symbols-outlined text-[13px]">volume_up</span>';
       const label = this.speechEnabled ? 'AUDIO ON' : 'AUDIO OFF';
       speechBtn.innerHTML = `${iconHtml}<span>${label}</span>`;
       this._setStatus(
@@ -505,7 +519,9 @@ export class OrionMapHarness {
     const textEl = document.getElementById('orion-harness-status-text');
     if (textEl) textEl.innerHTML = msg;
 
-    const plain = String(msg).replace(/<[^>]*>/g, '').trim();
+    const plain = String(msg)
+      .replace(/<[^>]*>/g, '')
+      .trim();
     if (
       plain &&
       plain !== this._lastAgentMsg &&
@@ -578,15 +594,133 @@ export class OrionMapHarness {
   // ==========================================================================
 
   /**
-   * Main entry point: Parses natural language text and executes actions on the map.
+   * Main entry point: Routes instant local map commands locally and sends
+   * natural-language / scientific queries to POST /api/orion/agent.
    * @param {string} rawCommand
    */
   async execute(rawCommand) {
-    if (!rawCommand) return;
-    const lower = rawCommand.toLowerCase().trim();
-    this.history.push(rawCommand);
+    if (!rawCommand || typeof rawCommand !== 'string') return;
+    const trimmed = rawCommand.trim();
+    if (!trimmed) return;
+    this.history.push(trimmed);
     this._playTone(660, 0.06);
-    this._addTranscriptMessage(rawCommand, 'user');
+    this._addTranscriptMessage(trimmed, 'user');
+
+    const route = classifyLocalCommand(trimmed, {
+      findSector: (q) => this._resolveSector(q),
+    });
+
+    if (route.kind === 'ignore') return;
+    if (route.kind === 'local') {
+      switch (route.action) {
+        case 'orbit':
+          return this.startOrbit();
+        case 'stop_orbit':
+          return this.stopOrbit();
+        case 'clouds':
+          return this.triggerClouds();
+        case 'shader':
+          return this.triggerShader(route.style, route.announcement);
+        case 'sea_level':
+          return this.triggerSeaLevelRise();
+        case 'coords':
+          return this.flyToCoords(
+            route.lat,
+            route.lon,
+            120000,
+            `Coordinates [${route.lat.toFixed(4)}, ${route.lon.toFixed(4)}]`,
+          );
+        case 'sector':
+          return this.flyToSector(route.sector);
+      }
+    }
+
+    const statusEl = document.getElementById('orion-harness-status-text');
+    if (statusEl) statusEl.textContent = 'Querying Orion Intelligence Agent...';
+
+    const response = await this.agentClient.ask({
+      message: trimmed,
+      history: this.agentTurns.slice(-6),
+      activeSectorId: this.activeSector?.id || 'barisal',
+      clientContext: {
+        cloudsActive: Boolean(this.cloudStream?.active),
+        shader: this.activeShader || 'normal',
+      },
+    });
+
+    if (response && response.ok && response.answer) {
+      return this._applyAgentResponse(trimmed, response);
+    }
+
+    return this._executeLocalFallback(trimmed);
+  }
+
+  /** Apply validated backend answer, evidence card, and allowlisted map actions. */
+  async _applyAgentResponse(userPrompt, response) {
+    const validIds = new Set(Object.keys(SECTORS));
+    const actions = sanitizeMapActions(response.mapActions, validIds);
+    const card = sanitizeEvidenceCard(response.evidenceCard);
+    let wantsEvidenceCard = false;
+
+    for (const action of actions) {
+      switch (action.type) {
+        case 'fly_to_sector': {
+          const target = SECTORS[action.sectorId];
+          if (target) await this.flyToSector(target, { silent: true });
+          break;
+        }
+        case 'fly_to_coords':
+          await this.flyToCoords(
+            action.lat,
+            action.lon,
+            action.altitude,
+            action.label,
+            { silent: true },
+          );
+          break;
+        case 'toggle_clouds':
+          this.triggerClouds({ silent: true, active: action.active });
+          break;
+        case 'set_shader':
+          this.triggerShader(action.style, '', { silent: true });
+          break;
+        case 'start_orbit':
+          this.startOrbit({ silent: true });
+          break;
+        case 'stop_orbit':
+          this.stopOrbit({ silent: true });
+          break;
+        case 'show_evidence_card':
+          wantsEvidenceCard = true;
+          break;
+      }
+    }
+
+    if (wantsEvidenceCard && card) {
+      this.showEvidenceCard({
+        ...card,
+        speech: response.speech || response.answer,
+      });
+    }
+
+    this.agentTurns.push(
+      { role: 'user', content: userPrompt },
+      { role: 'assistant', content: response.answer },
+    );
+    if (this.agentTurns.length > 12) {
+      this.agentTurns = this.agentTurns.slice(-12);
+    }
+
+    const statusEl = document.getElementById('orion-harness-status-text');
+    if (statusEl) statusEl.textContent = response.answer;
+    this._lastAgentMsg = response.answer;
+    this._addTranscriptMessage(response.answer, 'agent');
+    this.speak(response.speech || response.answer);
+  }
+
+  /** Deterministic local fallback when the backend agent endpoint is unreachable. */
+  async _executeLocalFallback(rawCommand) {
+    const lower = rawCommand.toLowerCase().trim();
 
     // 1. Orbit command
     if (
@@ -621,8 +755,7 @@ export class OrionMapHarness {
     if (
       lower.includes('thermal') ||
       lower.includes('flir') ||
-      lower.includes('heat') ||
-      lower.includes('gorom')
+      lower === 'gorom'
     ) {
       return this.triggerShader(
         'thermal',
@@ -682,7 +815,10 @@ export class OrionMapHarness {
       lower.includes('agriculture') ||
       lower.includes('krishi') ||
       lower.includes('কৃষি') ||
-      (lower.includes('uchit') && (lower.includes('weather') || lower.includes('abohawa') || lower.includes('আবহাওয়া')))
+      (lower.includes('uchit') &&
+        (lower.includes('weather') ||
+          lower.includes('abohawa') ||
+          lower.includes('আবহাওয়া')))
     ) {
       return this.handleCropAdvisoryQuery();
     }
@@ -913,12 +1049,14 @@ export class OrionMapHarness {
   // ==========================================================================
 
   /** Fly camera to targeted sector. */
-  async flyToSector(sector) {
+  async flyToSector(sector, { silent = false } = {}) {
     this.activeSector = sector;
-    this.stopOrbit();
+    this.stopOrbit({ silent: true });
 
     if (!this.viewer?.camera) {
-      this._setStatus(`Camera unavailable. Navigating to ${sector.name}`);
+      if (!silent) {
+        this._setStatus(`Camera unavailable. Navigating to ${sector.name}`);
+      }
       return;
     }
 
@@ -926,11 +1064,14 @@ export class OrionMapHarness {
     if (badge)
       badge.textContent = `${sector.id.toUpperCase()} [${Math.round(sector.altitude / 1000)}KM]`;
 
-    this._setStatus(
-      `🚀 Maneuvering to ${sector.name} (${sector.actionDesc})...`,
-    );
-    const speechText = sector.speech || `Navigating to ${sector.name}. Sector live.`;
-    this.speak(speechText);
+    if (!silent) {
+      this._setStatus(
+        `🚀 Maneuvering to ${sector.name} (${sector.actionDesc})...`,
+      );
+      const speechText =
+        sector.speech || `Navigating to ${sector.name}. Sector live.`;
+      this.speak(speechText);
+    }
 
     const dest = Cesium.Cartesian3.fromDegrees(
       sector.lon,
@@ -946,20 +1087,30 @@ export class OrionMapHarness {
       duration: 2.8,
       easingFunction: Cesium.EasingFunction.CUBIC_IN_OUT,
       complete: () => {
-        this._setStatus(`✓ Arrived at ${sector.name}. Sector live.`);
+        if (!silent) {
+          this._setStatus(`✓ Arrived at ${sector.name}. Sector live.`);
+        }
         this._briefSectorHighlight(sector);
       },
     });
   }
 
   /** Fly camera to explicit coordinates. */
-  async flyToCoords(lat, lon, altitude = 100000, label = 'Target') {
-    this.stopOrbit();
-    this._setStatus(`🚀 Maneuvering to ${label}...`);
-    this.speak(`Navigating to ${label}`);
+  async flyToCoords(
+    lat,
+    lon,
+    altitude = 100000,
+    label = 'Target',
+    { silent = false } = {},
+  ) {
+    this.stopOrbit({ silent: true });
+    if (!silent) {
+      this._setStatus(`🚀 Maneuvering to ${label}...`);
+      this.speak(`Navigating to ${label}`);
+    }
 
     const dest = Cesium.Cartesian3.fromDegrees(lon, lat, altitude);
-    this.viewer.camera.flyTo({
+    this.viewer?.camera?.flyTo({
       destination: dest,
       orientation: {
         heading: Cesium.Math.toRadians(0),
@@ -969,19 +1120,21 @@ export class OrionMapHarness {
       duration: 3.0,
       easingFunction: Cesium.EasingFunction.CUBIC_IN_OUT,
       complete: () => {
-        this._setStatus(`✓ Arrived at ${label}.`);
+        if (!silent) this._setStatus(`✓ Arrived at ${label}.`);
       },
     });
   }
 
   /** Continuous 360-degree tactical camera orbit around active sector. */
-  startOrbit() {
-    this.stopOrbit();
+  startOrbit({ silent = false } = {}) {
+    this.stopOrbit({ silent: true });
     const sector = this.activeSector || SECTORS.barisal;
-    this._setStatus(
-      `Engaging continuous 360° tactical orbit around ${sector.name}...`,
-    );
-    this.speak(`Engaging 360 degree orbit around ${sector.name}`);
+    if (!silent) {
+      this._setStatus(
+        `Engaging continuous 360° tactical orbit around ${sector.name}...`,
+      );
+      this.speak(`Engaging 360 degree orbit around ${sector.name}`);
+    }
 
     const center = Cesium.Cartesian3.fromDegrees(sector.lon, sector.lat, 0);
     const distance = sector.altitude * 0.85;
@@ -1002,41 +1155,51 @@ export class OrionMapHarness {
   }
 
   /** Stop camera orbit and unlock controls. */
-  stopOrbit() {
+  stopOrbit({ silent = false } = {}) {
     if (this.orbitInterval) {
       clearInterval(this.orbitInterval);
       this.orbitInterval = null;
       if (this.viewer?.camera) {
         this.viewer.camera.lookAtTransform(Cesium.Matrix4.IDENTITY);
       }
-      this._setStatus(`Orbit disengaged. Free camera active.`);
+      if (!silent) {
+        this._setStatus(`Orbit disengaged. Free camera active.`);
+      }
     }
   }
 
   /** Toggle NASA GIBS Real Clouds. */
-  triggerClouds() {
+  triggerClouds({ silent = false, active } = {}) {
     const dockBtn = document.getElementById('real-earth-clouds-dock-btn');
     if (dockBtn) {
-      dockBtn.click();
+      const current = dockBtn.getAttribute('aria-pressed') === 'true';
+      if (typeof active !== 'boolean' || current !== active) {
+        dockBtn.click();
+      }
       const isActive = dockBtn.getAttribute('aria-pressed') === 'true';
-      const msg = isActive
-        ? 'NASA GIBS live cloud imagery online.'
-        : 'NASA GIBS cloud overlay deactivated.';
-      this._setStatus(msg);
-      this.speak(msg);
-    } else {
+      if (!silent) {
+        const msg = isActive
+          ? 'NASA GIBS live cloud imagery online.'
+          : 'NASA GIBS cloud overlay deactivated.';
+        this._setStatus(msg);
+        this.speak(msg);
+      }
+    } else if (!silent) {
       this._setStatus('Real clouds toggle triggered.');
     }
   }
 
   /** Trigger shader style mode. */
-  triggerShader(styleKey, announcement) {
+  triggerShader(styleKey, announcement, { silent = false } = {}) {
+    this.activeShader = styleKey;
     const btn = document.querySelector(`.style-btn[data-style="${styleKey}"]`);
     if (btn) {
       btn.click();
-      this._setStatus(announcement);
-      this.speak(announcement);
-    } else {
+      if (!silent) {
+        this._setStatus(announcement);
+        this.speak(announcement);
+      }
+    } else if (!silent) {
       this._setStatus(`Shader mode ${styleKey} triggered.`);
     }
   }
@@ -1050,54 +1213,64 @@ export class OrionMapHarness {
     this.speak(msg);
   }
 
-  /** Trigger Extreme Disaster Rain & NASA GPM Precipitation Layer */
+  /** Offline fallback: Disaster rain & precipitation status */
   triggerDisasterRain() {
-    this._setStatus('🌧️ Activating NASA GPM Global Precipitation & Extreme Rain Radar...');
-    const speech = 'NASA GPM Live Precipitation radar active. Displaying atmospheric rain density and storm cells across the Bay of Bengal and coastal districts.';
+    this._setStatus('🌧️ Precipitation backend feed unavailable offline.');
+    const speech =
+      'Live precipitation telemetry requires the Orion backend service, which is currently unreachable.';
     this.showEvidenceCard({
-      title: 'DISASTER RAIN & GPM PRECIPITATION RADAR',
+      title: 'PRECIPITATION TELEMETRY STATUS',
       sector: 'Bay of Bengal & Coastal Delta',
-      slope: 'Rain Intensity: 42.8 mm/h (Heavy Precipitation)',
-      senSlope: 'Accumulated Radar: 184 mm / 24 hrs',
-      pValue: 'NASA GPM IMERG Early Run Active',
-      significance: 'EXTREME MONSOON RAINFALL WARNING',
-      narrative: 'NASA GPM real-time satellite constellation detects intense convective precipitation bands advancing inland. Flash flood risk elevated in low-lying riparian embankments.',
+      slope: 'Backend live weather unavailable',
+      senSlope: 'N/A (offline fallback)',
+      pValue: 'NASA GPM / Open-Meteo proxy offline',
+      significance: 'LIVE FEED UNAVAILABLE',
+      narrative:
+        'Cannot fetch live precipitation intensity while the Orion agent backend is offline. Reconnect backend or toggle NASA GIBS cloud imagery for visual cloud cover.',
       speech,
     });
     this.speak(speech);
   }
 
-  /** Trigger Cyclone & Storm Surge Inundation Monitoring */
+  /** Offline fallback: Cyclone & Bay of Bengal monitoring */
   triggerCycloneStorm() {
-    this.flyToSector(SECTORS.bay_of_bengal);
-    this._setStatus('🌀 Tracking Bay of Bengal Tropical Depression & Storm Surge...');
-    const speech = 'Bay of Bengal Tropical Cyclone tracker active. Central atmospheric pressure 988 millibars with maximum sustained surface winds of 85 knots.';
+    this.flyToSector(SECTORS.bay_of_bengal, { silent: true });
+    this._setStatus(
+      '🌀 Positioned on Bay of Bengal; cyclone live feed unavailable offline.',
+    );
+    const speech =
+      'Positioned on the Bay of Bengal sector. Live depression and weather telemetry requires the Orion backend connection.';
     this.showEvidenceCard({
-      title: 'CYCLONE & STORM SURGE TELEMETRY',
-      sector: 'Bay of Bengal [19.2°N, 89.5°E]',
-      slope: 'Central Pressure: 988 hPa | Wind: 85 knots',
-      senSlope: 'Tidal Surge Anomaly: +2.8 meters above HAT',
-      pValue: 'Joint Typhoon Warning Center Track Active',
-      significance: 'CATEGORY 2 CYCLONE WARNING',
-      narrative: 'Satellite infrared imaging and scatterometer telemetry indicate deep atmospheric convection. Coastal storm surge inundation alert issued for Barisal, Patuakhali, and Bhola.',
+      title: 'BAY OF BENGAL CYCLONE MONITOR',
+      sector: 'Bay of Bengal [20.2°N, 89.8°E]',
+      slope: 'Live telemetry unavailable offline',
+      senSlope: 'NHC proxy covers Atlantic/N.Pacific only',
+      pValue: 'Backend offline',
+      significance: 'LIVE FEED UNAVAILABLE',
+      narrative:
+        'Camera moved to the Bay of Bengal sector. Live meteorological readings are unavailable while the backend service is unreachable.',
       speech,
     });
     this.speak(speech);
   }
 
-  /** Trigger Sylhet Flash Flood Radar & SAR Inundation */
+  /** Offline fallback: Sylhet flood sector */
   triggerSylhetFlood() {
-    this.flyToSector(SECTORS.sylhet);
-    this._setStatus('🌊 Sentinel-1 SAR Flood Inundation & Haor Basin Telemetry active...');
-    const speech = 'Sentinel-1 SAR Radar Flood monitoring active for Sylhet Haor Basin. Inundation extent calculated at 68% of wetland surface.';
+    this.flyToSector(SECTORS.sylhet, { silent: true });
+    this._setStatus(
+      '🌊 Positioned on Sylhet Haor basin; live flood feed unavailable offline.',
+    );
+    const speech =
+      'Positioned on Sylhet Haor Basin. Live meteorological and flood telemetry requires the Orion backend connection.';
     this.showEvidenceCard({
-      title: 'SENTINEL-1 SAR FLOOD INUNDATION',
-      sector: 'Sylhet Haor Basin & Surma River',
-      slope: 'Flood Inundation Extent: 68.4% of basin area',
-      senSlope: 'Water Level Anomaly: +1.42m above danger level',
-      pValue: 'Copernicus Sentinel-1 Synthetic Aperture Radar',
-      significance: 'ACTIVE FLASH FLOOD EXTENT',
-      narrative: 'High-resolution radar backscatter telemetry isolates surface water pooling across Haor wetlands, confirming upstream transboundary runoff inflow.',
+      title: 'SYLHET HAOR FLOOD MONITOR',
+      sector: 'Sylhet Haor Basin [24.89°N, 91.87°E]',
+      slope: 'Live flood telemetry unavailable offline',
+      senSlope: 'N/A (offline fallback)',
+      pValue: 'Backend offline',
+      significance: 'LIVE FEED UNAVAILABLE',
+      narrative:
+        'Camera moved to Sylhet Haor Basin. Live rainfall and flood conditions are unavailable while the backend service is unreachable.',
       speech,
     });
     this.speak(speech);
@@ -1222,14 +1395,14 @@ export class OrionMapHarness {
       <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-bottom: 1px solid #27272a; background: rgba(255, 255, 255, 0.03);">
         <div style="display: flex; align-items: center; gap: 8px;">
           <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #ffffff; box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);"></span>
-          <span style="font-weight: 700; font-size: 11px; letter-spacing: 0.8px;">${data.title || 'CLIMATE EVIDENCE DOSSIER'}</span>
+          <span style="font-weight: 700; font-size: 11px; letter-spacing: 0.8px;">${escapeHtml(data.title || 'CLIMATE EVIDENCE DOSSIER')}</span>
         </div>
         <button id="orion-evidence-close-btn" style="background: transparent; border: none; color: #a1a1aa; font-size: 14px; cursor: pointer;">✕</button>
       </div>
 
       <div style="padding: 12px 14px; display: flex; flex-direction: column; gap: 10px;">
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 10px; background: rgba(0, 0, 0, 0.4); padding: 8px 10px; border-radius: 6px; border: 1px solid #18181b;">
-          <div><span style="color: #71717a;">SECTOR:</span> <span style="color: #ffffff; font-weight: 600;">${data.sector || 'Barisal Coastal Belt'}</span></div>
+          <div><span style="color: #71717a;">SECTOR:</span> <span style="color: #ffffff; font-weight: 600;">${escapeHtml(data.sector || 'Barisal Coastal Belt')}</span></div>
           <div><span style="color: #71717a;">TIMEFRAME:</span> <span style="color: #ffffff;">2001 - 2025 (25 Yrs)</span></div>
           <div><span style="color: #71717a;">DATASET:</span> <span style="color: #ffffff;">NASA MERRA-2 (T2M)</span></div>
           <div><span style="color: #71717a;">API:</span> <span style="color: #ffffff;">NASA POWER</span></div>
@@ -1239,24 +1412,24 @@ export class OrionMapHarness {
           <div style="font-size: 9.5px; color: #a1a1aa; letter-spacing: 0.5px; margin-bottom: 6px; text-transform: uppercase;">STATISTICAL METRICS (THEIL-SEN &amp; MANN-KENDALL)</div>
           <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
             <span style="color: #a1a1aa;">Seasonal Slope:</span>
-            <span style="color: #ffffff; font-weight: 700;">${data.slope || '+0.40°C / decade'}</span>
+            <span style="color: #ffffff; font-weight: 700;">${escapeHtml(data.slope || '+0.40°C / decade')}</span>
           </div>
           <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
             <span style="color: #a1a1aa;">Sen's Slope β:</span>
-            <span style="color: #ffffff;">${data.senSlope || '+0.040°C / year'}</span>
+            <span style="color: #ffffff;">${escapeHtml(data.senSlope || '+0.040°C / year')}</span>
           </div>
           <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
             <span style="color: #a1a1aa;">Mann-Kendall p-value:</span>
-            <span style="color: #ffffff; font-weight: 700;">${data.pValue || 'p < 0.001'}</span>
+            <span style="color: #ffffff; font-weight: 700;">${escapeHtml(data.pValue || 'p < 0.001')}</span>
           </div>
           <div style="display: flex; justify-content: space-between;">
             <span style="color: #a1a1aa;">Significance Verdict:</span>
-            <span style="color: #ffffff; border: 1px solid #52525b; padding: 1px 6px; border-radius: 3px; font-size: 9.5px;">${data.significance || 'STATISTICALLY SIGNIFICANT'}</span>
+            <span style="color: #ffffff; border: 1px solid #52525b; padding: 1px 6px; border-radius: 3px; font-size: 9.5px;">${escapeHtml(data.significance || 'STATISTICALLY SIGNIFICANT')}</span>
           </div>
         </div>
 
         <div style="font-size: 10.5px; color: #d4d4d8; background: rgba(0, 0, 0, 0.3); border-left: 2px solid #ffffff; padding: 8px 10px;">
-          ${data.narrative || 'September warming on the Barisal coast is strong and significant, while the annual mean shows no significant trend: annual averages hide the seasonal signal.'}
+          ${escapeHtml(data.narrative || 'September warming on the Barisal coast is strong and significant, while the annual mean shows no significant trend: annual averages hide the seasonal signal.')}
         </div>
 
         <div style="display: flex; gap: 8px;">
@@ -1328,91 +1501,61 @@ export class OrionMapHarness {
     this.speak(speech);
   }
 
-  /** Query 4: Seasonal Dissociation (Why annual avg masks October warming) */
+  /** Query 4: Seasonal Dissociation (Why annual avg masks September warming) */
   async handleSeasonalDissociationQuery() {
     const speech =
-      'Seasonal dissociation analysis shows that while annual average temperatures show modest warming, post-monsoon months of September and October exhibit severe, statistically significant warming across Bangladesh.';
+      'Annual averages mask the seasonal signal: across 34 Bangladesh grid cells, the annual mean has zero significant cells, while September warms significantly in 31 of 34 cells after FDR correction. October shows warming at p below 0.05 in 29 cells, but zero survive FDR.';
     this.showEvidenceCard({
-      title: 'SEASONAL DISSOCIATION PHENOMENON',
-      sector: 'Bangladesh Temporal Signal Decomposition',
-      slope: 'Annual Mean: +0.03°C/dec | Oct: +0.45°C/dec',
-      senSlope: '15x Amplification in Post-Monsoon Season',
-      pValue: 'Annual p=0.45 (ns) vs Oct p=0.007 (***)',
-      significance: 'EXTREME SEASONAL VARIATION',
+      title: 'SEASONAL DISSOCIATION (MERRA-2)',
+      sector: 'Bangladesh (34 MERRA-2 grid cells)',
+      slope: 'Sep: +0.360°C/dec | Oct: +0.389°C/dec | Annual: +0.021°C/dec',
+      senSlope: 'p<0.05: Sep 34/34 | Oct 29/34 | Annual 0/34',
+      pValue: 'BH FDR (q=0.05): Sep 31/34 | Oct 0/34 | Annual 0/34',
+      significance: 'ROBUST SEPTEMBER SIGNAL ONLY',
       narrative:
-        'Crucial discovery: Evaluating only annual averages dilutes the extreme post-monsoon autumn signal. Farmers and disaster managers must prepare for delayed cooling and extended post-monsoon tropical heat.',
+        'Evaluating only the annual mean misses the late-monsoon warming peak in September (+0.360°C/decade median, 31/34 cells FDR-significant). October trends do not survive FDR (0/34).',
       speech,
     });
     this.speak(speech);
   }
 
-  /** Query 5: Real-time Live Weather Telemetry */
+  /** Query 5: Offline Live Weather fallback */
   async handleLiveWeatherQuery() {
-    this._setStatus('📡 Querying Open-Meteo & NASA atmospheric telemetry...');
     const sec = this.activeSector || SECTORS.barisal;
-    try {
-      const res = await fetch(
-        `https://api.open-meteo.com/v1/forecast?latitude=${sec.lat}&longitude=${sec.lon}&current=temperature_2m,relative_humidity_2m,precipitation,weather_code,wind_speed_10m,wind_direction_10m&timezone=auto`,
-      );
-      if (res.ok) {
-        const data = await res.json();
-        const cur = data.current || {};
-        const temp = cur.temperature_2m ?? 30.5;
-        const humidity = cur.relative_humidity_2m ?? 70;
-        const precip = cur.precipitation ?? 0;
-        const wind = cur.wind_speed_10m ?? 8;
-        
-        const speech = `Live atmospheric telemetry for ${sec.name}: Current surface temperature is ${temp} degrees Celsius, relative humidity is ${humidity} percent, precipitation is ${precip} millimeters, with wind speed at ${wind} kilometers per hour.`;
-        
-        this.showEvidenceCard({
-          title: 'LIVE WEATHER TELEMETRY (OPEN-METEO)',
-          sector: `${sec.name} [${sec.lat.toFixed(2)}°N, ${sec.lon.toFixed(2)}°E]`,
-          slope: `Surface Temp: ${temp} °C | Humidity: ${humidity}%`,
-          senSlope: `Precipitation: ${precip} mm/h | Wind: ${wind} km/h`,
-          pValue: `Status: REAL-TIME STREAM ACTIVE`,
-          significance: 'OBSERVED ATMOSPHERIC TELEMETRY',
-          narrative: `Real-time satellite & ground sensor feed for ${sec.name}. Conditions are optimal for coastal monitoring. Updated every 15 minutes via Open-Meteo & Sentinel-5P.`,
-          speech,
-        });
-        this.speak(speech);
-        return;
-      }
-    } catch (e) {
-      console.warn('[OrionHarness] Weather API fallback:', e);
-    }
-    
-    // Fallback if offline
-    const speech = `Live weather for ${sec.name}: Temperature 30.8°C, Humidity 68%, Precipitation 0.0 mm/h, Wind 6.5 km/h. Conditions normal.`;
+    const speech = `Live weather telemetry for ${sec.name} requires the Orion backend service, which is currently unreachable.`;
+    this._setStatus(`📡 Live weather unavailable offline for ${sec.name}.`);
     this.showEvidenceCard({
       title: 'LIVE WEATHER TELEMETRY',
       sector: sec.name,
-      slope: 'Surface Temp: 30.8 °C | Humidity: 68%',
-      senSlope: 'Precipitation: 0.0 mm/h | Wind: 6.5 km/h',
-      pValue: 'Status: SATELLITE TELEMETRY ACTIVE',
-      significance: 'REAL-TIME ATMOSPHERIC READOUT',
-      narrative: `Surface meteorological data confirmed for ${sec.name}. Optimal conditions for field operations.`,
+      slope: 'Backend live weather unavailable',
+      senSlope: 'N/A (offline fallback)',
+      pValue: 'Status: FEED UNAVAILABLE',
+      significance: 'LIVE FEED UNAVAILABLE',
+      narrative: `Live Open-Meteo conditions for ${sec.name} could not be retrieved while the Orion agent backend is offline.`,
       speech,
     });
     this.speak(speech);
   }
 
-  /** Query 6: Farmer & Crop Advisory Intelligence (কৃষি ও ফসল পরামর্শ) */
+  /** Query 6: Offline Crop Advisory fallback (uses verified climate baseline only) */
   async handleCropAdvisoryQuery() {
-    this._setStatus('🌱 Analyzing agricultural crop suitability & weather impact...');
+    this._setStatus(
+      '🌱 Offline crop advisory (using MERRA-2 baseline only)...',
+    );
     const sec = this.activeSector || SECTORS.barisal;
-    const speech = `Agricultural Intelligence for ${sec.name}: Due to September warming (about +0.40°C/decade) and current 30°C temperature, Aman paddy requires controlled irrigation. For upcoming Rabi crops, delayed sowing of wheat and mustard by 7 to 10 days is advised to avoid early seedling heat stress.`;
-    
+    const speech = `Offline agricultural guidance for ${sec.name}: observed September MERRA-2 warming across Bangladesh (median +0.36°C per decade, Barisal +0.40°C per decade) supports maintaining controlled Aman irrigation and heat-resilient Rabi scheduling. Live weather is currently offline.`;
+
     this.showEvidenceCard({
-      title: 'FARMER CROP ADVISORY & CLIMATE ACTION',
+      title: 'CROP ADVISORY (CLIMATE BASELINE)',
       sector: `${sec.name} (Agricultural Sector)`,
-      slope: 'Aman Rice: Optimal grain filling stage (Keep 2-3cm water)',
-      senSlope: 'Rabi Season: Delay sowing by 7–10 days (Heat resilience)',
-      pValue: 'Soil Moisture: 68% | Temperature Index: 30.8°C',
-      significance: 'CLIMATE RESILIENT FARMING PROTOCOL',
-      narrative: `Based on NASA MERRA-2 thermal data and live weather observations for ${sec.name}: Extended post-monsoon warmth delays winter cooling. Farmers should adopt heat-tolerant BRRI dhan 75 / 87 and adjust Rabi planting schedules.`,
+      slope: 'Aman Rice: Maintain 2–3 cm standing water in grain filling',
+      senSlope:
+        'Rabi Season: Adjust sowing window for prolonged post-monsoon warmth',
+      pValue: 'Live Weather: UNAVAILABLE (offline fallback)',
+      significance: 'RULE-BASED CLIMATE GUIDANCE',
+      narrative: `Based on verified NASA MERRA-2 September warming trends for Bangladesh (+0.36°C/decade median): farmers can reduce heat stress using heat-tolerant varieties (e.g. BRRI dhan 75/87). Reconnect backend for live local weather.`,
       speech,
     });
     this.speak(speech);
   }
 }
-
