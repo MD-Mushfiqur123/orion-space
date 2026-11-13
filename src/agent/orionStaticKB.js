@@ -35,7 +35,23 @@ const GREETINGS = {
   sectorId: null,
 };
 
-export const ORION_STATIC_KB = [
+// ── Greeting entry ────────────────────────────────────────────────────────────
+const GREETINGS = {
+  id: 'greeting',
+  keywords: ['hello', 'hey', 'assalamu', 'salam', 'good morning', 'good evening', 'good afternoon', 'howdy', 'greetings'],
+  exactWords: ['hi', 'hello', 'hey'],  // only match as standalone words
+  reasoningSteps: [
+    'Detecting greeting intent...',
+    'Loading Orion Intelligence Agent profile...',
+    'Preparing welcome response...',
+  ],
+  answer:
+    'Hello! I am Orion Intelligence Agent — your scientific Earth observation assistant. I can answer questions about crop risk, flood forecasting, soil salinity, groundwater depletion, vegetation health, heatwaves, and rainfall trends across Bangladesh. How can I help you today?',
+  evidence: null,
+  sectorId: null,
+};
+
+export const ORION_STATIC_KB = [GREETINGS,
   GREETINGS,
   {
     id: 'q1_satkhira_salinity_crop',

@@ -51,8 +51,7 @@ function makeRequest({ method, url, headers = {}, body = null }) {
 
     if (body !== null) {
       payload = typeof body === 'string' ? body : JSON.stringify(body);
-      reqHeaders['Content-Type'] =
-        reqHeaders['Content-Type'] || 'application/json';
+      reqHeaders['Content-Type'] = reqHeaders['Content-Type'] || 'application/json';
       reqHeaders['Content-Length'] = Buffer.byteLength(payload);
     }
 
@@ -104,11 +103,7 @@ async function runSuite() {
   console.log('='.repeat(70));
 
   // 1. Start Model Server
-  console.log(
-    '\n[1/8] Starting Orion Model Inference Server on port ' +
-      MODEL_PORT +
-      '...',
-  );
+  console.log('\n[1/8] Starting Orion Model Inference Server on port ' + MODEL_PORT + '...');
   const modelProcess = spawn(
     'python3',
     ['deploy/model_server.py', '--port', String(MODEL_PORT)],
@@ -131,10 +126,7 @@ async function runSuite() {
   let modelUp = false;
   for (let i = 0; i < 20; i++) {
     try {
-      const res = await makeRequest({
-        method: 'GET',
-        url: `${MODEL_URL}/health`,
-      });
+      const res = await makeRequest({ method: 'GET', url: `${MODEL_URL}/health` });
       if (res.status === 200 && res.json?.status === 'healthy') {
         modelUp = true;
         break;
@@ -145,9 +137,7 @@ async function runSuite() {
   assert(modelUp, 'Model inference server booted and responded to /health');
 
   // 2. Start Orion Agent Backend Server
-  console.log(
-    '\n[2/8] Starting Orion Node.js Agent Backend on port ' + TEST_PORT + '...',
-  );
+  console.log('\n[2/8] Starting Orion Node.js Agent Backend on port ' + TEST_PORT + '...');
   const customEnv = {
     NODE_ENV: 'production',
     ORION_AGENT_PORT: String(TEST_PORT),
@@ -166,18 +156,13 @@ async function runSuite() {
     getConfig: () => loadAgentConfig(customEnv),
   });
 
-  await new Promise((resolve) =>
-    backendServer.listen(TEST_PORT, '127.0.0.1', resolve),
-  );
+  await new Promise((resolve) => backendServer.listen(TEST_PORT, '127.0.0.1', resolve));
   console.log('  [+] Backend server listening.');
 
   try {
     // 3. Health & Readiness Verification
     console.log('\n[3/8] Verifying Health & Readiness Endpoints...');
-    const backendHealth = await makeRequest({
-      method: 'GET',
-      url: `${BACKEND_URL}/health`,
-    });
+    const backendHealth = await makeRequest({ method: 'GET', url: `${BACKEND_URL}/health` });
     assert(backendHealth.status === 200, 'GET /health returns HTTP 200');
     assert(backendHealth.json.ok === true, 'Backend health reports ok: true');
     assert(
@@ -193,10 +178,7 @@ async function runSuite() {
       'Backend reports modelStatus: ready',
     );
 
-    const modelReady = await makeRequest({
-      method: 'GET',
-      url: `${MODEL_URL}/ready`,
-    });
+    const modelReady = await makeRequest({ method: 'GET', url: `${MODEL_URL}/ready` });
     assert(modelReady.status === 200, 'Model server /ready returns HTTP 200');
     assert(modelReady.json.ready === true, 'Model server reports ready: true');
 
@@ -208,10 +190,7 @@ async function runSuite() {
       url: `${MODEL_URL}/v1/chat/completions`,
       body: { messages: [{ role: 'user', content: 'hello' }] },
     });
-    assert(
-      unauth.status === 401,
-      'Model server rejects unauthenticated call with HTTP 401',
-    );
+    assert(unauth.status === 401, 'Model server rejects unauthenticated call with HTTP 401');
 
     // Authorized attempt
     const authDirect = await makeRequest({
@@ -220,18 +199,10 @@ async function runSuite() {
       headers: { Authorization: `Bearer ${MOCK_API_KEY}` },
       body: {
         model: 'orion-qwen3-0.6b',
-        messages: [
-          {
-            role: 'user',
-            content: 'What is the warming trend in Barisal in September?',
-          },
-        ],
+        messages: [{ role: 'user', content: 'What is the warming trend in Barisal in September?' }],
       },
     });
-    assert(
-      authDirect.status === 200,
-      'Model server responds HTTP 200 with Bearer token',
-    );
+    assert(authDirect.status === 200, 'Model server responds HTTP 200 with Bearer token');
     const choice = authDirect.json.choices?.[0]?.message;
     assert(
       (choice?.content && choice.content.length > 0) ||
@@ -244,9 +215,7 @@ async function runSuite() {
     });
 
     // 5. Scientific Grounding & Tool Planning via Backend
-    console.log(
-      '\n[5/8] Testing Scientific Questions via POST /api/orion/agent...',
-    );
+    console.log('\n[5/8] Testing Scientific Questions via POST /api/orion/agent...');
 
     // Question A: Barisal September warming
     const q1 = await makeRequest({
@@ -255,24 +224,14 @@ async function runSuite() {
       headers: { Origin: GITHUB_PAGES_ORIGIN },
       body: { message: 'Is Barisal warming in September?' },
     });
-    assert(
-      q1.status === 200,
-      'Agent returns HTTP 200 for Barisal warming query',
-    );
+    assert(q1.status === 200, 'Agent returns HTTP 200 for Barisal warming query');
     assert(q1.json.ok === true, 'Agent response ok: true');
     assert(
-      q1.json.answer?.toLowerCase().includes('barisal') ||
-        q1.json.answer?.includes('0.36'),
+      q1.json.answer?.toLowerCase().includes('barisal') || q1.json.answer?.includes('0.36'),
       'Agent reply cites Barisal climate data',
     );
-    assert(
-      Array.isArray(q1.json.mapActions),
-      'Agent returned mapActions array',
-    );
-    assert(
-      q1.json.mapActions.length > 0,
-      'Agent triggered map action for Barisal',
-    );
+    assert(Array.isArray(q1.json.mapActions), 'Agent returned mapActions array');
+    assert(q1.json.mapActions.length > 0, 'Agent triggered map action for Barisal');
     benchmarks.push({
       label: 'Barisal September Climate Query (End-to-End)',
       latencyMs: q1.latencyMs,
@@ -283,9 +242,7 @@ async function runSuite() {
       method: 'POST',
       url: `${BACKEND_URL}/api/orion/agent`,
       headers: { Origin: GITHUB_PAGES_ORIGIN },
-      body: {
-        message: 'What is the October temperature trend for Bangladesh?',
-      },
+      body: { message: 'What is the October temperature trend for Bangladesh?' },
     });
     assert(q2.status === 200, 'Agent returns HTTP 200 for October trend');
     assert(
@@ -357,15 +314,10 @@ async function runSuite() {
         oversizedStatus = 413;
       }
     }
-    assert(
-      oversizedStatus === 413,
-      'Oversized request is rejected with HTTP 413',
-    );
+    assert(oversizedStatus === 413, 'Oversized request is rejected with HTTP 413');
 
     // 7. Map Action Sanitization & Concurrent Request Suite
-    console.log(
-      '\n[7/8] Verifying Map Action Sanitization & Concurrent Load...',
-    );
+    console.log('\n[7/8] Verifying Map Action Sanitization & Concurrent Load...');
     const safeActions = sanitizeMapActions([
       {
         type: 'fly_to_coords',
@@ -374,10 +326,7 @@ async function runSuite() {
         altitude: 120000,
       },
     ]);
-    assert(
-      safeActions.length === 1,
-      'Valid fly_to_coords action sanitized successfully',
-    );
+    assert(safeActions.length === 1, 'Valid fly_to_coords action sanitized successfully');
     assert(safeActions[0].lat === 22.7, 'Preserved safe coordinate');
 
     const unsafeActions = sanitizeMapActions([
@@ -386,10 +335,7 @@ async function runSuite() {
         code: 'window.alert(1)',
       },
     ]);
-    assert(
-      unsafeActions.length === 0,
-      'Disallowed action dropped by sanitizer',
-    );
+    assert(unsafeActions.length === 0, 'Disallowed action dropped by sanitizer');
 
     // Concurrent load test (5 parallel agent turns)
     const concurrentStart = performance.now();
@@ -426,9 +372,7 @@ async function runSuite() {
       }),
     ]);
     const concurrentDuration = Math.round(performance.now() - concurrentStart);
-    const allSuccessful = parallelQueries.every(
-      (r) => r.status === 200 && r.json?.ok,
-    );
+    const allSuccessful = parallelQueries.every((r) => r.status === 200 && r.json?.ok);
     assert(allSuccessful, '5 concurrent agent requests completed successfully');
     benchmarks.push({
       label: '5 Concurrent Agent Queries (Parallel)',
@@ -437,28 +381,19 @@ async function runSuite() {
 
     // 8. Performance Benchmark Summary
     console.log('\n[8/8] Performance Benchmark Summary');
-    const modelHealth = await makeRequest({
-      method: 'GET',
-      url: `${MODEL_URL}/health`,
-    });
+    const modelHealth = await makeRequest({ method: 'GET', url: `${MODEL_URL}/health` });
     console.log('-'.repeat(70));
     console.log(
       `Model Server RSS Memory:  ${modelHealth.json.memory?.cpu_rss_mb || 'N/A'} MB`,
     );
-    console.log(
-      `Model Server Concurrency: ${modelHealth.json.active_concurrency}`,
-    );
-    console.log(
-      `Total Served Queries:     ${modelHealth.json.total_requests_served}`,
-    );
+    console.log(`Model Server Concurrency: ${modelHealth.json.active_concurrency}`);
+    console.log(`Total Served Queries:     ${modelHealth.json.total_requests_served}`);
     console.log('-'.repeat(70));
     for (const b of benchmarks) {
       console.log(`  * ${b.label.padEnd(45)}: ${b.latencyMs} ms`);
     }
     console.log('='.repeat(70));
-    console.log(
-      `\nALL ${passedTests}/${totalTests} DEPLOYMENT VERIFICATION TESTS PASSED!\n`,
-    );
+    console.log(`\nALL ${passedTests}/${totalTests} DEPLOYMENT VERIFICATION TESTS PASSED!\n`);
   } finally {
     // Teardown
     backendServer.close();
