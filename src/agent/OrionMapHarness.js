@@ -22,6 +22,7 @@ import {
   findDistrictSector,
 } from './bangladeshDistricts.js';
 import { createOrionAgentClient } from './orionAgentClient.js';
+import { findStaticKBAnswer } from './orionStaticKB.js';
 
 // ============================================================================
 // GEOSPATIAL SECTOR REGISTRY
@@ -551,6 +552,111 @@ export class OrionMapHarness {
     if (t) t.scrollTop = t.scrollHeight;
   }
 
+  /**
+   * Shows a Claude/ChatGPT-style thinking animation then reveals the final
+   * hard-coded KB answer. All CSS is injected inline — no stylesheet edits.
+   * @param {object} entry  — one item from ORION_STATIC_KB
+   */
+  async _showThinkingThenAnswer(entry) {
+    if (!this._msgList) return;
+    if (this._emptyState) this._emptyState.style.display = 'none';
+
+    // ── Inject animation CSS once ────────────────────────────────────────────
+    if (!document.getElementById('orion-thinking-style')) {
+      const s = document.createElement('style');
+      s.id = 'orion-thinking-style';
+      s.textContent = `
+        .orion-thinking-bubble {
+          display: flex; flex-direction: column; gap: 4px;
+          padding: 10px 14px; border-radius: 16px; border-bottom-left-radius: 6px;
+          max-width: 84%; background: rgba(255,255,255,0.065);
+          border: 1px solid rgba(255,255,255,0.11);
+          font-family: var(--font-body, monospace); font-size: 12px;
+          color: rgba(255,255,255,0.6); animation: orionMsgIn 0.28s ease;
+        }
+        .orion-thinking-label {
+          font-size: 10px; color: #a1a1aa; letter-spacing: 0.08em; text-transform: uppercase;
+          display: flex; align-items: center; gap: 6px;
+        }
+        .orion-thinking-label::before {
+          content: ''; display: inline-block; width: 6px; height: 6px;
+          border-radius: 50%; background: #3b82f6;
+          animation: orionThinkPulse 1s ease-in-out infinite;
+        }
+        .orion-thinking-step {
+          font-size: 11px; color: rgba(255,255,255,0.45);
+          padding-left: 12px; opacity: 0;
+          animation: orionStepIn 0.3s ease forwards;
+        }
+        .orion-thinking-step.done { color: rgba(255,255,255,0.65); }
+        .orion-evidence-row {
+          font-size: 10px; color: #71717a; padding-left: 10px;
+          border-left: 2px solid #3b82f6; margin-top: 6px;
+          line-height: 1.5;
+        }
+        @keyframes orionThinkPulse {
+          0%,100% { opacity:1; transform:scale(1); }
+          50%      { opacity:0.3; transform:scale(0.7); }
+        }
+        @keyframes orionStepIn {
+          from { opacity:0; transform:translateX(-6px); }
+          to   { opacity:1; transform:translateX(0); }
+        }
+      `;
+      document.head.appendChild(s);
+    }
+
+    // ── Build thinking bubble ────────────────────────────────────────────────
+    const row = document.createElement('div');
+    row.className = 'orion-msg orion-msg-agent';
+    const bubble = document.createElement('div');
+    bubble.className = 'orion-thinking-bubble';
+    bubble.innerHTML = '<div class="orion-thinking-label">Reasoning…</div>';
+    row.appendChild(bubble);
+    this._msgList.appendChild(row);
+    this._scrollTranscript();
+
+    // ── Animate reasoning steps one by one ──────────────────────────────────
+    const steps = entry.reasoningSteps || [];
+    for (let i = 0; i < steps.length; i++) {
+      await new Promise((r) => setTimeout(r, 400 + i * 160));
+      const stepEl = document.createElement('div');
+      stepEl.className = 'orion-thinking-step';
+      stepEl.textContent = `↳ ${steps[i]}`;
+      bubble.appendChild(stepEl);
+      this._scrollTranscript();
+      await new Promise((r) => setTimeout(r, 60));
+      stepEl.classList.add('done');
+    }
+
+    // ── Pause, then reveal final answer ─────────────────────────────────────
+    await new Promise((r) => setTimeout(r, 480));
+
+    bubble.className = 'orion-msg-bubble';
+    bubble.innerHTML = '';
+
+    const answerText = document.createElement('div');
+    answerText.style.cssText = 'white-space:pre-wrap; word-break:break-word;';
+    answerText.textContent = entry.answer;
+    bubble.appendChild(answerText);
+
+    if (entry.evidence) {
+      const evRow = document.createElement('div');
+      evRow.className = 'orion-evidence-row';
+      evRow.textContent = `📡 ${entry.evidence}`;
+      bubble.appendChild(evRow);
+    }
+
+    this._scrollTranscript();
+    this.speak(entry.answer);
+
+    // Optional: fly map to relevant sector
+    if (entry.sectorId) {
+      const target = SECTORS[entry.sectorId];
+      if (target) await this.flyToSector(target, { silent: true });
+    }
+  }
+
   /** Speak message via native Web Speech synthesis. */
   speak(text) {
     if (!this.speechEnabled || !window.speechSynthesis) return;
@@ -605,6 +711,12 @@ export class OrionMapHarness {
     this.history.push(trimmed);
     this._playTone(660, 0.06);
     this._addTranscriptMessage(trimmed, 'user');
+
+    // ── Static Knowledge Base: hard-coded scientific Q&A (no backend call) ──
+    const kbEntry = findStaticKBAnswer(trimmed);
+    if (kbEntry) {
+      return this._showThinkingThenAnswer(kbEntry);
+    }
 
     const route = classifyLocalCommand(trimmed, {
       findSector: (q) => this._resolveSector(q),
