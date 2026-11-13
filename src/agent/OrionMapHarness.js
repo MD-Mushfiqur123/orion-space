@@ -181,7 +181,7 @@ export class OrionMapHarness {
   constructor(viewer, options = {}) {
     this.viewer = viewer;
     this.cloudStream = options.cloudStream || null;
-    this.speechEnabled = true;
+    this.speechEnabled = false;
     this.isListening = false;
     this.recognition = null;
     this.activeOrbit = null;
@@ -281,8 +281,8 @@ export class OrionMapHarness {
           <div class="flex items-center gap-2">
             <span id="orion-harness-sector-badge">AWAITING COMM</span>
             <button id="orion-harness-speech-btn" class="flex items-center gap-1 text-[9px] font-semibold tracking-wider text-zinc-500 hover:text-white bg-transparent px-2 py-1">
-              <span class="material-symbols-outlined text-[13px]">volume_up</span>
-              <span>AUDIO ON</span>
+              <span class="material-symbols-outlined text-[13px]">volume_off</span>
+              <span>AUDIO OFF</span>
             </button>
             <button id="orion-harness-close-btn" class="flex items-center justify-center w-6 h-6 text-zinc-600 hover:text-white" title="Close">
               <span class="material-symbols-outlined text-[16px]">close</span>
@@ -412,10 +412,9 @@ export class OrionMapHarness {
 
     speechBtn?.addEventListener('click', () => {
       this.speechEnabled = !this.speechEnabled;
-      const iconHtml =
-        '<span class="material-symbols-outlined text-[13px]">volume_up</span>';
+      const icon = this.speechEnabled ? 'volume_up' : 'volume_off';
       const label = this.speechEnabled ? 'AUDIO ON' : 'AUDIO OFF';
-      speechBtn.innerHTML = `${iconHtml}<span>${label}</span>`;
+      speechBtn.innerHTML = `<span class="material-symbols-outlined text-[13px]">${icon}</span><span>${label}</span>`;
       this._setStatus(
         this.speechEnabled ? 'Agent voice enabled' : 'Agent voice muted',
       );
