@@ -6,6 +6,12 @@
 [![Team](https://img.shields.io/badge/Team-Orion_Space-0284c7?style=for-the-badge)](https://github.com/MD-Mushfiqur123/orion-space)
 [![Local Event](https://img.shields.io/badge/Local_Event-Barisal,_Bangladesh-10b981?style=for-the-badge)](https://github.com/MD-Mushfiqur123/orion-space)
 
+------
+Live link: 
+https://md-mushfiqur123.github.io/orion-space/#v=2&lat=23.6850&lon=90.3563&alt=908909&heading=360&pitch=-65&roll=360&style=normal&bloom=0&sharpen=1&bi=0&bv=2&si=49&hud=tactical&hv=1&dm=OFF&dd=0&da=elastic&kf=7&ko=1&cr=0&sc=0&scf=0&map=esri-imagery&l=&lo=f.e.1_k.o.n&ui=c.c.1_c.p.0_d.c.0_s.c.0_p.c.1_m.c.0
+
+------
+
 **Team Orion Space · Barisal, Bangladesh · NASA Space Apps Challenge 2026**
 **Challenge: *Be An Earth System Trend Detective!***
 
