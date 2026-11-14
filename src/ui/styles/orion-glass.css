@@ -126,9 +126,12 @@
   width: fit-content !important;
   max-width: calc(100vw - 3rem) !important;
   min-width: min(560px, calc(100vw - 3rem)) !important;
-  height: 60px !important;
-  min-height: 60px !important;
-  bottom: 20px !important;
+  /* height is gone and min-height/bottom lose their !important: the dock's
+     height must stay content-driven (the measured 62px constant) and its
+     bottom anchor is owned by the restored attribution geometry in
+     orion-organized.css. */
+  min-height: 60px;
+  bottom: 20px;
   padding: 5px !important;
   border-radius: 22px !important;
   background:
@@ -877,8 +880,9 @@
   #right-context-rail {
     width: min(300px, calc(100vw - 24px)) !important;
     right: 12px !important;
-    top: 12px !important;
-    bottom: 12px !important;
+    top: 12px;
+    /* bottom dropped: the rail's floor is owned by the single <=720px
+       credit-clearance anchor (src/creditAttribution.test.mjs). */
   }
 
   #title-bar {
@@ -927,7 +931,7 @@
     max-width: calc(100vw - 1rem) !important;
     overflow-x: auto !important;
     scrollbar-width: none !important;
-    bottom: 12px !important;
+    bottom: 12px;
   }
 
   #command-dock .style-btn {

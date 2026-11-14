@@ -140,16 +140,18 @@
   max-width: calc(100vw - 2.5rem) !important;
   min-width: min(520px, calc(100vw - 2.5rem)) !important;
 
-  /* positioning */
-  position: fixed !important;
-  bottom: 20px !important;
+  /* positioning — !important dropped from position/bottom/transform and the
+     height declaration removed: src/creditAttribution.test.mjs resolves the
+     dock's bottom anchor (2vh, 8px at 720px) and forbids a fixed dock height
+     (it would invalidate the measured 62px dock constant). */
+  position: fixed;
+  bottom: 20px;
   left: 50% !important;
-  transform: translateX(-50%) !important;
+  transform: translateX(-50%);
   z-index: var(--z-dock, 145) !important;
 
   /* geometry */
-  height: auto !important;
-  min-height: 62px !important;
+  min-height: 62px;
   padding: 5px 6px !important;
   gap: 6px !important;
   overflow: visible !important;
@@ -994,12 +996,16 @@
   }
 
   #right-context-rail {
-    position: fixed !important;
+    /* !important dropped from the guarded box properties: the attribution
+       model resolves the rail's own top/max-height and forbids importance on
+       them. The floor (bottom) stays unowned here — the <=720px credit
+       clearance anchor in orion-organized.css is the rail's only one. */
+    position: fixed;
     width: calc(100vw - 16px) !important;
     max-width: 340px !important;
     right: 8px !important;
-    top: 64px !important;
-    max-height: calc(100vh - 150px) !important;
+    top: 64px;
+    max-height: calc(100vh - 150px);
     overflow-y: auto !important;
     z-index: 1200 !important;
     display: none !important;
@@ -1051,9 +1057,11 @@
     max-width: 420px !important;
     overflow-x: auto !important;
     scrollbar-width: none !important;
-    bottom: 8px !important;
+    /* bottom/transform lose their !important: the dock's bottom anchor is
+       owned by the restored attribution geometry in orion-organized.css. */
+    bottom: 8px;
     left: 50% !important;
-    transform: translateX(-50%) !important;
+    transform: translateX(-50%);
     padding: 3px 6px !important;
   }
 

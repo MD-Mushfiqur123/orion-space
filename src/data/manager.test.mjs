@@ -97,6 +97,7 @@ test('renders ordinary layer rows without recreating a panel-hidden coordinator'
       children: [],
       className: '',
       dataset: {},
+      style: {},
       textContent: '',
       disabled: false,
       attributes: {},
@@ -108,13 +109,14 @@ test('renders ordinary layer rows without recreating a panel-hidden coordinator'
       removeEventListener() {},
       setAttribute(name, value) { this.attributes[name] = String(value); },
       querySelector(selector) {
-        if (selector.startsWith('[data-layer-id="')) {
-          const id = selector.slice(16, -2);
-          return this.children.find((child) => child.dataset.layerId === id) || null;
-        }
+        const byId = selector.startsWith('[data-layer-id="');
         const className = selector.startsWith('.') ? selector.slice(1) : '';
         const visit = (node) => {
-          if (String(node.className).split(/\s+/).includes(className)) return node;
+          if (byId) {
+            if (node.dataset?.layerId === selector.slice(16, -2)) return node;
+          } else if (String(node.className).split(/\s+/).includes(className)) {
+            return node;
+          }
           for (const child of node.children || []) {
             const found = visit(child);
             if (found) return found;
@@ -2771,13 +2773,14 @@ function makeControlElement() {
       return String(this.className).split(/\s+/).includes(className) ? this : null;
     },
     querySelector(selector) {
-      if (selector.startsWith('[data-layer-id="')) {
-        const id = selector.slice(16, -2);
-        return this.children.find((child) => child.dataset.layerId === id) || null;
-      }
+      const byId = selector.startsWith('[data-layer-id="');
       const className = selector.startsWith('.') ? selector.slice(1) : '';
       const visit = (node) => {
-        if (String(node.className).split(/\s+/).includes(className)) return node;
+        if (byId) {
+          if (node.dataset?.layerId === selector.slice(16, -2)) return node;
+        } else if (String(node.className).split(/\s+/).includes(className)) {
+          return node;
+        }
         for (const child of node.children || []) {
           const found = visit(child);
           if (found) return found;

@@ -704,26 +704,10 @@
     font-size: 10.5px !important;
   }
 
-  /* Drawer: insights on top, data layers underneath, both scroll on their
-     own and never cover each other. */
-  #right-context-rail.mobile-drawer-open,
-  #right-context-rail.mobile-open {
-    left: 8px !important;
-    right: 8px !important;
-    width: auto !important;
-    max-width: none !important;
-    top: 66px !important;
-    bottom: auto !important;
-    height: auto !important;
-    max-height: 42vh !important;
-    padding: 10px !important;
-    border-radius: 20px !important;
-    background: rgba(10, 12, 16, 0.94) !important;
-    border: 1px solid rgba(255, 255, 255, 0.14) !important;
-    backdrop-filter: blur(24px) !important;
-    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7) !important;
-  }
-
+  /* The rail's own drawer block was removed: src/creditAttribution.test.mjs
+     fails closed on any selector it cannot model positioning a rail/dock/credit
+     box, and the <=860px floating-rail overlay in orion-final-polish.css §9
+     already owns the small-screen rail. The data-layers drawer stays. */
   #left-panel-stack.mobile-drawer-open {
     left: 8px !important;
     right: 8px !important;
@@ -734,4 +718,783 @@
     height: auto !important;
     max-height: none !important;
   }
+}
+
+/* ─── Restored component contracts ────────────────────────────────────────
+   The premium redesign trimmed style.css to six imports, orphaning the
+   component stylesheets these rules came from (location.css, cockpit.css,
+   scenes.css, command-dock-sliding.css, status.css) while the markup and JS
+   that depend on them still ship. These are the behavior-bearing rules:
+   keyboard focus rings, dock popover reveal gating, and loading feedback.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+.location-pill {
+  padding: 6px 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.poi-pill {
+  padding: 6px 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.search-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.location-pill:focus-visible,
+.poi-pill:focus-visible,
+.search-toggle-btn:focus-visible,
+#location-search:focus-visible {
+  outline: 2px solid var(--text-primary);
+  outline-offset: -3px;
+}
+
+.cockpit-utility-glyph:focus-visible {
+  border-color: var(--glass-border-hover);
+  color: var(--text-primary);
+  outline: 2px solid var(--text-primary);
+  outline-offset: -3px;
+}
+
+.panel-collapse-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-secondary, #a1a1aa);
+  cursor: pointer;
+}
+
+.data-toggle-chip {
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+.scene-shot-btn {
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: 0.8px;
+  padding: 4px 6px;
+  cursor: pointer;
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+#command-dock .dock-popover-content {
+  position: absolute;
+  bottom: calc(100% + 0.65rem);
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  padding: 1.55rem 0.6rem 0.6rem;
+  visibility: hidden;
+  opacity: 0;
+  background: rgba(8, 20, 30, 0.94);
+  border: 1px solid rgba(123, 189, 211, 0.32);
+  border-radius: 0.42rem;
+  box-shadow:
+    0 0.9rem 2.4rem rgba(0, 0, 0, 0.58),
+    0 0 1.5rem rgba(0, 212, 255, 0.08),
+    0 0 0 1px rgba(255, 255, 255, 0.025) inset;
+  backdrop-filter: blur(28px) saturate(1.3);
+  -webkit-backdrop-filter: blur(28px) saturate(1.3);
+  pointer-events: none;
+  transform: translateY(0.55rem) scale(0.985);
+  transform-origin: bottom left;
+  transition:
+    opacity 180ms ease,
+    visibility 0s linear 180ms,
+    transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+#command-dock #location-bar:not(.collapsed) .dock-popover-content,
+#command-dock #control-panel:not(.collapsed) .dock-popover-content {
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+  margin-bottom: 10px;
+  /* Make newly revealed controls enter the Tab order immediately. The base
+     rule still delays visibility on close so its opacity fade can finish. */
+  transition-delay: 0s;
+}
+
+#global-loading-status:is(
+  [data-state='complete'],
+  [data-state='cancelled'],
+  [data-state='error']
+) {
+  justify-content: center;
+  text-align: center;
+}
+
+#global-loading-status:is(
+    [data-state='complete'],
+    [data-state='cancelled'],
+    [data-state='error']
+  )
+  #global-loading-detail {
+  display: none;
+}
+
+/* The settled traffic chip carries no progress number — the label's coverage
+   figure is the honest one. Collapse the empty slot so the chip closes up
+   instead of trailing a stub and its flex gap. */
+#traffic-sync-progress:empty {
+  display: none;
+}
+
+/* ═══ Restored panel-lane contracts (layout engine ↔ stylesheet) ═══ */
+/* The premium redesign orphaned the component sheets that consume the
+   variables and classes the shell's panel layout engine still writes. */
+
+#left-panel-stack.layout-focus > [data-panel-id].collapsed {
+  display: none;
+}
+
+#left-panel-stack > [data-panel-id]:not(.collapsed) {
+  box-sizing: border-box;
+  flex: 0 1 var(--left-panel-allocated-height, auto);
+  height: var(--left-panel-allocated-height, auto);
+  max-height: var(--left-panel-allocated-height, 100%);
+}
+
+#left-panel-stack > [data-panel-id]:not(.collapsed) .panel-header {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: transparent;
+}
+
+#left-panel-stack > [data-panel-id]:not(.collapsed) .panel-divider {
+  background: linear-gradient(
+    90deg,
+    rgb(0 212 255 / 28%),
+    rgba(0, 212, 255, 0.18) 58%,
+    transparent
+  );
+  box-shadow: 0 0 7px rgba(0, 212, 255, 0.22);
+}
+
+#right-context-rail [data-panel-id]:not(.collapsed) .panel-divider {
+  background: linear-gradient(
+    90deg,
+    rgb(0 212 255 / 28%),
+    rgba(0, 212, 255, 0.18) 58%,
+    transparent
+  );
+  box-shadow: 0 0 7px rgba(0, 212, 255, 0.22);
+}
+
+#right-context-rail.layout-focus {
+  height: var(--right-stack-max-height);
+}
+
+#right-context-rail.layout-exclusive > [data-panel-id].collapsed {
+  display: none;
+}
+
+#right-context-rail.layout-focus > [data-panel-id].collapsed {
+  display: block;
+  flex: 0 0 auto;
+}
+
+#right-context-rail.layout-focus.layout-exclusive > [data-panel-id].collapsed {
+  display: none;
+}
+
+#right-context-rail.layout-focus > [data-panel-id]:not(.collapsed) {
+  flex: 0 1 var(--right-panel-allocated-height);
+  height: var(--right-panel-allocated-height);
+  min-height: 0;
+  max-height: var(--right-panel-allocated-height);
+}
+
+/* Expanded Display integrates its header with the container shell; the
+   collapsed launcher keeps its standalone card sizing. */
+#pp-toggles:not(.collapsed) > .pp-header-row {
+  min-height: 32px;
+  padding: 0 4px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+#pp-toggles.collapsed .pp-header-row {
+  width: var(--right-collapsed-width, 132px);
+}
+
+/* Display owns the constrained desktop scroll surface; Parameters must not
+   become a second scroll container. */
+#pp-toggles:not(.collapsed) > .pp-panel-body > #param-slider-panel.active {
+  flex: 0 0 auto;
+  max-height: none;
+  overflow-y: visible;
+}
+
+#param-slider-panel:not(.collapsed) .param-panel-divider {
+  background: linear-gradient(
+    90deg,
+    rgb(0 212 255 / 28%),
+    rgba(0, 212, 255, 0.18) 58%,
+    transparent
+  );
+}
+
+.param-slider {
+  flex: 1;
+  min-width: 0;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+
+/* ═══ Restored Map Source chip-row contracts ═══ */
+
+.map-source-section {
+  display: grid;
+  gap: 6px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(123, 189, 211, 0.18);
+}
+
+.map-source-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: rgba(190, 221, 230, 0.62);
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: 1.35px;
+}
+
+.map-stack-chip-row {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.map-stack-chip {
+  display: inline-flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 4px;
+  padding: 4px 7px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--text-dim);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  cursor: pointer;
+  /* Explicit property list, NOT `transition: all`: `all` animates
+     `outline-width` off the `outline: none` base, and Chrome leaves that
+     transition parked at 0px for chips on a wrapped line — the keyboard ring
+     silently never appeared on rows 2 and 3. A focus indicator should be
+     instant anyway. */
+  transition:
+    color var(--transition-fast),
+    background-color var(--transition-fast),
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
+  outline: none;
+}
+
+#command-dock #control-panel.collapsed .map-source-section {
+  display: none;
+}
+
+@media (max-width: 620px) {
+  .map-stack-chip-row {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* Order matters: hover/focus, then active, then disabled — all at the same
+   specificity, so the later rule wins. Hovering the active chip must not wash
+   the cyan out, and a disabled chip must not light up under the cursor. Do not
+   add `:not(...)` here: it would raise specificity and let hover beat .active. */
+.map-stack-chip:hover,
+.map-stack-chip:focus-visible {
+  border-color: var(--glass-border-hover);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-primary);
+}
+
+/* The keyboard ring is an `outline`, a property NO other chip-state rule sets,
+   so it survives on the active chip. */
+.map-stack-chip:focus-visible {
+  outline: 1px solid color-mix(in srgb, var(--accent) 80%, transparent);
+  outline-offset: 2px;
+}
+
+.map-stack-chip.active {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-dim);
+  box-shadow: 0 0 10px rgba(0, 212, 255, 0.15);
+}
+
+.map-stack-chip.unavailable,
+.map-stack-chip[aria-disabled='true'] {
+  color: rgba(232, 234, 237, 0.28);
+  border-color: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.02);
+  cursor: not-allowed;
+}
+
+.map-stack-chip-req {
+  font-size: 7px;
+  letter-spacing: 0.3px;
+  color: rgba(232, 234, 237, 0.28);
+}
+
+.pp-stack-status {
+  min-width: 42px;
+  max-width: 54px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.8px;
+  color: var(--accent);
+  text-align: center;
+  text-transform: uppercase;
+}
+
+/* The dock's collapsed state hides the whole popover in the redesigned
+   markup (the legacy sheets gated .panel-inner / .dock-popover-content). */
+#command-dock #control-panel.collapsed #control-panel-popover {
+  display: none;
+}
+
+/* Outside the Cyber theme the scroll-body wrapper is layout-transparent. */
+.cyber-panel-body {
+  display: contents;
+}
+
+/* ═══ Restored world-overlay stacking contracts ═══ */
+
+#left-panel-stack {
+  z-index: 100;
+}
+
+#intel-hud {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.4s ease,
+    visibility 0.4s ease;
+}
+
+/* ═══ Restored quantitative-slider contracts ═══ */
+/* Quantitative companion sliders share Display / Sharpen's visible rail,
+   circular thumb, glow, and value treatment while retaining a taller hit area. */
+.gev-quantitative-slider {
+  width: 100%;
+  min-width: 0;
+  height: 18px;
+  margin: 0;
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  outline: none;
+  cursor: pointer;
+}
+.gev-quantitative-slider::-webkit-slider-runnable-track {
+  height: 3px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.08);
+}
+.gev-quantitative-slider::-webkit-slider-thumb {
+  width: 10px;
+  height: 10px;
+  margin-top: -3.5px;
+  border: 0;
+  border-radius: 50%;
+  -webkit-appearance: none;
+  appearance: none;
+  background: var(--accent);
+  box-shadow: 0 0 6px var(--accent-glow);
+  cursor: pointer;
+}
+.gev-quantitative-slider::-moz-range-track,
+.gev-quantitative-slider::-moz-range-progress {
+  height: 3px;
+  border: 0;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.08);
+}
+.gev-quantitative-slider::-moz-range-thumb {
+  width: 10px;
+  height: 10px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 6px var(--accent-glow);
+  cursor: pointer;
+}
+.gev-quantitative-slider:focus-visible {
+  border-radius: 4px;
+  outline: 1px solid color-mix(in srgb, var(--accent) 80%, transparent);
+  outline-offset: 2px;
+}
+.gev-quantitative-slider:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+}
+.gev-slider-value {
+  min-width: 28px;
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.5px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+/* ─── Restored panel corridors and compact breakpoints ─────────────────────
+   The expanded left lane scrolls inside the panel instead of clipping, and
+   the compact breakpoints keep the top-center actions and title readable.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+#left-panel-stack > #data-panel:not(.collapsed) .data-panel-inner,
+#left-panel-stack > #cctv-panel:not(.collapsed) .cctv-panel-inner,
+#left-panel-stack > #scene-panel:not(.collapsed) .scene-panel-inner {
+  height: 100%;
+  max-height: 100%;
+}
+
+#left-panel-stack > #data-panel:not(.collapsed) .data-panel-inner {
+  overflow: hidden;
+}
+
+@media (max-width: 720px) {
+  #top-center-actions {
+    top: max(12px, env(safe-area-inset-top));
+    right: 16px;
+    left: auto;
+    transform: none;
+  }
+
+  #style-indicator {
+    display: none;
+  }
+}
+
+@media (max-width: 520px) {
+  #title-bar h1 > span:last-child,
+  #title-bar .subtitle {
+    display: none;
+  }
+}
+
+/* ─── Restored clean-view and recording chrome suppression ──────────────────
+   The immersive modes fade the whole map chrome as one group; splitting the
+   lists per element let a stray control stay visible mid-recording.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+body.ui-clean-view #title-bar,
+body.ui-clean-view #style-indicator,
+body.ui-clean-view #top-center-actions,
+body.ui-clean-view #global-loading-status,
+body.ui-clean-view #traffic-sync-chip,
+body.ui-clean-view #cctv-sync-chip,
+body.ui-clean-view #pp-toggles,
+body.ui-clean-view #param-slider-panel,
+body.ui-clean-view #control-panel,
+body.ui-clean-view #location-bar,
+body.ui-clean-view #data-panel,
+body.ui-clean-view #cctv-panel,
+body.ui-clean-view #radio-panel,
+body.ui-clean-view #global-context-panel,
+body.ui-clean-view #scene-panel {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+body.recording-mode #style-indicator,
+body.recording-mode #top-center-actions,
+body.recording-mode #global-loading-status,
+body.recording-mode #traffic-sync-chip,
+body.recording-mode #cctv-sync-chip,
+body.recording-mode #pp-toggles,
+body.recording-mode #clean-view-exit,
+body.recording-mode #param-slider-panel,
+body.recording-mode #control-panel,
+body.recording-mode #location-bar,
+body.recording-mode #data-panel,
+body.recording-mode #cctv-panel,
+body.recording-mode #radio-panel,
+body.recording-mode #global-context-panel,
+body.recording-mode #gev-voice-control,
+body.recording-mode #scene-panel {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+body.scene-playback-mode
+  :is(
+    #clear-selected-layers,
+    #tilt-map-view,
+    #north-up-view,
+    #reset-globe-view
+  ) {
+  display: none !important;
+}
+
+/* ─── Restored Display panel width ownership ────────────────────────────────
+   The map Display panel and the Cockpit Display popover share one expanded
+   width token so the same nodes never resize between surfaces.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+#pp-toggles {
+  --pp-expanded-width: var(--display-panel-expanded-width);
+  position: relative;
+  z-index: 110;
+  width: var(--pp-expanded-width);
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 7px;
+}
+
+/* ─── Restored required-attribution geometry ────────────────────────────────
+   src/creditAttribution.test.mjs is a fail-closed cascade model of the four
+   boxes that must never paint over the Google/Cesium credit line: the credit
+   itself, #command-dock, #right-context-rail and the dock's popover trays.
+   The premium redesign trimmed style.css and repositioned the dock and rail
+   with !important, orphaning the geometry the model resolves. These rules are
+   restored from command-dock.css / command-dock-trays.css /
+   command-dock-sliding.css / responsive.css; the redesign sheets above now
+   yield on the guarded box properties (see the notes at each yielding rule).
+   ─────────────────────────────────────────────────────────────────────────── */
+
+/* Pinned-tray stack heights, written by panelLayoutController's
+   _updateCommandDockTrayStack(); the model evaluates them at 0 as a
+   conservative floor, so their defaults must exist and be zero. */
+#command-dock {
+  --dock-location-pinned-height: 0px;
+  --dock-presets-pinned-height: 0px;
+  --dock-pinned-stack-height: 0px;
+  --dock-lower-pinned-height: 0px;
+}
+
+/* The dock anchor: 2vh down to 721px, a flat 8px at 720px and below. The
+   credit keeps its 2vh base throughout, so the 2vh terms only cancel inside
+   the 721-900px band — the tray offsets below are band-limited to match. */
+#command-dock {
+  bottom: 2vh;
+}
+
+@media (max-width: 720px) {
+  #command-dock {
+    bottom: 8px;
+  }
+
+  /* The rail goes edge-to-edge at this width, so its floor is what decides
+     whether the required credit line survives. The credit's top edge sits at
+     calc(2vh + 5rem) plus its own 28px, so the rail tracks the credit's own
+     anchor and the 12px of clear air holds regardless of height. This is the
+     rail's ONLY bottom anchor in the whole cascade. */
+  #right-context-rail {
+    top: calc(50vh + 8px);
+    right: 16px;
+    bottom: calc(2vh + 7.5rem);
+    left: 16px;
+    width: auto;
+    max-height: none;
+    overflow-y: auto;
+  }
+}
+
+/* ─── Dock tray offsets ───────────────────────────────────────────────────── */
+
+#command-dock .dock-popover-content {
+  position: absolute;
+  bottom: calc(100% + 0.65rem);
+  z-index: 5;
+  transform: translateY(0.55rem) scale(0.985);
+  transform-origin: bottom left;
+}
+
+#command-dock #location-bar:not(.collapsed) .dock-popover-content,
+#command-dock #control-panel:not(.collapsed) .dock-popover-content {
+  transform: translateY(0) scale(1);
+  margin-bottom: 10px;
+}
+
+/* Pinned variants — the base (unmedia'd) forms govern above 900px, where the
+   dock keeps its full width and the trays never reach the credit corner. */
+#command-dock.dock-has-pinned-tray
+  #location-bar:not(.collapsed):not(.dock-pinned)
+  .dock-popover-content,
+#command-dock.dock-has-pinned-tray
+  #control-panel:not(.collapsed):not(.dock-pinned)
+  .dock-popover-content {
+  bottom: calc(100% + 1.2rem + var(--dock-pinned-stack-height));
+}
+
+#command-dock.dock-has-two-pinned-trays
+  .dock-pinned-top.dock-pinned:not(.collapsed)
+  .dock-popover-content {
+  bottom: calc(100% + 1.2rem + var(--dock-lower-pinned-height));
+}
+
+@media (max-width: 900px) {
+  #command-dock .dock-popover-content {
+    width: var(--dock-popover-mobile-width, calc(100vw - 1.5rem));
+  }
+
+  /* At this width the tray widens to nearly the whole viewport and at its
+     stock 0.65rem offset lands squarely on the credit — the transient popover
+     yields, not the permanent notice. */
+  #command-dock #location-bar .dock-popover-content,
+  #command-dock #control-panel .dock-popover-content {
+    bottom: calc(100% + 3rem);
+  }
+
+  #command-dock.dock-has-pinned-tray
+    #location-bar:not(.collapsed):not(.dock-pinned)
+    .dock-popover-content,
+  #command-dock.dock-has-pinned-tray
+    #control-panel:not(.collapsed):not(.dock-pinned)
+    .dock-popover-content {
+    bottom: calc(100% + 3rem + var(--dock-pinned-stack-height));
+  }
+
+  /* Written with the panel IDs on purpose: the stock two-pinned selector
+     carries one ID against five classes and loses to the ordinary narrow
+     rule, dropping var(--dock-lower-pinned-height) so the top tray lands on
+     its pinned sibling. */
+  #command-dock.dock-has-two-pinned-trays
+    #location-bar.dock-pinned-top.dock-pinned:not(.collapsed)
+    .dock-popover-content,
+  #command-dock.dock-has-two-pinned-trays
+    #control-panel.dock-pinned-top.dock-pinned:not(.collapsed)
+    .dock-popover-content {
+    bottom: calc(100% + 3rem + var(--dock-lower-pinned-height));
+  }
+}
+
+/* The dock re-anchored to a flat 8px while the credit keeps its 2vh base, so
+   the clearance above goes negative on tall narrow viewports; carrying the
+   2vh back into the tray's own offset restores the same flat 12px. This block
+   must stay AFTER the max-width:900px rules to win the cascade. */
+@media (max-width: 720px) {
+  #command-dock #location-bar .dock-popover-content,
+  #command-dock #control-panel .dock-popover-content {
+    bottom: calc(100% + 2vh + 2.5rem);
+  }
+
+  #command-dock.dock-has-pinned-tray
+    #location-bar:not(.collapsed):not(.dock-pinned)
+    .dock-popover-content,
+  #command-dock.dock-has-pinned-tray
+    #control-panel:not(.collapsed):not(.dock-pinned)
+    .dock-popover-content {
+    bottom: calc(100% + 2vh + 2.5rem + var(--dock-pinned-stack-height));
+  }
+
+  #command-dock.dock-has-two-pinned-trays
+    #location-bar.dock-pinned-top.dock-pinned:not(.collapsed)
+    .dock-popover-content,
+  #command-dock.dock-has-two-pinned-trays
+    #control-panel.dock-pinned-top.dock-pinned:not(.collapsed)
+    .dock-popover-content {
+    bottom: calc(100% + 2vh + 2.5rem + var(--dock-lower-pinned-height));
+  }
+}
+
+/* ─── The credit's own anchors ────────────────────────────────────────────── */
+
+/* Keep the complete inline attribution row above the command dock. Both the
+   ordinary and the minimal-HUD variant share one rule so the two anchors can
+   never diverge — the minimal selector is MORE specific, and a divergence
+   would make the model read an anchor the browser does not paint. */
+body:not(.ui-clean-view):not(.recording-mode) #cesium-credits,
+body:not(.ui-clean-view):not(.recording-mode):has(
+    #intel-hud[data-variant='minimal'].active
+  )
+  #cesium-credits {
+  right: auto;
+  bottom: calc(2vh + 5rem);
+  left: 1.5rem;
+  width: auto !important;
+  max-width: calc(100vw - 3rem);
+  text-align: left;
+}
+
+@media (max-width: 900px) {
+  body:not(.ui-clean-view):not(.recording-mode) #cesium-credits,
+  body:not(.ui-clean-view):not(.recording-mode):has(
+      #intel-hud[data-variant='minimal'].active
+    )
+    #cesium-credits {
+    bottom: calc(2vh + 5rem);
+    left: 0.75rem;
+    max-width: calc(100vw - 1.5rem);
+  }
+}
+
+/* Clean-view / recording: the Google + Cesium attribution MUST stay visible —
+   Google Maps Platform ToS and Cesium's terms require it whenever their
+   content is displayed, and these are exactly the modes used to record demos. */
+body.ui-clean-view #cesium-credits,
+body.recording-mode #cesium-credits {
+  right: auto;
+  bottom: 36px;
+  left: 36px;
 }

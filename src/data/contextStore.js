@@ -24,7 +24,7 @@ export function getContextStore() {
  * it.
  * @returns {boolean} True when the store is reachable.
  */
-function hasContextHost() {
+export function hasContextHost() {
   return typeof window !== 'undefined' && Boolean(window);
 }
 

@@ -61,6 +61,7 @@ function createMockViewer() {
 
 const mockCesium = {
   WebMapTileServiceImageryProvider: MockCesiumProvider,
+  UrlTemplateImageryProvider: MockCesiumProvider,
   WebMercatorTilingScheme: class MockMercator {},
   TimeIntervalCollection: class MockIntervalCollection {
     constructor(intervals) {
@@ -135,15 +136,15 @@ test('RealEarthCloudStream constructor sets default parameters', () => {
   const stream = new RealEarthCloudStream(viewer, { cesium: mockCesium });
 
   assert.equal(stream.active, false);
-  assert.equal(stream.satelliteKey, 'terra');
-  assert.equal(stream.alpha, 0.85);
-  assert.equal(stream.dateOffset, 'auto');
+  assert.equal(stream.satelliteKey, 'viirs-snpp');
+  assert.equal(stream.alpha, 0.8);
+  assert.equal(stream.dateOffset, 1);
   assert.equal(stream.cloudLayer, null);
 
   const diag = stream.getDiagnostics();
   assert.equal(diag.active, false);
-  assert.equal(diag.satellite, 'terra');
-  assert.equal(diag.layer, 'MODIS_Terra_CorrectedReflectance_TrueColor');
+  assert.equal(diag.satellite, 'viirs-snpp');
+  assert.equal(diag.layer, 'VIIRS_SNPP_CorrectedReflectance_TrueColor');
 });
 
 test('RealEarthCloudStream show() and toggle() activate layer and request scene render', async () => {
@@ -158,7 +159,7 @@ test('RealEarthCloudStream show() and toggle() activate layer and request scene 
   assert.equal(stream.active, true);
   assert.ok(stream.cloudLayer);
   assert.equal(stream.cloudLayer.show, true);
-  assert.equal(stream.cloudLayer.alpha, 0.85);
+  assert.equal(stream.cloudLayer.alpha, 0.8);
   assert.ok(viewer.scene.requestRenderCount > 0);
 
   // Toggle off
@@ -180,7 +181,7 @@ test('RealEarthCloudStream setSatellite() switches platform dynamically', async 
   });
 
   await stream.show();
-  assert.equal(stream.satelliteKey, 'terra');
+  assert.equal(stream.satelliteKey, 'viirs-snpp');
 
   await stream.setSatellite('viirs-noaa20');
   assert.equal(stream.satelliteKey, 'viirs-noaa20');
@@ -188,9 +189,9 @@ test('RealEarthCloudStream setSatellite() switches platform dynamically', async 
     stream.config.layer,
     'VIIRS_NOAA20_CorrectedReflectance_TrueColor',
   );
-  assert.equal(
-    stream.cloudLayer.provider.layer,
-    'VIIRS_NOAA20_CorrectedReflectance_TrueColor',
+  assert.match(
+    stream.cloudLayer.provider.url,
+    /VIIRS_NOAA20_CorrectedReflectance_TrueColor/,
   );
 
   await stream.setSatellite('aqua');

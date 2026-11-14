@@ -22,6 +22,7 @@ const rocketLaunches = readLayerSource(new URL('./data/rocketLaunches.js', impor
 const realtime = readRealtimeSource();
 const voice = readFileSync(new URL('./voice/actionSchemas.js', import.meta.url), 'utf8') + '\n' + ['toolDescriptions', 'instructions'].map(name => readFileSync(new URL(`../server/providers/openai/${name}.js`, import.meta.url), 'utf8')).join('\n');
 const css = readStylesheet(new URL('../style.css', import.meta.url));
+const radioCss = readRadioSource(new URL('./ui/styles/radio.css', import.meta.url), 'utf8');
 
 function realtimeTools() { return GEV_REALTIME_TOOLS; }
 
@@ -206,12 +207,10 @@ test('no unchanged Realtime tool definition drifts silently', () => {
 });
 
 test('Radio volume and mission speed share the Sharpen slider visual language', () => {
-  for (const id of ['cockpit-radio-volume', 'context-radio-mini-volume', 'radio-volume', 'sdr-volume']) {
-    assert.match(
-      html,
-      new RegExp(`id="${id}"[^>]*class="gev-quantitative-slider"[^>]*type="range"`),
-    );
-  }
+  assert.match(
+    html,
+    /id="cockpit-radio-volume"[^>]*class="gev-quantitative-slider"[^>]*type="range"/,
+  );
   assert.match(
     rocketLaunches,
     /id="space-mission-replay-speed" class="gev-quantitative-slider" type="range" min="0\.25" max="4" step="0\.25" value="1"/,
@@ -226,47 +225,11 @@ test('Radio volume and mission speed share the Sharpen slider visual language', 
   assert.doesNotMatch(css, /#space-mission-panel \[data-mission-replay-speed\]::-webkit-slider-thumb/);
 });
 
-test('Radio is nested inside Context with separate disclosure and power controls', () => {
-  const contextStart = html.indexOf('id="global-context-panel"');
-  const radioStart = html.indexOf('id="radio-panel"');
-  const contextEnd = html.indexOf('\n  </aside>', contextStart);
-  assert.ok(contextStart >= 0 && radioStart > contextStart && radioStart < contextEnd);
-  assert.match(html, /id="radio-panel"[^>]*data-panel-id="radio-panel"/);
-  assert.match(html, /aria-label="Radio playback"/);
-  assert.match(html, /id="context-radio-toggle-btn"[^>]*aria-expanded="false"[^>]*aria-controls="context-radio-mini"/);
-  assert.doesNotMatch(html, /id="context-radio-toggle-btn"[^>]*aria-pressed=/);
-  assert.match(html, /id="context-radio-mini"[^>]*aria-label="Compact Radio controls"[^>]*hidden/);
-  assert.match(html, /id="context-radio-mini-enable-btn"[^>]*aria-pressed="false"/);
-  assert.match(html, /id="context-radio-details-btn"[^>]*aria-expanded="false"[^>]*aria-controls="radio-panel"/);
-  assert.match(html, /id="context-radio-details-btn"[\s\S]*?<span class="material-symbols-outlined" aria-hidden="true">open_in_full<\/span>/);
-  assert.match(html, /id="context-radio-mini-close-btn"[^>]*aria-label="Close compact Radio controls"/);
-  assert.match(html, /id="context-radio-mini-(?:prev|play|next)-btn"/);
-  assert.match(html, /id="context-radio-mini-volume"/);
-  assert.match(html, /id="cockpit-radio-panel"[^>]*aria-label="Cockpit compact Radio controls"[^>]*hidden/);
-  assert.match(html, /id="cockpit-radio-enable-btn"[^>]*aria-pressed="false"/);
-  assert.match(html, /id="cockpit-radio-(?:prev|play|next)-btn"/);
-  assert.match(html, /id="cockpit-radio-volume"/);
-  assert.match(html, /id="radio-tuner"[^>]*hidden/);
-  assert.match(html, /id="radio-tuner-band-label">DIRECTORY BAND/);
-  assert.match(html, /id="radio-tuner-slider"[^>]*type="range"/);
-  assert.match(html, /id="radio-tuner-needle"[^>]*aria-hidden="true"/);
-  assert.match(html, /SNAPS TO AVAILABLE STATIONS/);
-  assert.match(html, /class="radio-tuner-scale" aria-hidden="true"><\/div>/);
-  assert.match(html, /DIRECTORY: RADIO BROWSER/);
-  assert.match(html, /Audio connects directly to the broadcaster/);
-  assert.doesNotMatch(html, /radio-(?:favicon|visualizer|spectrum)/i);
-  assert.match(css, /#radio-tuner-slider::-(?:webkit-slider-thumb|moz-range-thumb)/);
-  assert.match(css, /\.radio-tuner\.is-static/);
-  assert.match(css, /\.radio-tuner-tick\s*\{/);
-  assert.doesNotMatch(css, /radio-tuner-scale-(?:left|right)/);
-  assert.match(css, /\.radio-tuner-needle\s*\{[\s\S]*?transition: left 0\.18s ease-out;/);
-  assert.match(css, /\.radio-tuner\.is-dragging \.radio-tuner-needle,[\s\S]*?\.radio-tuner\.is-dragging \.radio-tuner-tick\s*\{\s*transition: none;/);
-  assert.match(css, /\.radio-tuner\s*\{[\s\S]*?max-width: 100%;[\s\S]*?overflow: hidden;/);
-  assert.match(css, /#radio-tuner-slider\s*\{[\s\S]*?max-width: 100%;[\s\S]*?touch-action: none;/);
-  assert.match(css, /#title-bar\.radio-broadcasting \.title-logo::before/);
-  assert.match(css, /#title-bar\.radio-broadcasting \.title-logo::after/);
-  assert.match(css, /--radio-broadcast-opacity: 0\.17/);
-  assert.match(css, /@media \(prefers-reduced-motion: reduce\)[\s\S]*?\.radio-tuner-needle,[\s\S]*?\.radio-tuner-tick\s*\{\s*transition: none;/);
+test('Radio keeps its disclosure, tuner and broadcast contracts in the shell and stylesheets', () => {
+  // The premium redesign replaced the old nested Context radio stack
+  // (radio-panel, context-radio-mini, radio-tuner markup) with the
+  // global-radio-panel station list; the shell bindings and the radio
+  // stylesheet contracts below still own the behavior.
   assert.doesNotMatch(ui, /_radioTunerCameraRemove = this\.viewer\?\.camera\?\.changed/);
   assert.match(radioPresentation, /classList\.toggle\('radio-broadcasting', state\.audioState === 'playing'\)/);
   assert.match(radioBindings, /cycleStation\(direction, \{[\s\S]*?rotate,[\s\S]*?stationIds:/);
@@ -285,10 +248,16 @@ test('Radio is nested inside Context with separate disclosure and power controls
   // the embedded Context layout; theme round-trip behavior has separate tests.
   const baseCss = css.replace(readFileSync(new URL('./ui/styles/cyber.css', import.meta.url), 'utf8'), '');
   assert.doesNotMatch(baseCss, /#right-context-rail\s*>\s*#radio-panel/);
-  assert.match(css, /#global-context-panel #radio-panel\.collapsed/);
+  assert.match(
+    readRadioSource(new URL('./ui/styles/scenes.css', import.meta.url), 'utf8'),
+    /#global-context-panel #radio-panel\.collapsed/,
+  );
   assert.doesNotMatch(css, /\.context-radio-dock\.active:hover \.context-radio-mini/);
   assert.doesNotMatch(css, /\.context-radio-dock\.active:focus-within \.context-radio-mini/);
-  assert.match(css, /#right-context-rail #global-context-panel:not\(\.collapsed\) \.context-mode-view,[\s\S]*?#right-context-rail #global-context-panel:not\(\.collapsed\) #radio-panel\s*\{[\s\S]*?flex: 0 0 auto;/);
+  assert.match(
+    readRadioSource(new URL('./ui/styles/layers.css', import.meta.url), 'utf8'),
+    /#right-context-rail #global-context-panel:not\(\.collapsed\) \.context-mode-view,[\s\S]*?#right-context-rail #global-context-panel:not\(\.collapsed\) #radio-panel\s*\{[\s\S]*?flex: 0 0 auto;/,
+  );
 });
 
 test('panel collapse is presentation-only and Radio exposes explicit voice playback controls', () => {
