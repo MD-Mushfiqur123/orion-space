@@ -100,6 +100,7 @@ export function createTesting({ state: layerState, services, parts, source }) {
   } = {}) {
     layerState._viewer = {
       scene: { primitives: { add: (p) => p, remove() {} } },
+      entities: { add: (e) => e, remove() {} },
     };
     // Neutralize the shared world-overlay host: these tests exercise catalog and
     // row-control logic, not the ISS callout.

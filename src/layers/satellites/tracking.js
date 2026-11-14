@@ -14,6 +14,7 @@ export function createTracking({ state: layerState, services, parts, source }) {
   const {
     clearTrackedSubjectContext,
     getContextStore,
+    hasContextHost,
     refreshTrackedSubjectContext,
     selectTrackedSubjectContext,
   } = services.context;
@@ -290,6 +291,7 @@ export function createTracking({ state: layerState, services, parts, source }) {
 
     const metadata = _contextSubjectMetadata(subjectAtStart);
     if (metadata) {
+      if (!hasContextHost()) return;
       const store = getContextStore();
       const key = String(subjectAtStart);
       if (store.entities.has(key)) {

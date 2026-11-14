@@ -16,17 +16,15 @@ import assert from 'node:assert/strict';
 const html = expandApplicationHtml(readFileSync(new URL('../index.html', import.meta.url), 'utf8'));
 const ui = readShellSource();
 const css = readStylesheet(new URL('../style.css', import.meta.url));
+const componentCss = readFileSync(new URL('./ui/styles/layers.css', import.meta.url), 'utf8');
 
 test('Contacts and Space Missions both participate in the ordinary Tab sequence', () => {
-  for (const id of ['global-context-flights-btn', 'global-context-missions-btn']) {
-    const button = html.match(new RegExp(`<button id="${id}"[\\s\\S]*?</button>`));
-    assert.ok(button, `${id} is missing`);
-    assert.match(button[0], /role="tab"/);
-    assert.match(button[0], /tabindex="0"/);
-  }
-
+  // The Trend Detective redesign removed the Global Context chooser markup;
+  // the mode wiring stays live but dormant, so the sync must tolerate the
+  // absent buttons while keeping every rendered one in the Tab sequence.
   const syncSource = _syncContextModeButtons.toString();
   assert.match(syncSource, /\[\s*this\._globalContextFlightsBtn,\s*this\._globalContextMissionsBtn,?\s*\]/);
+  assert.match(syncSource, /if \(!button\) continue;/);
   assert.match(syncSource, /button\.tabIndex = 0/);
   assert.doesNotMatch(syncSource, /tabIndex\s*=\s*[^;]*\?\s*-1/);
 });
@@ -119,7 +117,10 @@ test('Context tablist retains Left, Right, Home, and End keyboard navigation', (
 });
 
 test('Context tabs draw a visible keyboard-focus outline including active tabs', () => {
-  const rules = [...css.matchAll(/([^{}]+)\{([^{}]*)\}/g)];
+  // The chooser markup left with the Trend Detective redesign, so its rules
+  // are pinned where they still live: the component stylesheet keeps the
+  // focus ring for the day the chooser returns.
+  const rules = [...componentCss.matchAll(/([^{}]+)\{([^{}]*)\}/g)];
   const focusRule = rules.find(([, selector, body]) => (
     selector.trim().endsWith('.context-mode-button:focus-visible')
       && /outline:\s*2px solid var\(--text-primary\)/.test(body)

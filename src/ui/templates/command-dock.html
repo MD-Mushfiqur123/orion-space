@@ -1,6 +1,19 @@
 
 <div id="command-dock" class="fixed bottom-6 left-1/2 z-50 pointer-events-auto" aria-label="Visual preset modes and timeline">
+  <div id="location-bar" class="collapsed">
+    <div class="location-inner">
+      <div class="location-toolbar">
+        <button id="location-bar-toggle" type="button" class="dock-tray-toggle" data-dock-toggle-target="location-bar" aria-controls="location-bar-popover" aria-expanded="false" aria-label="Expand LOCATION">
+          <span class="dock-label-icon dock-label-icon-location" aria-hidden="true"></span>
+          <span class="location-toolbar-label">LOCATION</span>
+        </button>
+        <button class="panel-collapse-btn" data-collapse-target="location-bar" aria-label="Expand LOCATION">+</button>
+      </div>
+      <div id="location-bar-popover" class="dock-popover-content"></div>
+    </div>
+  </div>
   <div id="control-panel">
+    <button id="control-panel-toggle" data-dock-toggle-target="control-panel" aria-controls="control-panel-popover" aria-expanded="true" class="dock-group-label" title="Collapse the visual presets tray">PRESETS</button>
     <div id="control-panel-popover" class="bg-black/60 backdrop-blur-3xl border border-white/10 rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.8)] p-2">
       <div id="style-buttons" class="flex items-center gap-1.5" role="toolbar" aria-label="View style and tools">
         <span class="dock-group-label" aria-hidden="true">VIEW</span>
@@ -28,6 +41,13 @@
           <span class="btn-label">AI AGENT</span>
         </button>
       </div>
+      <section class="map-source-section">
+        <div class="map-source-heading">
+          <span id="map-source-label">MAP SOURCE</span>
+          <span id="map-stack-status" class="pp-stack-status" role="status"></span>
+        </div>
+        <div id="map-stack-chips" class="map-stack-chip-row" role="group" aria-label="Map source"></div>
+      </section>
     </div>
   </div>
 </div>

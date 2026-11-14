@@ -62,44 +62,25 @@ export function createOpenSkySource({
         params.set('lat', query.latitude.toFixed(4));
         params.set('lon', query.longitude.toFixed(4));
       }
-      try {
-        const { response, payload } = await readResponse(
-          fetchImpl,
-          `/api/opensky${params.size ? '?' + params : ''}`,
-          { signal },
-          'OpenSky',
-        );
-        if (response.ok && payload) {
-          return {
-            ...openSkySnapshot(payload, {
-              source: header(response, 'x-flight-source') || 'OpenSky Network',
-              coverage:
-                header(response, 'x-flight-coverage') ||
-                'worldwide upstream snapshot',
-              now: now(),
-            }),
-            status: response.status,
-          };
-        }
-      } catch {}
-
-      // Fallback: Return simulated live flights over Bay of Bengal & global corridor
-      const baseTime = now();
-      const mockStates = [
-        ['40094b', 'BAW117  ', 'United Kingdom', Math.floor(baseTime/1000), Math.floor(baseTime/1000), 90.41, 23.84, 10668, false, 245.2, 135.0, 0, null, 10700, null, false, 0],
-        ['800561', 'BBC045  ', 'Bangladesh', Math.floor(baseTime/1000), Math.floor(baseTime/1000), 90.35, 22.70, 4200, false, 180.5, 180.0, -5.2, null, 4250, null, false, 0],
-        ['700124', 'UAE584  ', 'United Arab Emirates', Math.floor(baseTime/1000), Math.floor(baseTime/1000), 91.83, 22.25, 11582, false, 250.0, 290.0, 0, null, 11600, null, false, 0],
-        ['780a11', 'CES551  ', 'China', Math.floor(baseTime/1000), Math.floor(baseTime/1000), 89.50, 24.50, 9800, false, 230.1, 45.0, 1.2, null, 9820, null, false, 0],
-        ['8001a2', 'EXX001  ', 'Bangladesh Air Force', Math.floor(baseTime/1000), Math.floor(baseTime/1000), 90.15, 21.80, 6500, false, 210.0, 160.0, 0, null, 6520, null, false, 0]
-      ];
-      return {
-        ...openSkySnapshot({ time: Math.floor(baseTime/1000), states: mockStates }, {
-          source: 'OpenSky Telemetry Network',
-          coverage: 'Bay of Bengal & Regional Airspace',
-          now: baseTime,
-        }),
-        status: 200,
-      };
+      const { response, payload } = await readResponse(
+        fetchImpl,
+        `/api/opensky${params.size ? '?' + params : ''}`,
+        { signal },
+        'OpenSky',
+      );
+      if (response.ok && payload) {
+        return {
+          ...openSkySnapshot(payload, {
+            source: header(response, 'x-flight-source') || 'OpenSky Network',
+            coverage:
+              header(response, 'x-flight-coverage') ||
+              'worldwide upstream snapshot',
+            now: now(),
+          }),
+          status: response.status,
+        };
+      }
+      throw openSkyError(response);
     },
     async getTrack(reference, { signal } = {}) {
       try {
@@ -115,7 +96,9 @@ export function createOpenSkySource({
             complete: false,
           };
         }
-      } catch {}
+      } catch (error) {
+        if (signal?.aborted) throw error;
+      }
       return { records: [], complete: false };
     },
     async getEnrichment(query, { signal } = {}) {
@@ -129,7 +112,9 @@ export function createOpenSkySource({
           'adsbdb',
         );
         if (response.ok) return payload;
-      } catch {}
+      } catch (error) {
+        if (signal?.aborted) throw error;
+      }
       return { id: query.id, name: 'Aircraft Telemetry' };
     },
   };
@@ -152,7 +137,9 @@ export function createAdsbLolSource({
         );
         response = res.response;
         payload = res.payload;
-      } catch {}
+      } catch (error) {
+        if (signal?.aborted) throw error;
+      }
 
       if (!response || !response.ok) {
         try {
@@ -164,7 +151,9 @@ export function createAdsbLolSource({
           );
           response = direct.response;
           payload = direct.payload;
-        } catch {}
+        } catch (error) {
+        if (signal?.aborted) throw error;
+      }
       }
 
       if (response?.ok && payload) return readsbIdentities(payload);
@@ -181,7 +170,9 @@ export function createAdsbLolSource({
         );
         response = res.response;
         payload = res.payload;
-      } catch {}
+      } catch (error) {
+        if (signal?.aborted) throw error;
+      }
 
       if (!response || !response.ok) {
         try {
@@ -193,7 +184,9 @@ export function createAdsbLolSource({
           );
           response = direct.response;
           payload = direct.payload;
-        } catch {}
+        } catch (error) {
+        if (signal?.aborted) throw error;
+      }
       }
 
       if (response?.ok && payload) {
@@ -225,7 +218,9 @@ export function createAdsbLolSource({
         );
         response = res.response;
         payload = res.payload;
-      } catch {}
+      } catch (error) {
+        if (signal?.aborted) throw error;
+      }
 
       if (!response || !response.ok) {
         try {
@@ -237,7 +232,9 @@ export function createAdsbLolSource({
           );
           response = direct.response;
           payload = direct.payload;
-        } catch {}
+        } catch (error) {
+        if (signal?.aborted) throw error;
+      }
       }
 
       if (response?.ok && payload) {
@@ -266,33 +263,37 @@ export function createAisStreamSource({
   return {
     label: 'AISStream',
     async getSnapshot({ maxRows = 12000 } = {}, { signal } = {}) {
-      try {
-        const url = new URL(apiUrl, origin());
-        url.searchParams.set('maxRows', String(maxRows));
-        const { response, payload } = await readResponse(
-          fetchImpl,
-          url.toString(),
-          { signal, cache: 'no-store' },
-          'AIS live',
-        );
-        if (response.ok && payload) {
-          return { ...vesselSnapshot(payload), status: response.status };
-        }
-      } catch {}
-
-      // Safe static fallback for Bay of Bengal, Payra, and Chittagong ports
-      const baseTime = Date.now();
-      const mockVessels = {
-        rows: [
-          { mmsi: '405000001', lat: 21.80, lon: 90.20, name: 'BAY RUNNER 1', type: 'Cargo', destination: 'PAYRA PORT', speed: 12.4, heading: 340, course: 340, last_position_epoch: Math.floor(baseTime/1000) },
-          { mmsi: '405000002', lat: 21.45, lon: 91.50, name: 'CHITTAGONG EXPRESS', type: 'Container', destination: 'CHITTAGONG', speed: 15.1, heading: 25, course: 25, last_position_epoch: Math.floor(baseTime/1000) },
-          { mmsi: '405000003', lat: 22.10, lon: 89.60, name: 'MONGLA TIDE', type: 'Tanker', destination: 'MONGLA PORT', speed: 9.8, heading: 10, course: 10, last_position_epoch: Math.floor(baseTime/1000) },
-          { mmsi: '405000004', lat: 20.90, lon: 90.80, name: 'SURVEY SHIP ORION', type: 'Research', destination: 'BAY OF BENGAL', speed: 6.2, heading: 180, course: 180, last_position_epoch: Math.floor(baseTime/1000) }
-        ],
-        newestPositionAt: new Date(baseTime).toISOString(),
-        refreshing: false
-      };
-      return { ...vesselSnapshot(mockVessels), status: 200 };
+      const url = new URL(apiUrl, origin());
+      url.searchParams.set('maxRows', String(maxRows));
+      const { response, payload } = await readResponse(
+        fetchImpl,
+        url.toString(),
+        { signal, cache: 'no-store' },
+        'AIS live',
+      );
+      if (response.ok && payload) {
+        return { ...vesselSnapshot(payload), status: response.status };
+      }
+      if (payload && typeof payload.status === 'string') {
+        // The proxy reported its feed state (for example 'missing-key');
+        // surface it instead of inventing positions.
+        return {
+          records: [],
+          complete: false,
+          source: 'AISStream',
+          coverage: 'received AIS positions',
+          transportStatus: payload.status,
+          observedAtMs: null,
+          freshness: 'unknown',
+          stale: false,
+          rawRowCount: 0,
+        };
+      }
+      throw new LiveSourceError(
+        'unavailable',
+        `AIS live HTTP ${response.status}`,
+        { status: response.status },
+      );
     },
     async getTrack(reference, { signal } = {}) {
       try {
@@ -308,7 +309,9 @@ export function createAisStreamSource({
             complete: false,
           };
         }
-      } catch {}
+      } catch (error) {
+        if (signal?.aborted) throw error;
+      }
       return { records: [], complete: false };
     },
   };

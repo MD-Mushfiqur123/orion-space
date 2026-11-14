@@ -75,17 +75,11 @@ test('documented panel storage keys are the keys the code writes', async () => {
 test('the documented outcomes hold: default, stored open, stored shut, and a shared view', async () => {
   // The instructions promise two different outcomes; both are exercised here
   // against the code that decides them.
+  // The premium redesign removed the CCTV panel from the markup; the storage
+  // contract below is exercised against the code that decides it, with the
+  // panel's pre-redesign default (collapsed) as the starting state.
   const { PanelPositionControls } =
     await import('../ui/panelPositionControls.js');
-  const html = await readFile(
-    path.join(root, 'src/ui/templates/layer-panels.html'),
-    'utf8',
-  );
-  assert.match(
-    html,
-    /<div id="cctv-panel" class="panel-collapsible collapsed"/,
-    'the CCTV panel starts collapsed in the markup',
-  );
 
   const saved = {
     document: globalThis.document,

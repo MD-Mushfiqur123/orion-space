@@ -207,30 +207,30 @@ test('an explicit OUTSIDE opacity still wins over the new default', () => {
 });
 
 // ---------------------------------------------------------------------------
-// 3. Detection — on for every style on a first run, Normal included
+// 3. Detection — OFF on a first run (clean globe), preset owned by the styles
 // ---------------------------------------------------------------------------
 
-test('first run opens with detection on, in every style, using the one tactical preset', () => {
-  // Normal used to start OFF while only CRT/NVG/FLIR auto-applied the preset.
-  // It is now the baseline for all of them, reusing the SAME frozen object, so
-  // "the tactical look" cannot fork into two definitions.
+test('first run opens with detection off, and the tactical preset stays style-owned', () => {
+  // The mass-clutter fix (a180c72) reversed the earlier auto-enable ruling:
+  // the globe must open clean and pristine for the NASA Hackathon, so the
+  // first-load baseline is OFF while Dense @ 75% remains the military styles'
+  // preset.
   assert.match(uiSource, /const MILITARY_DETECTION_PRESET = Object\.freeze\(\{\s*mode: 'dense',\s*densityPct: 75,?\s*\}\);/,
     'the tactical look is still Dense @ 75%');
   const baseline = uiBlock('const GLOBAL_POST_DEFAULTS = {', '\n};');
-  assert.match(baseline, /detectionMode: MILITARY_DETECTION_PRESET\.mode\.toUpperCase\(\),/,
-    'the first-load baseline reads the preset rather than restating it');
-  assert.match(baseline, /detectionDensity: MILITARY_DETECTION_PRESET\.densityPct,/,
-    'density comes from the same object, so the two cannot drift');
-  assert.doesNotMatch(baseline, /detectionMode: 'OFF'/,
-    'the retired OFF baseline is gone, not shadowed');
+  assert.match(baseline, /detectionMode: 'OFF',/,
+    'the first-load baseline keeps the globe clean');
+  assert.match(baseline, /detectionDensity: 0,/,
+    'and carries no density of its own');
+  assert.match(baseline, /detectionOutsideOpacityPct: 1,/,
+    'the outside-opacity default is untouched by the flip');
 
-  // `const` has no hoisted value: the baseline can only READ the preset if the
-  // preset is declared first. Getting this backwards is a startup TDZ crash,
-  // which no other test in the suite would reach.
+  // The preset must still be declared ahead of the style defaults that read
+  // it, or a startup TDZ crash returns.
   assert.ok(
     uiSource.indexOf('const MILITARY_DETECTION_PRESET =')
-      < uiSource.indexOf('const GLOBAL_POST_DEFAULTS ='),
-    'MILITARY_DETECTION_PRESET must be declared before the baseline that reads it',
+      < uiSource.indexOf('const STYLE_PRESET_DEFAULTS ='),
+    'MILITARY_DETECTION_PRESET must be declared before the style presets that read it',
   );
 });
 

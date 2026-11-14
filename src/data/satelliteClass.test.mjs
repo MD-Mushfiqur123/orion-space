@@ -413,10 +413,10 @@ test('a real stations-feed outage keeps STATION in the legend, matching the card
 });
 
 test('a catalog rebuild refreshes the detection overlay class strings', async () => {
-  // The overlay caches one record per satellite and stamps id/class at
-  // creation. A rebuild can re-tag a satellite (whichever group survives an
-  // outage wins dedupe), so a cache that outlives the catalog shows the old
-  // class forever.
+  // Clutter suppression means the overlay only surfaces the TRACKED satellite,
+  // and its class string is read from the live catalog row. A rebuild can
+  // re-tag a satellite (whichever group survives an outage wins dedupe), so
+  // the overlay must follow the surviving row, not a stale class string.
   const originalFetch = globalThis.fetch;
   const log = console.log;
   const warn = console.warn;
@@ -432,14 +432,19 @@ test('a catalog rebuild refreshes the detection overlay class strings', async ()
     });
 
     await satellitesLayer.update(viewer);
+    assert.equal(
+      satellitesLayer.trackById(33333, { origin: 'user' }),
+      true,
+      'the seeded satellite is trackable',
+    );
     const first = satellitesLayer.getDetectableObjects().find((o) => o.sourceId === 33333);
-    assert.ok(first, 'the seeded satellite is collectable');
+    assert.ok(first, 'the tracked satellite is collectable');
     assert.equal(first.klass, 'GEO');
 
     homeGroup = 'visual';
     await satellitesLayer.update(viewer);
     const second = satellitesLayer.getDetectableObjects().find((o) => o.sourceId === 33333);
-    assert.equal(second.klass, 'VISUAL', 'the cached record does not outlive its catalog');
+    assert.equal(second.klass, 'VISUAL', 'the class follows the rebuilt catalog');
   } finally {
     console.log = log;
     console.warn = warn;

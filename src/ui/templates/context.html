@@ -9,6 +9,7 @@
       <h2 id="climate-detective-title" class="orion-card__title">Trend Detective</h2>
     </header>
 
+    <div class="cyber-panel-body" data-rail-scroller>
     <div class="climate-detective-body orion-trend">
       <div class="orion-trend__hero">
         <div class="orion-trend__place">
@@ -28,6 +29,7 @@
       </dl>
 
       <p class="orion-trend__footnote">p &lt; 0.001 · survives FDR correction · annual mean shows no significant trend</p>
+    </div>
     </div>
   </section>
 
@@ -124,4 +126,38 @@
       <audio id="global-radio-audio-player" preload="none"></audio>
     </div>
   </section>
+
+  <!-- 5 · Global Context: the Contacts / Space Missions chooser. Hidden by the
+       clean-view baseline; the cyber theme and Cockpit restore it. -->
+  <aside id="global-context-panel" class="panel-collapsible collapsed" data-panel-id="global-context-panel" aria-labelledby="global-context-title">
+    <div class="global-context-panel-inner" data-rail-scroller>
+      <header class="panel-header mb-2 pb-2 border-b border-white/10">
+        <h2 id="global-context-title" class="panel-title">GLOBAL CONTEXT</h2>
+        <button class="panel-collapse-btn" data-collapse-target="global-context-panel" aria-label="Expand GLOBAL CONTEXT">+</button>
+      </header>
+      <div class="cyber-panel-body" data-rail-scroller>
+      <div class="global-context-actions">
+        <button id="cockpit-entry" type="button" aria-label="Enter cockpit view" aria-keyshortcuts="C" hidden>
+          <span class="material-symbols-outlined" aria-hidden="true">flight</span>
+          ENTER COCKPIT
+          <kbd>C</kbd>
+        </button>
+        <button id="installations-search-btn" type="button" aria-label="Search nearby sites">
+          <span class="material-symbols-outlined" aria-hidden="true">search</span>
+          SEARCH NEARBY SITES
+        </button>
+      </div>
+      <div class="context-mode-tabs" role="tablist" aria-label="Context mode">
+        <button id="global-context-flights-btn" type="button" class="context-mode-button" role="tab" aria-selected="false" aria-label="CONTACTS" title="Cycles the nearest contacts of whatever type you select — planes, vessels, installations. Satellites track independently."><span class="material-symbols-outlined" aria-hidden="true">radar</span>CONTACTS</button>
+        <button id="global-context-missions-btn" type="button" class="context-mode-button" role="tab" aria-selected="false" aria-label="SPACE MISSIONS"><span class="material-symbols-outlined" aria-hidden="true">rocket_launch</span>SPACE MISSIONS</button>
+      </div>
+      <div id="context-mode-standby">
+        <p>CONTACTS — nearest planes · vessels · sites</p>
+        <p>SPACE MISSIONS — launches &amp; orbital assets</p>
+      </div>
+      <div id="context-flights-view" hidden></div>
+      <div id="context-missions-view" hidden></div>
+      </div>
+    </div>
+  </aside>
 </aside>

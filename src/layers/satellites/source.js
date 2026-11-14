@@ -26,27 +26,34 @@ export function createSatelliteSource({
     async readGroup(group, { signal } = {}) {
       if (!GROUPS.has(group)) throw new TypeError('Unknown satellite group');
       signal?.throwIfAborted();
+      let lastStatus = 404;
       try {
         const response = await fetchImpl(`/api/celestrak/${group}`, { signal });
+        lastStatus = response.status;
         if (response.ok) {
           const text = await response.text();
           signal?.throwIfAborted();
           return { ok: true, status: response.status, text };
         }
-      } catch {}
+      } catch (err) {
+        if (signal?.aborted) throw err;
+      }
 
       // Direct fallback to CelesTrak HTTPS API for static hosting (GitHub Pages / Vercel)
       try {
         const fallbackUrl = CELESTRAK_DIRECT_URLS[group] || `https://celestrak.org/NORAD/elements/gp.php?GROUP=${group}&FORMAT=tle`;
         const directRes = await fetchImpl(fallbackUrl, { signal });
+        lastStatus = directRes.status;
         if (directRes.ok) {
           const text = await directRes.text();
           signal?.throwIfAborted();
           return { ok: true, status: directRes.status, text };
         }
-      } catch {}
+      } catch (err) {
+        if (signal?.aborted) throw err;
+      }
 
-      return { ok: false, status: 404, text: '' };
+      return { ok: false, status: lastStatus, text: '' };
     },
   };
 }

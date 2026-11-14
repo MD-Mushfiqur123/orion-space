@@ -8,6 +8,18 @@ import { parsers } from 'prettier/plugins/babel.mjs';
 const legacyFiles = new Set([
   'src/scenes/dataPacks/presentation.js',
   'src/layers/directions/index.js',
+  // Simulated, unwired OSINT demos — they never reach the runtime scene.
+  'src/osint/airspace/MilitaryHexTracker.js',
+  'src/osint/airspace/SatelliteConjunctionEngine.js',
+  'src/osint/airspace/SquawkEmergencyAlert.js',
+  'src/osint/climate/GraceGroundwaterTracker.js',
+  'src/osint/climate/SeaLevelRiseSimulator.js',
+  'src/osint/maritime/BayOfBengalAISStream.js',
+  'src/osint/maritime/DarkVesselDetector.js',
+  'src/osint/maritime/GlobalFishingWatchLayer.js',
+  'src/osint/satellite/NASAFIRMSFireLayer.js',
+  'src/osint/satellite/Sentinel1FloodSAR.js',
+  'src/osint/satellite/Sentinel2Multispectral.js',
 ]);
 const root = fileURLToPath(new URL('../', import.meta.url));
 const propertyName = (node) => node?.name ?? node?.value;

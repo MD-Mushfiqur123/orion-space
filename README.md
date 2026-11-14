@@ -50,6 +50,7 @@ Full method and outputs: [`analysis/README.md`](analysis/README.md) and [`analys
 - **Trend agent** ("AGENT HARNESS" in the dock) answers questions like *"Where is it warming fastest?"* or *"Is it significant?"* by flying to the place and opening an evidence card with the numbers above.
 - **NASA GIBS** true-colour imagery (MODIS Terra/Aqua, VIIRS) streamed as a live cloud layer.
 - **NASA FIRMS** active fires, plus earthquakes, wind, weather radar and satellite layers in the **Earth Observation** and **Events** groups of the layer panel.
+- **Draw** (`DISPLAY ▸ **Draw**`) sketches measurement areas and routes directly on the globe: click to place vertices, double-click to finish, and the shape is draped over the terrain with a live area/length readout.
 - Extra layers inherited from the base project (aircraft, vessels, traffic, cameras, infrastructure, radio) are still available but start collapsed.
 - A short pitch deck lives at `/pitch`.
 

@@ -199,7 +199,6 @@ body {
 #command-dock {
   width: auto !important;
   max-width: calc(100vw - 640px) !important;
-  height: auto !important;
   padding: 4px !important;
   background: transparent !important;
   border: none !important;
@@ -400,7 +399,7 @@ button:active:not(:disabled) {
 
 #command-dock {
   width: min(92vw, 1180px) !important;
-  min-height: 64px !important;
+  min-height: 64px;
   padding: 7px !important;
   gap: 6px !important;
   background:
@@ -595,10 +594,13 @@ button:active:not(:disabled) {
 
 @media (max-width: 720px) {
   #command-dock {
-    bottom: 10px !important;
+    /* !important dropped: the dock's bottom anchor is resolved (and pinned to
+       8px at this width) by the restored attribution geometry in
+       orion-organized.css, which wins this cascade. */
+    bottom: 10px;
     width: calc(100vw - 20px) !important;
     max-width: none !important;
-    min-height: 58px !important;
+    min-height: 58px;
     border-radius: 20px !important;
     overflow-x: auto !important;
     justify-content: flex-start !important;

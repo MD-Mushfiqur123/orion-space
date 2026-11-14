@@ -7,7 +7,10 @@
 @import './src/ui/styles/orion-glass.css';
 @import './src/ui/styles/orion-final-polish.css';
 @import './src/ui/styles/orion-organized.css';
+@import './src/ui/styles/cockpit.css';
+@import './src/ui/styles/first-run.css';
 
 @import "tailwindcss";
 @source "./src";
 @source "./index.html";
+@import './src/ui/styles/cyber.css';

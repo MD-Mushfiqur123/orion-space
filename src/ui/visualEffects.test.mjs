@@ -234,8 +234,10 @@ test('destroying one instance does not remove another pipeline or clock', () => 
 });
 
 test('existing baseline and military presets keep one detection default', () => {
-  assert.equal(GLOBAL_POST_DEFAULTS.detectionMode, 'DENSE');
-  assert.equal(GLOBAL_POST_DEFAULTS.detectionDensity, 75);
+  // The baseline is intentionally OFF (clean and pristine globe for the NASA
+  // Hackathon demo); the military presets still own the dense detection look.
+  assert.equal(GLOBAL_POST_DEFAULTS.detectionMode, 'OFF');
+  assert.equal(GLOBAL_POST_DEFAULTS.detectionDensity, 0);
   assert.equal(GLOBAL_POST_DEFAULTS.sharpen.intensity, 49);
   assert.equal(GLOBAL_POST_DEFAULTS.detectionFadePct, 7);
   assert.equal(GLOBAL_POST_DEFAULTS.detectionOutsideOpacityPct, 1);

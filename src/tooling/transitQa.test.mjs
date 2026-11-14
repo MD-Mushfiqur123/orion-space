@@ -674,13 +674,11 @@ test('public transit documentation uses courtesy attribution and the approved gr
     'utf8',
   );
   assert.ok(
-    readme.includes(
-      'Nineteen layers and map sources. **Seventeen have a keyless path.**',
-    ),
+    readme.includes('No API keys are required for the core experience.'),
   );
   assert.ok(
     readme.includes(
-      '**Sits on the real ground.** Entity heights are aligned to work with Google 3D tiles, so aircraft park on aprons and cameras stand on street corners instead of floating.',
+      'built on top of **[God\'s Eye View](https://github.com/bilawalsidhu/gods-eye-view)** by **Bilawal Sidhu**, an open-source (MIT) CesiumJS spatial-intelligence viewer.',
     ),
   );
   assert.doesNotMatch(
