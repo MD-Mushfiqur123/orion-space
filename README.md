@@ -108,10 +108,17 @@ Orion Space is built on top of **[God's Eye View](https://github.com/bilawalsidh
 
 ## Team
 
+- **Dilruba Dina** ([@dilrubadina711](https://github.com/dilrubadina711)),Team lead
+
 - **Md Mushfiqur Rahim** ([@MD-Mushfiqur123](https://github.com/MD-Mushfiqur123)), lead developer
-- [@nabeulislam](https://github.com/nabeulislam), UI redesign
-- **Fahmid Hasan Taohid** ([@fahmidhasann](https://github.com/fahmidhasann)), review and analysis
-- *(add the remaining team members here)*
+
+- [@nabeulislam](https://github.com/nabeulislam), Frontend Developer
+
+- **Fahmid Hasan Taohid** ([@fahmidhasann](https://github.com/fahmidhasann)),Video Editor
+
+- **Mahmud Hasan** [@iammahmudhasan](https://github.com/iammahmudhasan), System Architect
+
+
 
 Local event: **Barisal, Bangladesh** · Challenge: **Be An Earth System Trend Detective!**
 
