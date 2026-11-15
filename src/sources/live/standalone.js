@@ -152,8 +152,8 @@ export function createAdsbLolSource({
           response = direct.response;
           payload = direct.payload;
         } catch (error) {
-        if (signal?.aborted) throw error;
-      }
+          if (signal?.aborted) throw error;
+        }
       }
 
       if (response?.ok && payload) return readsbIdentities(payload);
@@ -185,8 +185,8 @@ export function createAdsbLolSource({
           response = direct.response;
           payload = direct.payload;
         } catch (error) {
-        if (signal?.aborted) throw error;
-      }
+          if (signal?.aborted) throw error;
+        }
       }
 
       if (response?.ok && payload) {
@@ -203,7 +203,10 @@ export function createAdsbLolSource({
 
       // Safe static fallback
       return {
-        ...readsbSnapshot({ ac: [], total: 0 }, { observedAtMs: now(), now: now(), stale: false }),
+        ...readsbSnapshot(
+          { ac: [], total: 0 },
+          { observedAtMs: now(), now: now(), stale: false },
+        ),
         status: 200,
       };
     },
@@ -233,8 +236,8 @@ export function createAdsbLolSource({
           response = direct.response;
           payload = direct.payload;
         } catch (error) {
-        if (signal?.aborted) throw error;
-      }
+          if (signal?.aborted) throw error;
+        }
       }
 
       if (response?.ok && payload) {

@@ -708,6 +708,7 @@ export class StyleManager extends ShellFacade {
     this._mapSourceControls?.destroy();
     this._mapSourceControls = createMapSourceControls({
       container: this._mapStackChips,
+      selectElement: this._mapSourceSelect,
       statusElement: this._mapStackStatus,
       controller: this.mapStackController,
       subscribe: (onChange) => {

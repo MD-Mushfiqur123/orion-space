@@ -145,7 +145,9 @@ export class RealEarthCloudStream {
   }
 
   get config() {
-    return SATELLITE_CONFIGS[this.satelliteKey] || SATELLITE_CONFIGS['viirs-snpp'];
+    return (
+      SATELLITE_CONFIGS[this.satelliteKey] || SATELLITE_CONFIGS['viirs-snpp']
+    );
   }
 
   /** Resolve the optimal date (default yesterday for 100% seamless stitched orbital coverage). */

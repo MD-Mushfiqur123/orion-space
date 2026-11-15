@@ -67,5 +67,23 @@
       </div>
       </div>
     </div>
+
+    <!-- Map Source Selector -->
+    <div id="map-source-panel" class="panel-collapsible active" data-panel-id="map-source-panel">
+      <div class="panel-header mb-2 pb-2 border-b border-white/10 flex items-center justify-between">
+        <span class="text-xs font-semibold tracking-wider text-white"><span id="map-source-label">MAP SOURCE</span></span>
+        <span id="map-stack-status" class="pp-stack-status text-[10px] font-mono text-zinc-400" role="status"></span>
+      </div>
+      <div class="cyber-panel-body" data-rail-scroller>
+        <div class="map-source-controls flex flex-col gap-2">
+          <div class="relative">
+            <select id="map-source-select" class="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 pr-8 text-xs text-white focus:outline-none focus:border-white/30 cursor-pointer appearance-none" aria-label="Map source">
+            </select>
+            <span class="material-symbols-outlined pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[18px] text-zinc-400" aria-hidden="true">expand_more</span>
+          </div>
+          <div id="map-stack-chips" class="map-stack-chip-row hidden" role="group" aria-label="Map source" style="display: none;"></div>
+        </div>
+      </div>
+    </div>
   </div>
 </aside>

@@ -128,14 +128,14 @@ export function createApplicationViewer({ container, creditContainer }) {
         // this flag.
         preserveDrawingBuffer: false,
         powerPreference: 'high-performance',
-        antialias: true
-      }
+        antialias: true,
+      },
     },
   });
   try {
     viewer.targetFrameRate = 60;
     viewer.resolutionScale = Math.min(window.devicePixelRatio || 1.0, 1.25);
-    
+
     // Set clock to solar noon (bright daytime illumination over Bangladesh & Asia)
     viewer.clock.currentTime = Cesium.JulianDate.fromDate(
       new Date('2026-06-21T06:00:00Z'),
@@ -146,12 +146,12 @@ export function createApplicationViewer({ container, creditContainer }) {
     // atmosphere fails to LINK on Apple's Metal backend and kills the
     // render loop. See app/atmosphereCompat.js.
     applyModelAtmosphereWorkaround(viewer.scene);
-    
+
     viewer.scene.globe.show = true;
     viewer.scene.globe.enableLighting = false; // Disable dark night shadows over terrain
     viewer.scene.globe.maximumScreenSpaceError = 2.5;
     viewer.scene.globe.baseColor = Cesium.Color.fromCssColorString('#12283e');
-    
+
     viewer.scene.skyAtmosphere.show = true;
     viewer.scene.skyAtmosphere.atmosphereLightIntensity = 22;
     viewer.scene.skyAtmosphere.saturationShift = 0.1;

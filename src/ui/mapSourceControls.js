@@ -1,4 +1,8 @@
-import { renderMapStackChips, syncMapStackChips } from '../mapStackChips.js';
+import {
+  renderMapSourceSelect,
+  renderMapStackChips,
+  syncMapStackChips,
+} from '../mapStackChips.js';
 
 /**
  * Own Map Source presentation and selection without constructing map providers.
@@ -6,6 +10,7 @@ import { renderMapStackChips, syncMapStackChips } from '../mapStackChips.js';
  */
 export function createMapSourceControls({
   container,
+  selectElement,
   statusElement,
   controller,
   subscribe,
@@ -22,7 +27,10 @@ export function createMapSourceControls({
   };
   function render(state) {
     if (destroyed || !state) return;
-    syncMapStackChips(container, state.activeId);
+    if (container) syncMapStackChips(container, state.activeId);
+    if (selectElement && state.activeId) {
+      selectElement.value = state.activeId;
+    }
     if (statusElement) {
       const stack = state.activeStack;
       statusElement.textContent =
@@ -58,13 +66,24 @@ export function createMapSourceControls({
   function refresh() {
     if (destroyed) return;
     for (const remove of removers.splice(0)) remove();
-    renderMapStackChips(container, controller.getStacks(), {
-      activeId: controller.getActiveId(),
-      onSelect: (id) => {
-        void select(id).catch(() => {});
-      },
-      bind,
-    });
+    if (container) {
+      renderMapStackChips(container, controller.getStacks(), {
+        activeId: controller.getActiveId(),
+        onSelect: (id) => {
+          void select(id).catch(() => {});
+        },
+        bind,
+      });
+    }
+    if (selectElement) {
+      renderMapSourceSelect(selectElement, controller.getStacks(), {
+        activeId: controller.getActiveId(),
+        onSelect: (id) => {
+          void select(id).catch(() => {});
+        },
+        bind,
+      });
+    }
     render(controller.getState());
   }
   const unsubscribe = subscribe(() => {

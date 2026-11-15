@@ -275,8 +275,12 @@ export class MapSourceController {
       const nextLayer = this._createImageryLayer(resolution.provider);
       this.viewer.imageryLayers.add(nextLayer, 0);
       previousErrorListener?.();
-      if (previousLayer)
-        this.viewer.imageryLayers.remove(previousLayer, true);
+      await this._waitForSceneFrames(gen, 2);
+      if (gen !== this._switchGen) {
+        this.viewer.imageryLayers.remove(nextLayer, true);
+        return;
+      }
+      if (previousLayer) this.viewer.imageryLayers.remove(previousLayer, true);
       this._imageryLayer = nextLayer;
       this._activeImageryProvider = resolution.provider;
       this._removeImageryErrorListener = null;
@@ -304,6 +308,30 @@ export class MapSourceController {
       this._terrainMode = terrain.id;
     }
     return resolution;
+  }
+
+  _waitForSceneFrames(gen, count = 1) {
+    if (gen !== this._switchGen) return Promise.resolve();
+    const postRender = this.viewer.scene?.postRender;
+    if (!postRender?.addEventListener) return Promise.resolve();
+    return new Promise((resolve) => {
+      let settled = false;
+      let frames = 0;
+      const finish = () => {
+        if (settled) return;
+        frames++;
+        if (frames < count && gen === this._switchGen) {
+          this._requestRender('map-stack-settle');
+          return;
+        }
+        settled = true;
+        remove?.();
+        resolve();
+      };
+      const remove = postRender.addEventListener(finish);
+      this._requestRender('map-stack-settle');
+      if (gen !== this._switchGen) finish();
+    });
   }
 
   _cached(cache, id, create) {

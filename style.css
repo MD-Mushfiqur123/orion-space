@@ -11,6 +11,6 @@
 @import './src/ui/styles/first-run.css';
 
 @import "tailwindcss";
+@import './src/ui/styles/cyber.css';
 @source "./src";
 @source "./index.html";
-@import './src/ui/styles/cyber.css';

@@ -6,6 +6,7 @@ function makeElement(tagName = 'div') {
   const element = {
     tagName,
     type: '',
+    value: '',
     className: '',
     title: '',
     disabled: false,
@@ -249,4 +250,27 @@ test('completion after destruction cannot paint or notify', async () => {
   assert.equal(f.calls.length, count);
   assert.equal(f.statusElement.textContent, label);
   assert.equal(await f.controls.select('osm'), null);
+});
+
+test('select dropdown renders options, reflects active stack, and dispatches on change', async () => {
+  const f = fixture();
+  const selectElement = makeElement('select');
+  selectElement.ownerDocument = f.container.ownerDocument;
+  const controls = createMapSourceControls({
+    selectElement,
+    statusElement: f.statusElement,
+    controller: f.controller,
+    subscribe: (listener) => {
+      f.listeners.add(listener);
+      return () => f.listeners.delete(listener);
+    },
+  });
+  assert.equal(selectElement.children.length, 3);
+  assert.equal(selectElement.value, 'osm');
+  selectElement.value = 'esri-imagery';
+  for (const handler of selectElement.listeners.change || []) handler();
+  f.requests[0].resolve(f.change('esri-imagery'));
+  await Promise.resolve();
+  assert.equal(selectElement.value, 'esri-imagery');
+  controls.destroy();
 });

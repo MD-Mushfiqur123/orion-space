@@ -5,6 +5,8 @@ export function startApplicationChrome({
   loadingScreen,
   styleManager,
   dataManager,
+  viewer,
+  tileset,
   signal,
   initializeWelcome = initFirstRunExperience,
   initializeSettings,
@@ -17,13 +19,36 @@ export function startApplicationChrome({
     resolveDelay = resolve;
   });
   const delayTimer = setTimeout(resolveDelay, 1000);
+  const firstFrame = new Promise((resolve) => {
+    const postRender = viewer?.scene?.postRender;
+    if (!postRender?.addEventListener) {
+      resolve();
+      return;
+    }
+    let settled = false;
+    const finish = () => {
+      if (settled) return;
+      settled = true;
+      remove?.();
+      resolve();
+    };
+    const remove = postRender.addEventListener(finish);
+    viewer.scene.requestRender?.();
+    if (signal.aborted) finish();
+  });
+  const surfaceReady = Promise.resolve(tileset?.readyPromise).catch(() => {});
   const revealFirstRun = () => {
     if (disposed || signal.aborted || firstRun) return;
     firstRun = initializeWelcome?.({ styleManager, dataManager });
     clearTimeout(revealTimer);
     loadingScreen.removeEventListener('transitionend', revealFirstRun);
   };
-  void Promise.all([styleManager.initialRestorePromise, minimumDelay])
+  void Promise.all([
+    styleManager.initialRestorePromise,
+    minimumDelay,
+    firstFrame,
+    surfaceReady,
+  ])
     .catch(() => {
       /* Restoration reports its own outcome through the controls. */
     })

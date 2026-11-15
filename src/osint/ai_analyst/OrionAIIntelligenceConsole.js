@@ -1635,7 +1635,9 @@ Available Operator Command Syntaxes:
 
     this._domElements.audioBtn.addEventListener('click', () => {
       this.soundEnabled = !this.soundEnabled;
-      this._domElements.audioBtn.textContent = this.soundEnabled ? '[AUDIO ON]' : '[AUDIO OFF]';
+      this._domElements.audioBtn.textContent = this.soundEnabled
+        ? '[AUDIO ON]'
+        : '[AUDIO OFF]';
       this._appendLog(
         'SYS',
         `Audio sound effects ${this.soundEnabled ? 'ENABLED' : 'MUTED'}`,

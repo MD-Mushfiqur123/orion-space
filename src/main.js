@@ -105,7 +105,8 @@ application
 
     if (mobileMenuBtn) {
       mobileMenuBtn.addEventListener('click', () => {
-        const isLeftOpen = leftPanelStack?.classList.contains('mobile-drawer-open');
+        const isLeftOpen =
+          leftPanelStack?.classList.contains('mobile-drawer-open');
         if (isLeftOpen) {
           leftPanelStack?.classList.remove('mobile-drawer-open');
           rightContextRail?.classList.remove('mobile-drawer-open');
@@ -201,9 +202,12 @@ application
         if (res.ok) {
           const d = await res.json();
           if (d.current) {
-            liveWeatherData.temp = d.current.temperature_2m ?? liveWeatherData.temp;
-            liveWeatherData.precip = d.current.precipitation ?? liveWeatherData.precip;
-            liveWeatherData.wind = d.current.wind_speed_10m ?? liveWeatherData.wind;
+            liveWeatherData.temp =
+              d.current.temperature_2m ?? liveWeatherData.temp;
+            liveWeatherData.precip =
+              d.current.precipitation ?? liveWeatherData.precip;
+            liveWeatherData.wind =
+              d.current.wind_speed_10m ?? liveWeatherData.wind;
           }
         }
       } catch (err) {
@@ -216,7 +220,9 @@ application
 
     const updateWeatherTelemetry = () => {
       const tempEl = document.getElementById('weather-val-temp');
-      const precipEl = document.getElementById('weather-val-precip') || document.getElementById('weather-val-rain');
+      const precipEl =
+        document.getElementById('weather-val-precip') ||
+        document.getElementById('weather-val-rain');
       const windEl = document.getElementById('weather-val-wind');
       const no2El = document.getElementById('weather-val-no2');
       const pulseDot = document.querySelector(
@@ -236,14 +242,14 @@ application
       }
 
       if (tempEl) {
-        const jitter = (Math.random() * 0.2 - 0.1);
+        const jitter = Math.random() * 0.2 - 0.1;
         tempEl.textContent = `${(liveWeatherData.temp + jitter).toFixed(1)}`;
       }
       if (precipEl) {
         precipEl.textContent = `${liveWeatherData.precip.toFixed(1)}`;
       }
       if (windEl) {
-        const jitter = (Math.random() * 0.4 - 0.2);
+        const jitter = Math.random() * 0.4 - 0.2;
         windEl.textContent = `${Math.max(0, liveWeatherData.wind + jitter).toFixed(1)}`;
       }
       if (no2El) {

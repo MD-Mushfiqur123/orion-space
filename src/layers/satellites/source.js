@@ -9,13 +9,18 @@ const GROUPS = new Set([
 ]);
 
 const CELESTRAK_DIRECT_URLS = {
-  stations: 'https://celestrak.org/NORAD/elements/gp.php?GROUP=stations&FORMAT=tle',
+  stations:
+    'https://celestrak.org/NORAD/elements/gp.php?GROUP=stations&FORMAT=tle',
   visual: 'https://celestrak.org/NORAD/elements/gp.php?GROUP=visual&FORMAT=tle',
-  'gps-ops': 'https://celestrak.org/NORAD/elements/gp.php?GROUP=gps-ops&FORMAT=tle',
-  'glo-ops': 'https://celestrak.org/NORAD/elements/gp.php?GROUP=glo-ops&FORMAT=tle',
-  galileo: 'https://celestrak.org/NORAD/elements/gp.php?GROUP=galileo&FORMAT=tle',
+  'gps-ops':
+    'https://celestrak.org/NORAD/elements/gp.php?GROUP=gps-ops&FORMAT=tle',
+  'glo-ops':
+    'https://celestrak.org/NORAD/elements/gp.php?GROUP=glo-ops&FORMAT=tle',
+  galileo:
+    'https://celestrak.org/NORAD/elements/gp.php?GROUP=galileo&FORMAT=tle',
   geo: 'https://celestrak.org/NORAD/elements/gp.php?GROUP=geo&FORMAT=tle',
-  starlink: 'https://celestrak.org/NORAD/elements/gp.php?GROUP=starlink&FORMAT=tle',
+  starlink:
+    'https://celestrak.org/NORAD/elements/gp.php?GROUP=starlink&FORMAT=tle',
 };
 
 /** Read catalog text from the existing group endpoint using a supplied transport. */
@@ -41,7 +46,9 @@ export function createSatelliteSource({
 
       // Direct fallback to CelesTrak HTTPS API for static hosting (GitHub Pages / Vercel)
       try {
-        const fallbackUrl = CELESTRAK_DIRECT_URLS[group] || `https://celestrak.org/NORAD/elements/gp.php?GROUP=${group}&FORMAT=tle`;
+        const fallbackUrl =
+          CELESTRAK_DIRECT_URLS[group] ||
+          `https://celestrak.org/NORAD/elements/gp.php?GROUP=${group}&FORMAT=tle`;
         const directRes = await fetchImpl(fallbackUrl, { signal });
         lastStatus = directRes.status;
         if (directRes.ok) {

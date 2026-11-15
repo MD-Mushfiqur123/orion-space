@@ -482,20 +482,25 @@ test('the keyboard focus ring survives on the ACTIVE chip', () => {
   );
 });
 
-test('the Visual Presets tray owns Map Source and the retired left panel is absent', () => {
+test('the left rail owns Map Source and bottom tray has no map section', () => {
   const html = expandApplicationHtml(
     readFileSync(new URL('../index.html', import.meta.url), 'utf8'),
   );
   const ui = readShellSource();
 
-  assert.doesNotMatch(
-    html,
-    /map-stack-select/,
-    'the SOURCE dropdown is replaced by the chip row',
-  );
   assert.match(
     html,
-    /<section class="map-source-section"[\s\S]*?<div id="map-stack-chips" class="map-stack-chip-row" role="group" aria-label="Map source"><\/div>/,
+    /id="scene-panel"[\s\S]*?id="map-source-panel"[\s\S]*?id="map-source-select"/,
+    'Map Source dropdown is placed after Director Camera in the left rail',
+  );
+  const commandDockHtml =
+    html.match(
+      /<div id="command-dock"[\s\S]*?<\/div>\s*<aside id="left-control-rail"/,
+    )?.[0] || '';
+  assert.doesNotMatch(
+    commandDockHtml,
+    /id="map-source-label"/,
+    'bottom control-panel has no map source section',
   );
   assert.doesNotMatch(
     html,

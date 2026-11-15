@@ -123,19 +123,15 @@ export class PanelChrome {
         allowStored: !this._initialShareState,
       });
     }
-    // The command dock always starts compact; either wing reveals on hover,
-    // focus, or click and collapses again after the interaction moves away.
-    this.setPanelCollapsed('control-panel', true, {
+    // The command dock preset tray is persistently visible and stable;
+    // location-bar reveals on hover, focus, or click.
+    this.setPanelCollapsed('control-panel', false, {
       syncShare: false,
       persist: false,
     });
     this.setPanelCollapsed('location-bar', true, {
       syncShare: false,
       persist: false,
-    });
-    this._initAutoHoverPanel('control-panel', {
-      openDelayMs: 140,
-      closeDelayMs: 420,
     });
     this._initAutoHoverPanel('location-bar', {
       openDelayMs: 140,

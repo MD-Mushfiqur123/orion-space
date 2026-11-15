@@ -227,7 +227,8 @@ export class LayerPanel {
         details.appendChild(summary);
 
         this._currentGroupContainer = document.createElement('div');
-        this._currentGroupContainer.className = 'layer-group-content flex flex-col gap-2 mt-2 mb-4';
+        this._currentGroupContainer.className =
+          'layer-group-content flex flex-col gap-2 mt-2 mb-4';
         details.appendChild(this._currentGroupContainer);
 
         this._toggleContainer.appendChild(details);
@@ -276,7 +277,7 @@ export class LayerPanel {
         '🧪': 'science',
         '🏭': 'factory',
         '🌋': 'volcano',
-        '🎣': 'fishing'
+        '🎣': 'fishing',
       };
       icon.textContent = emojiMap[layer.icon] || layer.icon;
       icon.style.fontSize = '16px';

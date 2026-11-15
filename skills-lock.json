@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "skills": {
+    "web-performance-optimization": {
+      "source": "sickn33/agentic-awesome-skills",
+      "sourceType": "github",
+      "skillPath": "skills/web-performance-optimization/SKILL.md",
+      "computedHash": "08c26a91596b31a05372737c0d2dfd43dc113efb1c1d0af7da26d271a0c7f730"
+    }
+  }
+}

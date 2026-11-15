@@ -179,9 +179,7 @@ test('consumer build includes only infrastructure code and resolves assets under
       write: false,
       assetsInlineLimit: 0,
       rollupOptions: {
-        input: fileURLToPath(
-          import.meta.resolve('orion-space/infrastructure'),
-        ),
+        input: fileURLToPath(import.meta.resolve('orion-space/infrastructure')),
         external: ['cesium'],
         preserveEntrySignatures: 'strict',
       },

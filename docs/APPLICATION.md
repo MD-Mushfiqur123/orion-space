@@ -203,4 +203,3 @@ shared chrome owns the welcome/loading transition; standalone composition adds
 Provider Settings. `build/html` expands an allowlist of component markers from
 `src/ui/templates`; unknown names cannot read arbitrary filesystem paths. The
 standalone document expands to the same markup as before this extraction.
-

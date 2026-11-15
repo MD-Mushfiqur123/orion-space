@@ -35,7 +35,8 @@ const GREETINGS = {
   sectorId: null,
 };
 
-export const ORION_STATIC_KB = [GREETINGS,
+export const ORION_STATIC_KB = [
+  GREETINGS,
   {
     id: 'q1_satkhira_salinity_crop',
     keywords: [

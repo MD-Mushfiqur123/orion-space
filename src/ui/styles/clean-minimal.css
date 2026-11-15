@@ -450,8 +450,8 @@ svg[class*="cockpit"],
   font-size: 10px !important;
   cursor: pointer !important;
   transition:
-    background-color 0.2s cubic-bezier(0.25, 1, 0.5, 1) !important,
-    border-color 0.2s cubic-bezier(0.25, 1, 0.5, 1) !important,
+    background-color 0.2s cubic-bezier(0.25, 1, 0.5, 1),
+    border-color 0.2s cubic-bezier(0.25, 1, 0.5, 1),
     color 0.2s cubic-bezier(0.25, 1, 0.5, 1) !important;
 }
 
@@ -695,6 +695,7 @@ svg[class*="cockpit"],
 }
 
 #command-dock #location-bar,
+#command-dock #control-panel-toggle,
 #command-dock .panel-header,
 #command-dock .panel-mini-status {
   display: none !important;

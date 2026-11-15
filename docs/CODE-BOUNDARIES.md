@@ -730,4 +730,3 @@ sources supply `{records, droppedCount, status, saturated}`; viewport filtering,
 exact-bound retry and rendering stay in the layer. Legacy cache saturation is
 decoded in the source. Source and geometry modules remain independent of Cesium,
 DOM and platform middleware.
-

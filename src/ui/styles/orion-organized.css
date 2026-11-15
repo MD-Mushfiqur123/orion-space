@@ -610,33 +610,105 @@
 
 /* ══════════════ § 5 · COMMAND DOCK ══════════════ */
 
+#command-dock #control-panel-toggle {
+  display: none !important;
+}
+
 #command-dock .dock-group-label {
-  padding: 0 6px 0 8px;
-  font-family: var(--o-font-body);
-  font-size: 9.5px;
-  font-weight: 600;
+  padding: 0 8px 0 4px;
+  font-family: var(--font-mono, monospace);
+  font-size: 10px;
+  font-weight: 700;
   letter-spacing: 0.14em;
-  color: var(--o-text-3);
+  color: rgba(255, 255, 255, 0.75);
   white-space: nowrap;
   user-select: none;
 }
 
-/* Visual filters are secondary: quieter buttons until picked. */
-#command-dock .style-btn[data-style]:not(.active) {
-  background: transparent !important;
-  border-color: transparent !important;
+/* High-contrast, crisp visual filter buttons */
+#command-dock .style-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  text-decoration: none !important;
+  box-sizing: border-box !important;
 }
 
-#command-dock .style-btn[data-style]:not(.active):hover {
+#command-dock .style-btn:not(.active):not([aria-pressed='true']) {
   background: rgba(255, 255, 255, 0.08) !important;
-  border-color: rgba(255, 255, 255, 0.14) !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  color: #f4f4f5 !important;
+  font-family: var(--font-display, 'Space Grotesk', sans-serif) !important;
+  font-size: 10.5px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.08em !important;
+  padding: 6px 13px !important;
+  min-height: 38px !important;
+  border-radius: 12px !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4) !important;
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease !important;
 }
 
-/* Real Clouds is a primary data action, so it keeps a visible outline. */
-#command-dock #real-earth-clouds-dock-btn:not(.active) {
-  background: rgba(255, 255, 255, 0.05) !important;
-  border-color: rgba(255, 255, 255, 0.16) !important;
-  color: var(--o-text) !important;
+#command-dock .style-btn:not(.active):not([aria-pressed='true']) .btn-label {
+  color: #f4f4f5 !important;
+  opacity: 1 !important;
+  font-weight: 600 !important;
+}
+
+#command-dock .style-btn:not(.active):not([aria-pressed='true']):hover {
+  background: rgba(255, 255, 255, 0.18) !important;
+  border-color: rgba(255, 255, 255, 0.38) !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.12) !important;
+}
+
+#command-dock .style-btn:not(.active):not([aria-pressed='true']):hover .btn-label {
+  color: #ffffff !important;
+}
+
+#command-dock .style-btn.active,
+#command-dock .style-btn[aria-pressed='true'] {
+  background: #ffffff !important;
+  border: 1px solid #ffffff !important;
+  color: #09090b !important;
+  font-weight: 700 !important;
+  border-radius: 12px !important;
+  padding: 6px 14px !important;
+  min-height: 38px !important;
+  box-shadow: 0 2px 14px rgba(255, 255, 255, 0.35) !important;
+}
+
+#command-dock .style-btn.active *,
+#command-dock .style-btn[aria-pressed='true'] * {
+  color: #09090b !important;
+}
+
+/* Real Clouds button */
+#command-dock #real-earth-clouds-dock-btn:not(.active):not([aria-pressed='true']) {
+  background: rgba(56, 189, 248, 0.12) !important;
+  border: 1px solid rgba(56, 189, 248, 0.28) !important;
+  color: #7dd3fc !important;
+  font-weight: 600 !important;
+}
+
+#command-dock #real-earth-clouds-dock-btn:not(.active):not([aria-pressed='true']):hover {
+  background: rgba(56, 189, 248, 0.22) !important;
+  border-color: rgba(56, 189, 248, 0.48) !important;
+  color: #e0f2fe !important;
+}
+
+#command-dock #real-earth-clouds-dock-btn.active,
+#command-dock #real-earth-clouds-dock-btn[aria-pressed='true'] {
+  background: #38bdf8 !important;
+  border-color: #38bdf8 !important;
+  color: #082f49 !important;
+  font-weight: 700 !important;
+}
+
+#command-dock #real-earth-clouds-dock-btn.active *,
+#command-dock #real-earth-clouds-dock-btn[aria-pressed='true'] * {
+  color: #082f49 !important;
 }
 
 /* ══════════════ § 6 · TOP-CENTER ACTIONS ══════════════ */
@@ -1067,40 +1139,88 @@
   border-top: 1px solid rgba(123, 189, 211, 0.18);
 }
 
-/* The presets tray is one nowrap flex row (orion-final-polish), so the MAP
-   SOURCE block — added to the tray later — was squeezed beside the buttons.
-   Both the tray and the chip row are content-sized: the five source labels
-   ("Esri Satellite", "Bing Aerial") are the whole point of the block, and at
-   any fixed tray width they collapsed to ellipses a few pixels wide. The tray
-   stays one row, so the dock keeps the 62px height the attribution geometry
-   above the credit line assumes. */
-#command-dock #control-panel:not(.collapsed) #control-panel-popover {
-  width: max-content !important;
-  /* Keeps the open tray inside the viewport at every desktop width; below
-     ~1120px the labels give up a few pixels rather than leave the screen. */
-  max-width: calc(100vw - 5rem) !important;
+/* Clean, compact command dock: wraps visual presets neatly without dead space */
+#command-dock {
+  width: fit-content !important;
+  max-width: calc(100vw - 2rem) !important;
+  min-width: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: rgba(10, 13, 18, 0.82) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-top-color: rgba(255, 255, 255, 0.22) !important;
+  border-radius: 20px !important;
+  box-shadow:
+    0 16px 40px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(255, 255, 255, 0.05) inset,
+    0 1px 0 rgba(255, 255, 255, 0.15) inset !important;
+  backdrop-filter: blur(28px) saturate(1.6) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(1.6) !important;
+  padding: 5px 8px !important;
 }
 
-/* The dock's fixed 1060px cap could not hold the open tray, so the tray hung
-   past the pill's edge and off a 1100px screen. Let the cap follow the
-   viewport at narrow widths. */
-#command-dock {
-  max-width: min(1060px, calc(100vw - 2rem)) !important;
+#command-dock::before {
+  border-radius: 19px !important;
+  background: linear-gradient(
+    105deg,
+    rgba(255, 255, 255, 0.08),
+    transparent 40%,
+    transparent 70%,
+    rgba(0, 212, 255, 0.04)
+  ) !important;
+}
+
+#command-dock > #control-panel,
+#command-dock > #control-panel.collapsed,
+#command-dock > #control-panel:not(.collapsed) {
+  min-width: 0 !important;
+  width: fit-content !important;
+  flex: 0 0 auto !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+#command-dock #control-panel #control-panel-popover,
+#command-dock #control-panel.collapsed #control-panel-popover,
+#command-dock #control-panel:not(.collapsed) #control-panel-popover {
+  display: flex !important;
+  align-items: center !important;
+  width: fit-content !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  overflow: visible !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  transform: none !important;
+}
+
+#command-dock #style-buttons {
+  min-width: 0 !important;
+  width: fit-content !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 5px !important;
 }
 
 /* Its divider turns vertical so the column reads as part of the same tray.
-   The column takes the width its labels need (`auto`, shrinkable) instead of a
-   fixed 208px that gave every chip ~36px and ellipsised "Esri Satellite" down
-   to a couple of letters. It is still one row, so the dock height is fixed. */
+   The bounded flex basis gives the map controls room without allowing them to
+   change the dock's width. */
 #command-dock #control-panel-popover > .map-source-section {
-  flex: 0 1 auto;
+  flex: 0 1 clamp(180px, 32vw, 320px);
+  width: clamp(180px, 32vw, 320px);
   min-width: 0;
+  max-width: 100%;
   align-self: center;
   margin-top: 0;
   padding-top: 0;
   padding-left: 10px;
   border-top: 0;
   border-left: 1px solid rgba(255, 255, 255, 0.08);
+  overflow: hidden;
 }
 
 /* A cramped column truncates a stack label instead of letting it run into the
@@ -1136,24 +1256,22 @@
 }
 
 .map-stack-chip-row {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  display: flex;
+  min-width: 0;
+  max-width: 100%;
   gap: 4px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
 }
 
-/* Equal tracks sized from the tray's width gave every chip ~36px and
-   ellipsised "Esri Satellite" down to a couple of letters. On a desktop tray
-   there is room for the labels, so the tracks take their natural width there;
-   the row is still one row, so the dock height is unchanged. Phones keep the
-   3-column wrap. */
-@media (min-width: 1120px) {
-  .map-stack-chip-row {
-    grid-template-columns: repeat(5, max-content);
-  }
+.map-stack-chip-row::-webkit-scrollbar {
+  display: none;
 }
-
 
 .map-stack-chip {
+  flex: 0 0 auto;
   display: inline-flex;
   align-items: baseline;
   justify-content: center;
@@ -1188,7 +1306,7 @@
 
 @media (max-width: 620px) {
   .map-stack-chip-row {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    overflow-x: auto;
   }
 }
 
@@ -1245,10 +1363,10 @@
   text-transform: uppercase;
 }
 
-/* The dock's collapsed state hides the whole popover in the redesigned
-   markup (the legacy sheets gated .panel-inner / .dock-popover-content). */
-#command-dock #control-panel.collapsed #control-panel-popover {
-  display: none;
+/* The visual presets tray in the command dock stays persistently visible and stable */
+#command-dock #control-panel.collapsed #control-panel-popover,
+#command-dock #control-panel:not(.collapsed) #control-panel-popover {
+  display: flex !important;
 }
 
 /* Outside the Cyber theme the scroll-body wrapper is layout-transparent. */

@@ -678,7 +678,7 @@ test('public transit documentation uses courtesy attribution and the approved gr
   );
   assert.ok(
     readme.includes(
-      'built on top of **[God\'s Eye View](https://github.com/bilawalsidhu/gods-eye-view)** by **Bilawal Sidhu**, an open-source (MIT) CesiumJS spatial-intelligence viewer.',
+      "built on top of **[God's Eye View](https://github.com/bilawalsidhu/gods-eye-view)** by **Bilawal Sidhu**, an open-source (MIT) CesiumJS spatial-intelligence viewer.",
     ),
   );
   assert.doesNotMatch(

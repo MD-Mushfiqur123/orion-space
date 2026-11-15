@@ -163,3 +163,53 @@ export function syncMapStackChips(container, activeId) {
     chip.setAttribute?.('aria-pressed', String(active));
   }
 }
+
+/**
+ * Renders the map source dropdown into `selectElement`.
+ * @param {HTMLSelectElement} selectElement
+ * @param {Array<object>} stacks
+ * @param {object} [options]
+ * @param {string|null} [options.activeId]
+ * @param {(stackId: string) => void} [options.onSelect]
+ * @param {Document} [options.doc]
+ * @param {(element: HTMLElement, type: string, listener: Function) => void} [options.bind]
+ * @returns {Array<object>}
+ */
+export function renderMapSourceSelect(
+  selectElement,
+  stacks,
+  {
+    activeId = null,
+    onSelect = null,
+    doc,
+    bind = (element, type, listener) =>
+      element.addEventListener(type, listener),
+  } = {},
+) {
+  if (!selectElement) return [];
+  const ownerDoc = doc || selectElement.ownerDocument || globalThis.document;
+  if (!ownerDoc?.createElement) return [];
+
+  selectElement.innerHTML = '';
+  const models = mapStackChipModels(stacks, activeId);
+
+  for (const model of models) {
+    const option = ownerDoc.createElement('option');
+    option.value = model.id;
+    option.textContent = model.available
+      ? model.label
+      : `${model.label} (${model.requirement || 'Unavailable'})`;
+    option.disabled = !model.available;
+    if (model.active) {
+      option.selected = true;
+    }
+    selectElement.appendChild(option);
+  }
+
+  bind(selectElement, 'change', () => {
+    const nextId = selectElement.value;
+    if (nextId) onSelect?.(nextId);
+  });
+
+  return models;
+}

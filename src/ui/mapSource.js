@@ -4,6 +4,7 @@ export {
   PRESENTED_MAP_STACK_IDS,
   mapStackChipModel,
   mapStackChipModels,
+  renderMapSourceSelect,
   renderMapStackChips,
   syncMapStackChips,
 } from '../mapStackChips.js';
