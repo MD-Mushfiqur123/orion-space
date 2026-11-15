@@ -157,6 +157,26 @@ test('repeated Esri shot handoffs retain imagery and keep tile fallback live', a
   env.controller.destroy();
 });
 
+test('a failed replacement keeps the last working imagery layer visible', async () => {
+  const env = publicFixture();
+  env.registry.recoveryId = null;
+  await env.controller.setStack('esri-imagery');
+  const previousLayer = env.imagery[0];
+  const osm = env.registry.sources.find(
+    (source) => source.descriptor.id === 'osm',
+  );
+  osm.imagery = async () => {
+    throw new Error('replacement unavailable');
+  };
+
+  await env.controller.setStack('osm');
+
+  assert.equal(env.imagery[0], previousLayer);
+  assert.equal(env.controller.getActiveId(), 'esri-imagery');
+  assert.equal(env.controller.getState().lastError, 'replacement unavailable');
+  env.controller.destroy();
+});
+
 test('returning to the live provider supersedes a pending switch without rebuilding imagery', async () => {
   const env = publicFixture();
   await env.controller.setStack('esri-imagery');

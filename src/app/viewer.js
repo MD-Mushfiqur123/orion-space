@@ -120,10 +120,13 @@ export function createApplicationViewer({ container, creditContainer }) {
     infoBox: false,
     baseLayer: false,
     creditContainer,
-    msaaSamples: 2,
+    msaaSamples: 1,
     contextOptions: {
       webgl: {
-        preserveDrawingBuffer: true,
+        // Keeping the back buffer alive forces an expensive copy on every
+        // frame. Screenshots use the browser capture path and do not require
+        // this flag.
+        preserveDrawingBuffer: false,
         powerPreference: 'high-performance',
         antialias: true
       }
@@ -131,7 +134,7 @@ export function createApplicationViewer({ container, creditContainer }) {
   });
   try {
     viewer.targetFrameRate = 60;
-    viewer.resolutionScale = Math.min(window.devicePixelRatio || 1.0, 1.5);
+    viewer.resolutionScale = Math.min(window.devicePixelRatio || 1.0, 1.25);
     
     // Set clock to solar noon (bright daytime illumination over Bangladesh & Asia)
     viewer.clock.currentTime = Cesium.JulianDate.fromDate(
@@ -146,7 +149,7 @@ export function createApplicationViewer({ container, creditContainer }) {
     
     viewer.scene.globe.show = true;
     viewer.scene.globe.enableLighting = false; // Disable dark night shadows over terrain
-    viewer.scene.globe.maximumScreenSpaceError = 2.0;
+    viewer.scene.globe.maximumScreenSpaceError = 2.5;
     viewer.scene.globe.baseColor = Cesium.Color.fromCssColorString('#12283e');
     
     viewer.scene.skyAtmosphere.show = true;

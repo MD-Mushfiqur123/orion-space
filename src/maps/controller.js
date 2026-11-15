@@ -267,10 +267,19 @@ export class MapSourceController {
       !this._imageryLayer ||
       this._activeImageryProvider !== resolution.provider
     ) {
-      this._removeImageryLayer();
-      this._imageryLayer = this._createImageryLayer(resolution.provider);
+      // Build and attach the replacement before removing the current layer.
+      // If Cesium rejects a provider, the last working map must remain visible
+      // while the controller enters its recovery path.
+      const previousLayer = this._imageryLayer;
+      const previousErrorListener = this._removeImageryErrorListener;
+      const nextLayer = this._createImageryLayer(resolution.provider);
+      this.viewer.imageryLayers.add(nextLayer, 0);
+      previousErrorListener?.();
+      if (previousLayer)
+        this.viewer.imageryLayers.remove(previousLayer, true);
+      this._imageryLayer = nextLayer;
       this._activeImageryProvider = resolution.provider;
-      this.viewer.imageryLayers.add(this._imageryLayer, 0);
+      this._removeImageryErrorListener = null;
     }
     const source = this._sources.get(resolution.effectiveStackId);
     this._credits.show(source?.credit || null);
