@@ -1068,19 +1068,32 @@
 }
 
 /* The presets tray is one nowrap flex row (orion-final-polish), so the MAP
-   SOURCE block — added to the tray later — was squeezed to 79px beside the
-   buttons: its heading ran across the AI AGENT button and the five chips
-   collapsed to 12px each. The tray is content-sized, so widening it while the
-   column is open gives the block a real column and keeps the dock one row —
-   its 62px height is the constant the attribution geometry assumes. */
+   SOURCE block — added to the tray later — was squeezed beside the buttons.
+   Both the tray and the chip row are content-sized: the five source labels
+   ("Esri Satellite", "Bing Aerial") are the whole point of the block, and at
+   any fixed tray width they collapsed to ellipses a few pixels wide. The tray
+   stays one row, so the dock keeps the 62px height the attribution geometry
+   above the credit line assumes. */
 #command-dock #control-panel:not(.collapsed) #control-panel-popover {
-  width: 880px !important;
-  max-width: calc(100vw - 2.5rem) !important;
+  width: max-content !important;
+  /* Keeps the open tray inside the viewport at every desktop width; below
+     ~1120px the labels give up a few pixels rather than leave the screen. */
+  max-width: calc(100vw - 5rem) !important;
 }
 
-/* Its divider turns vertical so the column reads as part of the same tray. */
+/* The dock's fixed 1060px cap could not hold the open tray, so the tray hung
+   past the pill's edge and off a 1100px screen. Let the cap follow the
+   viewport at narrow widths. */
+#command-dock {
+  max-width: min(1060px, calc(100vw - 2rem)) !important;
+}
+
+/* Its divider turns vertical so the column reads as part of the same tray.
+   The column takes the width its labels need (`auto`, shrinkable) instead of a
+   fixed 208px that gave every chip ~36px and ellipsised "Esri Satellite" down
+   to a couple of letters. It is still one row, so the dock height is fixed. */
 #command-dock #control-panel-popover > .map-source-section {
-  flex: 0 0 208px;
+  flex: 0 1 auto;
   min-width: 0;
   align-self: center;
   margin-top: 0;
@@ -1127,6 +1140,18 @@
   grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 4px;
 }
+
+/* Equal tracks sized from the tray's width gave every chip ~36px and
+   ellipsised "Esri Satellite" down to a couple of letters. On a desktop tray
+   there is room for the labels, so the tracks take their natural width there;
+   the row is still one row, so the dock height is unchanged. Phones keep the
+   3-column wrap. */
+@media (min-width: 1120px) {
+  .map-stack-chip-row {
+    grid-template-columns: repeat(5, max-content);
+  }
+}
+
 
 .map-stack-chip {
   display: inline-flex;
