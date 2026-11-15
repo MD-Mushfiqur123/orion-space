@@ -118,6 +118,22 @@
   grid-column: 1 / -1;
 }
 
+/* The left anchor has to follow the rail widths at each breakpoint — the same
+   values orion-glass uses. Pinning it at 336px made the card run into the
+   top-center actions as soon as the rail narrowed (it overlapped them at
+   1024px, where the actions begin at 512px). */
+@media (max-width: 1366px) {
+  #title-bar {
+    left: 290px !important;
+  }
+}
+
+@media (max-width: 1024px) {
+  #title-bar {
+    left: 260px !important;
+  }
+}
+
 /* ══════════════ § 3 · RIGHT RAIL CARDS ══════════════ */
 
 #right-context-rail {
@@ -139,7 +155,7 @@
 #right-context-rail .orion-card__header {
   display: flex !important;
   align-items: center !important;
-  gap: 8px !important;
+  gap: 6px !important;
   margin: 0 0 12px !important;
   padding: 0 !important;
   border: 0 !important;
@@ -176,7 +192,7 @@
   align-items: center;
   gap: 5px;
   flex: 0 0 auto;
-  padding: 2px 8px;
+  padding: 2px 6px;
   border-radius: 999px;
   font-family: var(--o-font-body);
   font-size: 9.5px;
@@ -443,9 +459,10 @@
   font-size: 12px;
   font-weight: 600;
   color: var(--o-text);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  /* The column is too narrow for the longest place names: let them wrap to a
+     second line instead of truncating the headline of the card. */
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 .orion-event__text small {
@@ -650,7 +667,52 @@
   margin-top: 6px !important;
 }
 
-/* ══════════════ § 7 · PHONES / SMALL TABLETS ══════════════ */
+/* ══════════════ § 7 · NARROW DESKTOP — DOCK VS RAILS ══════════════ */
+
+/* In the 1024–1366 band the rail stands 268px wide, and the trend card's stat
+   values ("+0.040°C/yr") and its source chip then painted past the card edge.
+   Tighten that card's inner spacing instead of truncating the numbers. */
+@media (max-width: 1366px) {
+  #right-context-rail .orion-card {
+    padding: 12px !important;
+  }
+
+  #right-context-rail .orion-stat {
+    padding: 8px;
+  }
+
+  #right-context-rail .orion-trend__place .orion-chip {
+    font-size: 8.5px;
+    padding: 1px 5px;
+  }
+}
+
+/* Below ~1230px the centred dock reaches under both side rails and paints over
+   their last rows, which no amount of scrolling can bring clear. End the left
+   rail above the dock's lane and give both rails bottom padding: padding is
+   not part of the measured attribution geometry, so the credit-line model
+   still owns every box position. */
+@media (max-width: 1230px) {
+  #left-panel-stack {
+    bottom: calc(2vh + 5.6rem) !important;
+  }
+
+  #left-panel-stack,
+  #right-context-rail {
+    padding-bottom: 108px !important;
+  }
+}
+
+/* Phones keep their own composition (the rail is a drawer above the dock), so
+   restore the lane they were designed with. */
+@media (max-width: 860px) {
+  #left-panel-stack,
+  #right-context-rail {
+    padding-bottom: 20px !important;
+  }
+}
+
+/* ══════════════ § 8 · PHONES / SMALL TABLETS ══════════════ */
 
 @media (max-width: 1180px) and (min-width: 861px) {
   #title-bar .orion-badge {
@@ -887,9 +949,15 @@
 
 #left-panel-stack > [data-panel-id]:not(.collapsed) {
   box-sizing: border-box;
-  flex: 0 1 var(--left-panel-allocated-height, auto);
-  height: var(--left-panel-allocated-height, auto);
-  max-height: var(--left-panel-allocated-height, 100%);
+  /* This lane is one scrolling column, so the engine's allocation can only be
+     a floor. Reading it as an exact height clipped every panel to the ~24px
+     its measurement pass sees (it measures the panel header alone), painting
+     all three panels onto the same band. The panel's own content sets its
+     height instead. */
+  flex: 0 0 auto;
+  height: auto;
+  max-height: none;
+  min-height: var(--left-panel-allocated-height, auto);
 }
 
 #left-panel-stack > [data-panel-id]:not(.collapsed) .panel-header {
@@ -997,6 +1065,51 @@
   margin-top: 8px;
   padding-top: 8px;
   border-top: 1px solid rgba(123, 189, 211, 0.18);
+}
+
+/* The presets tray is one nowrap flex row (orion-final-polish), so the MAP
+   SOURCE block — added to the tray later — was squeezed to 79px beside the
+   buttons: its heading ran across the AI AGENT button and the five chips
+   collapsed to 12px each. The tray is content-sized, so widening it while the
+   column is open gives the block a real column and keeps the dock one row —
+   its 62px height is the constant the attribution geometry assumes. */
+#command-dock #control-panel:not(.collapsed) #control-panel-popover {
+  width: 880px !important;
+  max-width: calc(100vw - 2.5rem) !important;
+}
+
+/* Its divider turns vertical so the column reads as part of the same tray. */
+#command-dock #control-panel-popover > .map-source-section {
+  flex: 0 0 208px;
+  min-width: 0;
+  align-self: center;
+  margin-top: 0;
+  padding-top: 0;
+  padding-left: 10px;
+  border-top: 0;
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* A cramped column truncates a stack label instead of letting it run into the
+   neighbouring tile. */
+#command-dock .map-stack-chip-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* A narrow tray shrinks this column; keep both labels inside it instead of
+   painting over the neighbouring buttons. */
+#command-dock #control-panel-popover .map-source-heading {
+  gap: 6px;
+  min-width: 0;
+}
+
+#command-dock #control-panel-popover .map-source-heading > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .map-source-heading {

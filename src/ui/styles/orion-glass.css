@@ -840,14 +840,17 @@
     padding: 10px !important;
   }
 
+  /* 252px clipped the right rail's own content (the trend card's stat rows
+     and the NASA source chip painted past its edge), so this breakpoint keeps
+     the 268px the 1366px band already uses. The map inset follows. */
   #right-context-rail {
-    width: 252px !important;
+    width: 268px !important;
   }
 
   #cesiumContainer,
   #world-overlay-root {
     left: 244px !important;
-    right: 276px !important;
+    right: 292px !important;
   }
 
   #title-bar {
